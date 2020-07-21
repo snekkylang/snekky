@@ -1,0 +1,1 @@
+haxe --main Snekky --interp -cp src
