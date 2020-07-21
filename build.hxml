@@ -1,0 +1,3 @@
+-cp src
+-main Snekky
+-cpp cpp
