@@ -35,7 +35,7 @@ class Lexer {
 		final startPosition = position;
 
 		while (Helper.isAscii(peekChar()) || peekChar() == "_") {
-            readChar();
+			readChar();
 		}
 
 		return code.substring(startPosition - 1, position);
@@ -73,30 +73,30 @@ class Lexer {
 
 	function eatWhitespace() {
 		while (currentChar == " " || Helper.isLinebreak(currentChar)) {
-            readChar();
-            increaseCurrentLine();
+			readChar();
+			increaseCurrentLine();
 		}
-    }
-    
-    public function tokenize() {
-        while (currentChar != "\u{0}") {
-            trace(readToken());
-        }
-    }
+	}
 
-    public function peekToken() {
-        final lastPostion = position;
-        final lastLine = currentLine;
-        final token = readToken();
-        position = lastPostion;
-        currentLine = lastLine;
+	public function tokenize() {
+		while (currentChar != "\u{0}") {
+			trace(readToken());
+		}
+	}
 
-        return token;
-    }
+	public function peekToken() {
+		final lastPostion = position;
+		final lastLine = currentLine;
+		final token = readToken();
+		position = lastPostion;
+		currentLine = lastLine;
+
+		return token;
+	}
 
 	public function readToken() {
 		readChar();
-        eatWhitespace();
+		eatWhitespace();
 
 		return switch (currentChar) {
 			case ".": new Token(TokenType.Dot, currentLine, ".");
@@ -116,59 +116,65 @@ class Lexer {
 			case ":": new Token(TokenType.Colon, currentLine, ":");
 			case "\"": new Token(TokenType.String, currentLine, readString());
 			case "&": {
-                if (peekChar() == "&") {
-					readChar();
-					new Token(TokenType.LogicAnd, currentLine, "&&");
-                } else new Token(TokenType.BitAnd, currentLine, "&");
-            }
-            case "|": {
-                if (peekChar() == "|") {
-                    readChar();
-                    new Token(TokenType.LogicOr, currentLine, "|");
-                } else new Token(TokenType.BitOr, currentLine, "|");
-            }
-            case "!": {
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.NotEqual, currentLine, "!=");
-                } else new Token(TokenType.Bang, currentLine, "!");
-            }
-            case "=": {
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.Equal, currentLine, "==");
-                } else new Token(TokenType.Assign, currentLine, "=");
-            }
-            case "<": {
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.SmallerThanOrEqual, currentLine, "<=");
-                } else new Token(TokenType.SmallerThan, currentLine, "<");
-            }
-            case ">": {
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.GreaterThanOrEqual, currentLine, ">=");
-                } else new Token(TokenType.GreaterThan, currentLine, ">");
-            }
+					if (peekChar() == "&") {
+						readChar();
+						new Token(TokenType.LogicAnd, currentLine, "&&");
+					} else
+						new Token(TokenType.BitAnd, currentLine, "&");
+				}
+			case "|": {
+					if (peekChar() == "|") {
+						readChar();
+						new Token(TokenType.LogicOr, currentLine, "|");
+					} else
+						new Token(TokenType.BitOr, currentLine, "|");
+				}
+			case "!": {
+					if (peekChar() == "=") {
+						readChar();
+						new Token(TokenType.NotEqual, currentLine, "!=");
+					} else
+						new Token(TokenType.Bang, currentLine, "!");
+				}
+			case "=": {
+					if (peekChar() == "=") {
+						readChar();
+						new Token(TokenType.Equal, currentLine, "==");
+					} else
+						new Token(TokenType.Assign, currentLine, "=");
+				}
+			case "<": {
+					if (peekChar() == "=") {
+						readChar();
+						new Token(TokenType.SmallerThanOrEqual, currentLine, "<=");
+					} else
+						new Token(TokenType.SmallerThan, currentLine, "<");
+				}
+			case ">": {
+					if (peekChar() == "=") {
+						readChar();
+						new Token(TokenType.GreaterThanOrEqual, currentLine, ">=");
+					} else
+						new Token(TokenType.GreaterThan, currentLine, ">");
+				}
 			case "\u{0}": new Token(TokenType.Eof, currentLine, currentChar);
 			default: {
-                if (Helper.isNumber(currentChar)) {
-                    return new Token(TokenType.Number, currentLine, readNumber());
-                }
+					if (Helper.isNumber(currentChar)) {
+						return new Token(TokenType.Number, currentLine, readNumber());
+					}
 
-                if (Helper.isAscii(currentChar)) {
-                    final ident = readIdent();
+					if (Helper.isAscii(currentChar)) {
+						final ident = readIdent();
 
-                    if (Keyword.isKeyword(ident)) {
-                        return new Token(Keyword.getKeyword(ident), currentLine, ident);
-                    } else {
-                        return new Token(TokenType.Ident, currentLine, ident);
-                    }
-                }
+						if (Keyword.isKeyword(ident)) {
+							return new Token(Keyword.getKeyword(ident), currentLine, ident);
+						} else {
+							return new Token(TokenType.Ident, currentLine, ident);
+						}
+					}
 
-                return new Token(TokenType.Illegal, currentLine, currentChar);
-            }
+					return new Token(TokenType.Illegal, currentLine, currentChar);
+				}
 		}
 	}
 }
