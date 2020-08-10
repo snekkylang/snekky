@@ -80,7 +80,8 @@ class Lexer {
 
     public function tokenize() {
         while (currentChar != "\u{0}") {
-            trace(readToken());
+            final token = readToken();
+            trace('${token.line} ${token.type} ${token.literal}');
         }
     }
 
