@@ -17,7 +17,7 @@ import parser.nodes.*;
 class Parser {
 
     final lexer:Lexer;
-    public var ast = new Block(0);
+    public var ast = new Block(1);
     var currentToken:Token;
     
     public function new(lexer:Lexer) {
@@ -63,7 +63,11 @@ class Parser {
             return parameters;
         }
 
-        while (currentToken.type != TokenType.RParen) { // TODO: eof check
+        while (currentToken.type != TokenType.RParen) {
+            if (currentToken.type == TokenType.Eof) {
+                Error.unexpectedEof();
+            }
+
             nextToken();
             parameters.push(parseExpression());
         }
@@ -178,7 +182,7 @@ class Parser {
     function parseToken(block:Block) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
-            case TokenType.Ident: parseIdent();
+            case TokenType.Ident | TokenType.Number: block.addNode(parseExpression());
             default: 
         }
     }
