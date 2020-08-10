@@ -1,8 +1,8 @@
 package lexer;
 
 class Keyword {
-    
-	static final keywords = [
+
+    static final keywords = [
         "function" => TokenType.Function, 
         "let" => TokenType.Let, 
         "mut" => TokenType.Mut, 
@@ -13,13 +13,13 @@ class Keyword {
         "while" => TokenType.While, 
         "return" => TokenType.Return, 
         "import" => TokenType.Import,
-	];
+    ];
 
-	public static function isKeyword(ident:String) {
-		return keywords.get(ident) != null;
-	}
+    public static function isKeyword(ident:String) {
+        return keywords.get(ident) != null;
+    }
 
-	public static function getKeyword(ident:String) {
-		return keywords[ident];
-	}
+    public static function getKeyword(ident:String) {
+        return keywords[ident];
+    }
 }
