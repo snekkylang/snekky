@@ -2,7 +2,7 @@ package parser.nodes;
 
 class Block extends Node {
 
-    var body:Array<Node> = [];
+    public final body:Array<Node> = [];
 
     public function new(line:Int) {
         this.type = NodeType.Block;

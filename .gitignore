@@ -1,3 +1,5 @@
 .haxelib/
 cpp/
-input.snek/
+java/
+input.snek
+ast.json

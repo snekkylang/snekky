@@ -5,6 +5,8 @@ enum NodeType {
     Expression;
     Node;
     Variable;
+    Ident;
+    FunctionCall;
 
     Plus;
     Minus;
