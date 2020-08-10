@@ -90,7 +90,7 @@ class Parser {
                 case TokenType.Number: output.push(parseNumber());
                 case TokenType.Ident: {
                     if (lexer.peekToken().type == TokenType.LParen) {
-                        var lastTarget: Expression = new Expression(currentToken.line, [new Ident(currentToken.line, currentToken.literal)]);
+                        var lastTarget = new Expression(currentToken.line, [new Ident(currentToken.line, currentToken.literal)]);
 
                         do {
                             nextToken();
