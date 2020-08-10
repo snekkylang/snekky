@@ -1,5 +1,7 @@
 package parser;
 
+import sys.io.File;
+import haxe.format.JsonPrinter;
 import parser.nodes.operators.LParen;
 import parser.nodes.operators.Multiply;
 import parser.nodes.operators.Divide;
@@ -30,6 +32,10 @@ class Parser {
         }
     }
 
+    public function writeAst() {
+        File.saveContent("ast.json", JsonPrinter.print(ast));
+    }
+
     function nextToken() {
         currentToken = lexer.readToken();
     }
@@ -49,9 +55,27 @@ class Parser {
         return new IntN(currentToken.line, n);
     }
 
-    private function parseExpression() {
+    function parseCallParameters() {
+        final parameters:Array<Expression> = [];
+
+        if (lexer.peekToken().type == TokenType.RParen) {
+            nextToken();
+            return parameters;
+        }
+
+        while (currentToken.type != TokenType.RParen) { // TODO: eof check
+            nextToken();
+            parameters.push(parseExpression());
+        }
+
+        return parameters;
+    }
+
+    private function parseExpression(): Expression {
         final output:Array<Node> = [];
         final operators:Array<Operator> = [];
+
+        var openBraces = 0;
 
         while (true) {
             if (currentToken.type == TokenType.Eof) {
@@ -60,13 +84,36 @@ class Parser {
 
             switch (currentToken.type) {
                 case TokenType.Number: output.push(parseNumber());
-                case TokenType.LParen: operators.push(new LParen(currentToken.line));
+                case TokenType.Ident: {
+                    if (lexer.peekToken().type == TokenType.LParen) {
+                        var lastTarget: Expression = new Expression(currentToken.line, [new Ident(currentToken.line, currentToken.literal)]);
+
+                        do {
+                            nextToken();
+
+                            lastTarget = new Expression(currentToken.line, [new FunctionCall(currentToken.line, lastTarget, parseCallParameters())]);
+                        } while (lexer.peekToken().type == TokenType.LParen);
+
+                        output.push(lastTarget.value[0]); // todo: is this necessary?
+                    } else {
+                        output.push(new Ident(currentToken.line, currentToken.literal));
+                    }
+                }
+                case TokenType.LParen: {
+                    operators.push(new LParen(currentToken.line));
+                    openBraces++;
+                }
                 case TokenType.RParen: {
+                    openBraces--;
+
+                    if (openBraces < 0) {
+                        break;
+                    }
+
                     while (operators.length > 0 && operators[operators.length - 1].type != NodeType.LParen) {
                         output.push(operators.pop());
                     }
 
-            
                     if (operators.length > 0 && operators[operators.length - 1].type == NodeType.LParen) {
                         operators.pop();
                     }
@@ -98,13 +145,13 @@ class Parser {
             output.push(operators.pop());
         }
 
-        trace(output);
+        return new Expression(currentToken.line, output);
     }
 
     function parseVariable() {
-        var mutable = currentToken.type == Mut;
+        var mutable = currentToken.type == TokenType.Mut;
 
-        if (lexer.peekToken().type != Ident) {
+        if (lexer.peekToken().type != TokenType.Ident) {
             Error.unexpectedToken();
         }
 
@@ -112,20 +159,26 @@ class Parser {
 
         final name = currentToken.literal;
 
-        if (lexer.peekToken().type != Assign) {
+        if (lexer.peekToken().type != TokenType.Assign) {
             Error.unexpectedToken();
         }
 
         nextToken();
         nextToken();
 
+        final value = parseExpression();
+
+        return new Variable(currentToken.line, name, value, mutable);
+    }
+
+    function parseIdent() { // TODO: Parse assigns
         parseExpression();
     }
 
     function parseToken(block:Block) {
         switch (currentToken.type) {
-            case Let:
-                parseVariable();
+            case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
+            case TokenType.Ident: parseIdent();
             default: 
         }
     }

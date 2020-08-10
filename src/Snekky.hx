@@ -10,5 +10,6 @@ class Snekky {
         var lexer = new Lexer(code);
         var parser = new Parser(lexer);
         parser.generateAst();
+        parser.writeAst();
     }
 }

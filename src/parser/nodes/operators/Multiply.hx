@@ -4,9 +4,7 @@ import parser.nodes.operators.Operator.OperatorAssociativity;
 
 class Multiply extends Operator {
 
-    public function new(line:Int) {
-        super();
-        
+    public function new(line:Int) {        
         this.line = line;
         this.type = NodeType.Multiply;
         this.precedence = 3;
