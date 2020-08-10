@@ -40,16 +40,9 @@ class Parser {
         currentToken = lexer.readToken();
     }
 
-    private function getOperatorPrecedence(op:Node) {
-        return switch (op.type) {
-            case NodeType.Plus | NodeType.Minus: 4;
-            case NodeType.Multiply | NodeType.Divide: 3;
-            default: 0;
-        }
-    }
 
     @:nullSafety(Off)
-    private function parseNumber() {
+    function parseNumber() {
         final n = Std.parseInt(currentToken.literal);
 
         return new IntN(currentToken.line, n);
@@ -75,7 +68,7 @@ class Parser {
         return parameters;
     }
 
-    private function parseExpression(): Expression {
+    function parseExpression(): Expression {
         final output:Array<Node> = [];
         final operators:Array<Operator> = [];
 
