@@ -7,7 +7,6 @@ enum TokenType {
     Ident;
     Number;
     String;
-
     Assign;
     Plus;
     Minus;
@@ -31,14 +30,13 @@ enum TokenType {
     Semicolon;
     Dot;
     Colon;
-
     LParen;
     RParen;
     LBrace;
     RBrace;
     LBracket;
     RBracket;
-
+    
     // Keywords
     Function;
     Let;
