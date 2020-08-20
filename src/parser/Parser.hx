@@ -1,5 +1,7 @@
 package parser;
 
+import parser.nodes.datatypes.Function.FunctionN;
+import parser.nodes.datatypes.Int.IntN;
 import sys.io.File;
 import haxe.format.JsonPrinter;
 import lexer.TokenType;
@@ -33,6 +35,79 @@ class Parser {
 
     public function nextToken() {
         currentToken = lexer.readToken();
+    }
+
+    @:nullSafety(Off)
+    public function parseNumber():Node {
+        final n = Std.parseInt(currentToken.literal);
+
+        return new IntN(currentToken.line, n);
+    }
+
+    public function parseBlock():Block {
+        final block = new Block(currentToken.line);
+
+        while (currentToken.type != TokenType.RBrace) {
+            if (currentToken.type == TokenType.Eof) {
+                Error.unexpectedEof();
+            }
+
+            parseToken(block);
+            nextToken();
+        }
+
+        return block;
+    }
+
+    public function parseFunction():FunctionN {
+        if (currentToken.type != TokenType.LParen) {
+            Error.unexpectedToken();
+        }
+
+        nextToken();
+
+        final parameters:Array<Ident> = [];
+
+        while (currentToken.type != TokenType.RParen) {
+            if (currentToken.type == TokenType.Ident) {
+                parameters.push(new Ident(currentToken.line, currentToken.literal));
+            } else if (currentToken.type != TokenType.Comma) {
+                Error.unexpectedToken();
+            }
+
+            nextToken();
+        }
+
+        nextToken();
+
+        if (currentToken.type != TokenType.RParen) {
+            Error.unexpectedToken();
+        }
+
+        nextToken();
+
+        final block = parseBlock();
+
+        return new FunctionN(currentToken.line, block, parameters);
+    }
+
+    public function parseCall(target:Expression):Expression {
+        final callParameters:Array<Expression> = [];
+
+        nextToken();
+
+        while (currentToken.type != TokenType.RParen) {
+            callParameters.push(expressionParser.parseExpression());
+        }
+
+        final call = new Expression(currentToken.line, new FunctionCall(currentToken.line, target, callParameters));
+
+        return if (lexer.peekToken().type == TokenType.LParen) {
+            nextToken();
+            parseCall(call);
+        } else {
+            call;
+        }
     }
 
     function parseVariable():Variable {
