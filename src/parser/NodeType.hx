@@ -21,4 +21,5 @@ enum NodeType {
 
     Int;
     String;
+    Function;
 }
