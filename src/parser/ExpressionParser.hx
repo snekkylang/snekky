@@ -1,5 +1,6 @@
 package parser;
 
+import parser.nodes.Boolean;
 import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
 import parser.nodes.Node;
@@ -158,6 +159,18 @@ class ExpressionParser {
             case TokenType.Function:
                 parser.nextToken();
                 parser.parseFunction();
+
+            case TokenType.True:
+                final boolean = new Boolean(parser.currentToken.line, true);
+                parser.nextToken();
+
+                boolean;
+
+            case TokenType.False:
+                final boolean = new Boolean(parser.currentToken.line, false);
+                parser.nextToken();
+
+                boolean;
 
             default: new Ident(-1, "");
         }
