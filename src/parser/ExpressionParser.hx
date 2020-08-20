@@ -1,5 +1,8 @@
 package parser;
 
+import parser.nodes.FunctionCall;
+import cpp.Callable;
+import lexer.Lexer;
 import parser.nodes.Node;
 import parser.nodes.datatypes.Int.IntN;
 import parser.nodes.operators.*;
@@ -10,9 +13,15 @@ import parser.nodes.Expression;
 class ExpressionParser {
 
     final parser:Parser;
+    final lexer:Lexer;
 
-    public function new(parser:Parser) {
+    public function new(parser:Parser, lexer:Lexer) {
         this.parser = parser;
+        this.lexer = lexer;
+    }
+
+    public function parseExpression():Expression {
+        return new Expression(parser.currentToken.line, disjunction());
     }
 
     @:nullSafety(Off)
@@ -22,8 +31,23 @@ class ExpressionParser {
         return new IntN(parser.currentToken.line, n);
     }
 
-    public function parseExpression():Expression {
-        return new Expression(parser.currentToken.line, disjunction());
+    function parseCall(target:Expression) {
+        final callParameters:Array<Expression> = [];
+
+        parser.nextToken();
+
+        while (parser.currentToken.type != TokenType.RParen) {
+            callParameters.push(parseExpression());
+        }
+
+        final call = new Expression(parser.currentToken.line, new FunctionCall(parser.currentToken.line, target, callParameters));
+
+        return if (lexer.peekToken().type == TokenType.LParen) {
+            parser.nextToken();
+            parseCall(call);
+        } else {
+            call;
+        }
     }
 
     function disjunction():Node {
@@ -137,10 +161,18 @@ class ExpressionParser {
                 disjunction;
 
             case TokenType.Ident:
-                var ident = new Ident(parser.currentToken.line, parser.currentToken.literal);
+                final ident = new Ident(parser.currentToken.line, parser.currentToken.literal);
                 parser.nextToken();
 
-                ident;
+                if (parser.currentToken.type == TokenType.LParen) {
+                    parseCall(new Expression(parser.currentToken.line, ident)).value;
+                } else {
+                    ident; 
+                }
+
+                /* var ident = new Ident(parser.currentToken.line, parser.currentToken.literal);
+
+                ident; */
 
             case TokenType.Number:
                 var number = parseNumber();
@@ -148,9 +180,7 @@ class ExpressionParser {
                 
                 number;
 
-            default:
-                Error.unexpectedToken();
-                new Ident(-1, "");
+            default: new Ident(-1, "");
         }
     }
 }

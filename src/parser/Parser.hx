@@ -16,7 +16,7 @@ class Parser {
     
     public function new(lexer:Lexer) {
         this.lexer = lexer;
-        this.expressionParser = new ExpressionParser(this);
+        this.expressionParser = new ExpressionParser(this, lexer);
         this.currentToken = lexer.readToken();
     }
 
@@ -33,26 +33,6 @@ class Parser {
 
     public function nextToken() {
         currentToken = lexer.readToken();
-    }
-
-    function parseCallParameters():Array<Expression> {
-        final parameters:Array<Expression> = [];
-
-        if (lexer.peekToken().type == TokenType.RParen) {
-            nextToken();
-            return parameters;
-        }
-
-        while (currentToken.type != TokenType.RParen) {
-            if (currentToken.type == TokenType.Eof) {
-                Error.unexpectedEof();
-            }
-
-            nextToken();
-            parameters.push(expressionParser.parseExpression());
-        }
-
-        return parameters;
     }
 
     function parseVariable():Variable {
