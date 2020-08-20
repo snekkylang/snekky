@@ -12,8 +12,12 @@ enum NodeType {
     Minus;
     Multiply;
     Divide;
-    LParen;
-    RParen;
+    LogicOr;
+    LogicAnd;
+    SmallerThan;
+    GreaterThan;
+    Equal;
+    Negation;
 
     Int;
     String;
