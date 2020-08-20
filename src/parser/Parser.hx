@@ -80,7 +80,7 @@ class Parser {
 
         nextToken();
 
-        if (currentToken.type != TokenType.RParen) {
+        if (currentToken.type != TokenType.LBrace) {
             Error.unexpectedToken();
         }
 
@@ -106,6 +106,7 @@ class Parser {
             nextToken();
             parseCall(call);
         } else {
+            nextToken();
             call;
         }
     }
@@ -133,9 +134,51 @@ class Parser {
         return new Variable(currentToken.line, name, value, mutable);
     }
 
+    function parseReturn() {
+        nextToken();
+
+        final returnValue = expressionParser.parseExpression();
+
+        return new Return(currentToken.line, returnValue);
+    }
+
+    function parseIf() {
+        nextToken();
+
+        final condition = expressionParser.parseExpression();
+
+        if (currentToken.type != TokenType.LBrace) {
+            Error.unexpectedToken();
+        }
+
+        nextToken();
+
+        final consequence = parseBlock();
+        var alternative:Block = null;
+
+        if (lexer.peekToken().type == TokenType.Else) {
+            nextToken();
+            nextToken();
+
+            if (currentToken.type != TokenType.LBrace) {
+                Error.unexpectedToken();
+            }
+
+            nextToken();
+
+            trace(currentToken.type);
+            
+            alternative = parseBlock();
+        }
+
+        return new If(currentToken.line, condition, consequence, alternative);
+    }
+
     public function parseToken(block:Block) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
+            case TokenType.Return: block.addNode(parseReturn());
+            case TokenType.If: block.addNode(parseIf());
             default:
                 block.addNode(expressionParser.parseExpression());
         }

@@ -1,5 +1,3 @@
-let test = func(a, b) {
-    a + b;
+if b > 2 {
+    print("hi");
 }
-
-let b = 1;
