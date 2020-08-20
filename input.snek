@@ -1,1 +1,5 @@
-"hallo" + 2;
+let test = func(a, b) {
+    a + b;
+}
+
+let b = 1;

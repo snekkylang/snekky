@@ -58,10 +58,11 @@ class Parser {
         return new Variable(currentToken.line, name, value, mutable);
     }
 
-    function parseToken(block:Block) {
+    public function parseToken(block:Block) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
-            default: block.addNode(expressionParser.parseExpression());
+            default:
+                block.addNode(expressionParser.parseExpression());
         }
     }
 }

@@ -3,7 +3,7 @@ package lexer;
 class Keyword {
 
     static final keywords = [
-        "function" => TokenType.Function, 
+        "func" => TokenType.Function, 
         "let" => TokenType.Let, 
         "mut" => TokenType.Mut, 
         "true" => TokenType.True, 

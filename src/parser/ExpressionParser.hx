@@ -1,8 +1,9 @@
 package parser;
 
+import parser.nodes.datatypes.Function.FunctionN;
+import parser.nodes.Block;
 import parser.nodes.datatypes.StringN;
 import parser.nodes.FunctionCall;
-import cpp.Callable;
 import lexer.Lexer;
 import parser.nodes.Node;
 import parser.nodes.datatypes.Int.IntN;
@@ -32,7 +33,7 @@ class ExpressionParser {
         return new IntN(parser.currentToken.line, n);
     }
 
-    function parseCall(target:Expression) {
+    function parseCall(target:Expression):Expression {
         final callParameters:Array<Expression> = [];
 
         parser.nextToken();
@@ -49,6 +50,55 @@ class ExpressionParser {
         } else {
             call;
         }
+    }
+
+    function parseBlock():Block {
+        final block = new Block(parser.currentToken.line);
+
+        while (parser.currentToken.type != TokenType.RBrace) {
+            if (parser.currentToken.type == TokenType.Eof) {
+                Error.unexpectedEof();
+            }
+
+            parser.parseToken(block);
+            parser.nextToken();
+        }
+
+        trace(parser.currentToken.type);
+
+        return block;
+    }
+
+    function parseFunction():FunctionN {
+        if (parser.currentToken.type != TokenType.LParen) {
+            Error.unexpectedToken();
+        }
+
+        parser.nextToken();
+
+        final parameters:Array<Ident> = [];
+
+        while (parser.currentToken.type != TokenType.RParen) {
+            if (parser.currentToken.type == TokenType.Ident) {
+                parameters.push(new Ident(parser.currentToken.line, parser.currentToken.literal));
+            } else if (parser.currentToken.type != TokenType.Comma) {
+                Error.unexpectedToken();
+            }
+
+            parser.nextToken();
+        }
+
+        parser.nextToken();
+
+        if (parser.currentToken.type != TokenType.RParen) {
+            Error.unexpectedToken();
+        }
+
+        parser.nextToken();
+
+        final block = parseBlock();
+
+        return new FunctionN(parser.currentToken.line, block, parameters);
     }
 
     function disjunction():Node {
@@ -182,6 +232,10 @@ class ExpressionParser {
                 parser.nextToken();
 
                 string;
+
+            case TokenType.Function:
+                parser.nextToken();
+                parseFunction();
 
             default: new Ident(-1, "");
         }
