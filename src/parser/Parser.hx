@@ -44,7 +44,7 @@ class Parser {
         return new IntN(currentToken.line, n);
     }
 
-    public function parseBlock():Block {
+    function parseBlock():Block {
         final block = new Block(currentToken.line);
 
         while (currentToken.type != TokenType.RBrace) {
@@ -134,7 +134,7 @@ class Parser {
         return new Variable(currentToken.line, name, value, mutable);
     }
 
-    function parseReturn() {
+    function parseReturn():Return {
         nextToken();
 
         final returnValue = expressionParser.parseExpression();
@@ -142,7 +142,7 @@ class Parser {
         return new Return(currentToken.line, returnValue);
     }
 
-    function parseIf() {
+    function parseIf():If {
         nextToken();
 
         final condition = expressionParser.parseExpression();
@@ -174,11 +174,28 @@ class Parser {
         return new If(currentToken.line, condition, consequence, alternative);
     }
 
-    public function parseToken(block:Block) {
+    function parseWhile():While {
+        nextToken();
+
+        final condition = expressionParser.parseExpression();
+
+        if (currentToken.type != TokenType.LBrace) {
+            Error.unexpectedToken();
+        }
+
+        nextToken();
+
+        final block = parseBlock();
+
+        return new While(currentToken.line, condition, block);
+    }
+
+    function parseToken(block:Block) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
             case TokenType.Return: block.addNode(parseReturn());
             case TokenType.If: block.addNode(parseIf());
+            case TokenType.While: block.addNode(parseWhile());
             default:
                 block.addNode(expressionParser.parseExpression());
         }
