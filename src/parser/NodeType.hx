@@ -25,4 +25,5 @@ enum NodeType {
 
     Return;
     If;
+    While;
 }
