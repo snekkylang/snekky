@@ -1,5 +1,6 @@
 package parser;
 
+import parser.nodes.datatypes.StringN;
 import parser.nodes.FunctionCall;
 import cpp.Callable;
 import lexer.Lexer;
@@ -150,7 +151,7 @@ class ExpressionParser {
         return switch (parser.currentToken.type) {
             case TokenType.LParen:
                 parser.nextToken();
-                var disjunction = disjunction();
+                final disjunction = disjunction();
 
                 if (parser.currentToken.type != TokenType.RParen) {
                     Error.unexpectedToken();
@@ -170,15 +171,17 @@ class ExpressionParser {
                     ident; 
                 }
 
-                /* var ident = new Ident(parser.currentToken.line, parser.currentToken.literal);
-
-                ident; */
-
             case TokenType.Number:
-                var number = parseNumber();
+                final number = parseNumber();
                 parser.nextToken();
                 
                 number;
+
+            case TokenType.String:
+                final string = new StringN(parser.currentToken.line, parser.currentToken.literal);
+                parser.nextToken();
+
+                string;
 
             default: new Ident(-1, "");
         }
