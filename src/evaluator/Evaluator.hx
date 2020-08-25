@@ -1,5 +1,8 @@
 package evaluator;
 
+import parser.nodes.Boolean;
+import object.ObjectType;
+import compiler.symbol.SymbolTable;
 import object.objects.IntObject;
 import object.objects.Object;
 import code.OpCode;
@@ -10,11 +13,14 @@ class Evaluator {
     final stack:Array<Object> = [];
     final byteCode:Bytes;
     final constants:Array<Object>;
+    final symbolTable:SymbolTable;
     var byteIndex = 0;
+    var env = new Environment(null);
 
-    public function new(byteCode:Bytes, constants:Array<Object>) {
+    public function new(byteCode:Bytes, constants:Array<Object>, symbolTable:SymbolTable) {
         this.byteCode = byteCode;
         this.constants = constants;
+        this.symbolTable = symbolTable;
     }
 
     public function eval() {
@@ -22,6 +28,10 @@ class Evaluator {
 
         while (byteIndex < byteCode.length) {
             evalInstruction();
+
+            if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
+                trace(cast(stack[stack.length - 1], IntObject).value);
+            }
         }
     }
 
@@ -46,8 +56,25 @@ class Evaluator {
                 byteIndex += 4;
 
                 stack.push(constants[constantIndex]);
+            case OpCode.SetLocal:
+                final localIndex = byteCode.getInt32(byteIndex);
+                byteIndex += 4;
+
+                final value = stack.pop();
+                env.setVariable(localIndex, value);
+            case OpCode.GetLocal:
+                final localIndex = byteCode.getInt32(byteIndex);
+                byteIndex += 4;
+
+                final value = env.getVariable(localIndex);
+
+                if (value == null) {
+                    // TODO error
+                }
+
+                stack.push(value);
             case OpCode.Pop:
-                trace(cast(stack.pop(), IntObject).value);
+                stack.pop();
 
             default:
 

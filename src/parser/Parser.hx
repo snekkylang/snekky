@@ -195,7 +195,8 @@ class Parser {
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             default:
-                block.addNode(expressionParser.parseExpression());
+                final expression = expressionParser.parseExpression();
+                block.addNode(new Statement(currentToken.line, expression));
         }
     }
 }
