@@ -5,4 +5,9 @@ enum OpCode {
     Add;
     Multiply;
     Pop;
+    SetLocal;
+    GetLocal;
+    Ident;
+    Jump;
+    JumpNot;
 }
