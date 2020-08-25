@@ -7,9 +7,10 @@ class Variable extends Node {
     public final mutable:Bool;
 
     public function new(line:Int, name:String, value:Expression, mutable:Bool) {
+        super(line, NodeType.Variable);
+        
         this.name = name;
         this.value = value;
         this.mutable = mutable;
-        this.type = NodeType.Variable;
     }
 }

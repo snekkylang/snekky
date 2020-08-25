@@ -3,7 +3,6 @@ package parser;
 enum NodeType {
     Block;
     Expression;
-    Node;
     Variable;
     Ident;
     FunctionCall;

@@ -5,8 +5,8 @@ class Ident extends Node {
     public final value:String;
 
     public function new(line:Int, value:String) {
-        this.line = line;
+        super(line, NodeType.Ident);
+
         this.value = value;
-        this.type = NodeType.Ident;
     }
 }

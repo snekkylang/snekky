@@ -165,8 +165,6 @@ class Parser {
             }
 
             nextToken();
-
-            trace(currentToken.type);
             
             alternative = parseBlock();
         }

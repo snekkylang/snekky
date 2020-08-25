@@ -6,9 +6,9 @@ class FunctionCall extends Node {
     public final target:Expression;
 
     public function new(line:Int, target:Expression, parameters:Array<Expression>) {
-        this.line = line;
+        super(line, NodeType.FunctionCall);
+
         this.target = target;
         this.parameters = parameters;
-        this.type = NodeType.FunctionCall;
     }
 }

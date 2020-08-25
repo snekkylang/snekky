@@ -24,7 +24,6 @@ class ExpressionParser {
     }
 
     function disjunction():Node {
-        trace(parser.currentToken.type);
         var left = conjunction();
 
         while (parser.currentToken.type == TokenType.LogicOr) {

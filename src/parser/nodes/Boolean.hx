@@ -5,8 +5,8 @@ class Boolean extends Node {
     public final value:Bool;
 
     public function new(line:Int, value:Bool) {
-        this.line = line;
+        super(line, NodeType.Boolean);
+
         this.value = value;
-        this.type = NodeType.Boolean;
     }
 }
