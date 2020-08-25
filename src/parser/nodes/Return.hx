@@ -5,8 +5,8 @@ class Return extends Node {
     public final value:Expression;
 
     public function new(line:Int, value:Expression) {
-        this.line = line;
+        super(line, NodeType.Return);
+
         this.value = value;
-        this.type = NodeType.Return;
     }
 }

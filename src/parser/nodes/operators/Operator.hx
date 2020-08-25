@@ -5,8 +5,9 @@ class Operator extends Node {
     public var left:Node;
     public var right:Node;
 
-    public function new(line:Int, left:Node, right:Node) {
-        this.line = line;
+    public function new(line:Int, type:NodeType, left:Node, right:Node) {
+        super(line, type);
+
         this.left = left;
         this.right = right;
     }

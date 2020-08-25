@@ -1,15 +1,21 @@
-import sys.io.File;
-import lexer.Lexer;
+import evaluator.Evaluator;
+import compiler.Compiler;
 import parser.Parser;
+import lexer.Lexer;
+import sys.io.File;
 
 class Snekky {
     
     public static function main() {
-        var code = File.getContent("./input.snek");
+        final code = File.getContent("./input.snek");
 
-        var lexer = new Lexer(code);
-        var parser = new Parser(lexer);
+        final lexer = new Lexer(code);
+        final parser = new Parser(lexer);
         parser.generateAst();
         parser.writeAst();
+        final compiler = new Compiler();
+        compiler.compile(parser.ast);
+        final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
+        evaluator.eval();
     }
 }
