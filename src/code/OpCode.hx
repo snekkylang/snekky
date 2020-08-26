@@ -11,4 +11,6 @@ enum OpCode {
     Jump;
     JumpNot;
     Equal;
+    SmallerThan;
+    GreaterThan;
 }

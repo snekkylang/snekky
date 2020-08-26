@@ -1,5 +1,14 @@
-if false {
-    1 + 2;
-} else {
-    2 + 3;
+let a = 42;
+let b = 2017;
+
+a = a % b;
+
+mut i = 0;
+
+while i < b {
+    if (a * i) % b == 1 {
+        return i;
+    }
+
+    i = i + 1;
 }

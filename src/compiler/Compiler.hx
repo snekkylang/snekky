@@ -34,7 +34,7 @@ class Compiler {
             case Expression:
                 final cExpression = cast(node, Expression);
                 compile(cExpression.value);
-            case Plus | Multiply | Equal:
+            case Plus | Multiply | Equal | SmallerThan | GreaterThan:
                 final cOperator = cast(node, Operator);
                 compile(cOperator.left);
                 compile(cOperator.right);
@@ -43,7 +43,9 @@ class Compiler {
                     case Plus: emit(OpCode.Add, []);
                     case Multiply: emit(OpCode.Multiply, []);
                     case Equal: emit(OpCode.Equal, []);
-                    default:
+                    case SmallerThan: emit(OpCode.SmallerThan, []);
+                    case GreaterThan: emit(OpCode.GreaterThan, []);
+                    default: // TODO: Error
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
@@ -81,6 +83,18 @@ class Compiler {
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
+            case While:
+                final cWhile = cast(node, While);
+
+                final jumpPos = instructions.length;
+                compile(cWhile.condition);
+
+                final jumpNotInstructionPos = instructions.length;
+                emit(OpCode.JumpNot, [0]);
+                compile(cWhile.block);
+                emit(OpCode.Jump, [jumpPos]);
+
+                overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
             case Int | Boolean:
                 emit(OpCode.Constant, [addConstant(node)]);
             default:
