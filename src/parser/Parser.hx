@@ -122,11 +122,11 @@ class Parser {
 
         final name = currentToken.literal;
 
-        if (lexer.peekToken().type != TokenType.Assign) {
+        nextToken();
+        if (currentToken.type != TokenType.Assign) {
             Error.unexpectedToken();
         }
 
-        nextToken();
         nextToken();
 
         final value = expressionParser.parseExpression();
@@ -188,12 +188,34 @@ class Parser {
         return new While(currentToken.line, condition, block);
     }
 
+    function parseVariableAssign() {
+        final name = currentToken.literal;
+
+        nextToken();
+        if (currentToken.type != TokenType.Assign) {
+            Error.unexpectedToken();
+        }
+
+        nextToken();
+
+        final value = expressionParser.parseExpression();
+
+        return new VariableAssign(currentToken.line, name, value);
+    }
+
     function parseToken(block:Block) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
             case TokenType.Return: block.addNode(parseReturn());
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
+            case TokenType.Ident:
+                if (lexer.peekToken().type == TokenType.Assign) {
+                    block.addNode(parseVariableAssign());
+                } else {
+                    final expression = expressionParser.parseExpression();
+                    block.addNode(new Statement(currentToken.line, expression));   
+                }
             default:
                 final expression = expressionParser.parseExpression();
                 block.addNode(new Statement(currentToken.line, expression));

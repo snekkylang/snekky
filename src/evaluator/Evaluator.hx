@@ -1,7 +1,5 @@
 package evaluator;
 
-import object.objects.BooleanObject;
-import parser.nodes.Boolean;
 import object.ObjectType;
 import compiler.symbol.SymbolTable;
 import object.objects.IntObject;
@@ -45,7 +43,7 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Add | OpCode.Multiply:
+            case OpCode.Add | OpCode.Multiply | OpCode.Equal:
                 final left = cast(stack.pop(), IntObject);
                 final right = cast(stack.pop(), IntObject);
 
@@ -78,8 +76,8 @@ class Evaluator {
             case OpCode.JumpNot:
                 final jumpIndex = readInt32();
                 
-                final conditionValue = cast(stack.pop(), BooleanObject);
-                if (!conditionValue.value) {
+                final conditionValue = cast(stack.pop(), IntObject);
+                if (conditionValue.value == 0) {
                     byteIndex = jumpIndex;
                 }
             case OpCode.Jump:

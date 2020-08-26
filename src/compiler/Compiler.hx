@@ -34,7 +34,7 @@ class Compiler {
             case Expression:
                 final cExpression = cast(node, Expression);
                 compile(cExpression.value);
-            case Plus | Multiply:
+            case Plus | Multiply | Equal:
                 final cOperator = cast(node, Operator);
                 compile(cOperator.left);
                 compile(cOperator.right);
@@ -42,12 +42,18 @@ class Compiler {
                 switch (cOperator.type) {
                     case Plus: emit(OpCode.Add, []);
                     case Multiply: emit(OpCode.Multiply, []);
+                    case Equal: emit(OpCode.Equal, []);
                     default:
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
                 final symbol = symbolTable.define(cVariable.name);
                 compile(cVariable.value);
+                emit(OpCode.SetLocal, [symbol.index]);
+            case VariableAssign:
+                final cVariableAssign = cast(node, VariableAssign);
+                final symbol = symbolTable.resolve(cVariableAssign.name); // TODO: Error if not found
+                compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, [symbol.index]);
             case Ident:
                 final cIdent = cast(node, Ident);
@@ -99,7 +105,7 @@ class Compiler {
             case Int:
                 constants.push(new IntObject(cast(node, IntN).value));
             case Boolean:
-                constants.push(new BooleanObject(cast(node, Boolean).value));
+                constants.push(new IntObject(cast(node, Boolean).value ? 1 : 0));
             default:
         }
 

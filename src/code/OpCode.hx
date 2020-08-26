@@ -10,4 +10,5 @@ enum OpCode {
     Ident;
     Jump;
     JumpNot;
+    Equal;
 }
