@@ -43,13 +43,16 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Add | OpCode.Multiply | OpCode.Equal:
+            case OpCode.Add | OpCode.Multiply | OpCode.Equal | OpCode.SmallerThan | OpCode.GreaterThan:
                 final left = cast(stack.pop(), IntObject);
                 final right = cast(stack.pop(), IntObject);
 
                 final result = switch (opCode) {
                     case OpCode.Add: left.value + right.value;
                     case OpCode.Multiply: left.value * right.value;
+                    case OpCode.Equal: left.value == right.value ? 1 : 0;
+                    case OpCode.SmallerThan: left.value > right.value ? 1 : 0;
+                    case OpCode.GreaterThan: left.value < right.value ? 1 : 0;
                     default: -1; // TODO: Error
                 }
 
