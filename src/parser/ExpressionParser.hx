@@ -1,5 +1,6 @@
 package parser;
 
+import parser.nodes.operators.Module.Modulo;
 import parser.nodes.Boolean;
 import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
@@ -90,11 +91,15 @@ class ExpressionParser {
     function term():Node {
         var left = signedFactor();
 
-        while (parser.currentToken.type == TokenType.Multiply || parser.currentToken.type == TokenType.Divide) {
+        while (parser.currentToken.type == TokenType.Multiply || parser.currentToken.type == TokenType.Divide || parser.currentToken.type == TokenType.Modulo) {
             left = if (parser.currentToken.type == TokenType.Multiply) {
                 parser.nextToken();
                 final right = term();
                 new Multiply(parser.currentToken.line, left, right);
+            } else if (parser.currentToken.type == TokenType.Modulo) {
+                parser.nextToken();
+                final right = term();
+                new Modulo(parser.currentToken.line, left, right);
             } else {
                 parser.nextToken();
                 final right = term();

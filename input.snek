@@ -3,12 +3,12 @@ let b = 2017;
 
 a = a % b;
 
-mut i = 0;
+let i = 0;
 
 while i < b {
     if (a * i) % b == 1 {
-        return i;
+        i;
     }
-
+        
     i = i + 1;
 }
