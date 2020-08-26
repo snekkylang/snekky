@@ -59,13 +59,34 @@ class Compiler {
             case If:
                 final cIf = cast(node, If);
                 compile(cIf.condition);
-                emit(OpCode.Jump, [instructions.length + 5]);
+
+                final jumpNotInstructionPos = instructions.length;
+                emit(OpCode.JumpNot, [0]);
+
                 compile(cIf.consequence);
-                emit(OpCode.JumpNot, [instructions.length + 5]);
+                final jumpInstructionPos = instructions.length;
+                emit(OpCode.Jump, [0]);
+
+                final jumpNotPos = instructions.length;
+                if (cIf.alternative != null) {
+                    compile(cIf.alternative);
+                }
+                final jumpPos = instructions.length;
+
+                overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
+                overwriteInstruction(jumpInstructionPos, [jumpPos]);
             case Int | Boolean:
                 emit(OpCode.Constant, [addConstant(node)]);
             default:
         }
+    }
+
+    function overwriteInstruction(pos:Int, operands:Array<Int>) {
+        final buffer = new BytesBuffer();
+        final currentBytes = instructions.getBytes();
+        currentBytes.setInt32(pos + 1, operands[0]);
+        buffer.add(currentBytes);
+        instructions = buffer;
     }
 
     function emit(op:OpCode, operands:Array<Int>) {

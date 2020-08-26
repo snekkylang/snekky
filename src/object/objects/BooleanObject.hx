@@ -1,7 +1,7 @@
 package object.objects;
 class BooleanObject extends Object {
 
-    final value:Bool;
+    public final value:Bool;
 
     public function new(value:Bool) {
         super(ObjectType.Boolean);

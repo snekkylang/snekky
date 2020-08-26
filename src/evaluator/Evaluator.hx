@@ -1,5 +1,6 @@
 package evaluator;
 
+import object.objects.BooleanObject;
 import parser.nodes.Boolean;
 import object.ObjectType;
 import compiler.symbol.SymbolTable;
@@ -29,8 +30,12 @@ class Evaluator {
         while (byteIndex < byteCode.length) {
             evalInstruction();
 
-            if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
-                trace(cast(stack[stack.length - 1], IntObject).value);
+            try {
+                if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
+                    trace(cast(stack[stack.length - 1], IntObject).value);
+                }
+            } catch(e) {
+                trace("error");
             }
         }
     }
@@ -73,6 +78,20 @@ class Evaluator {
                 }
 
                 stack.push(value);
+            case OpCode.JumpNot:
+                final jumpIndex = byteCode.getInt32(byteIndex);
+                byteIndex += 4;
+                
+                final conditionValue = cast(stack.pop(), BooleanObject);
+                if (!conditionValue.value) {
+                    byteIndex = jumpIndex;
+                }
+            case OpCode.Jump:
+                trace("ok");
+                final jumpIndex = byteCode.getInt32(byteIndex);
+                byteIndex += 4;
+
+                byteIndex = jumpIndex;
             case OpCode.Pop:
                 stack.pop();
 
