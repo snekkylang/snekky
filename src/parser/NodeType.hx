@@ -13,6 +13,7 @@ enum NodeType {
     Minus;
     Multiply;
     Divide;
+    Modulo;
     LogicOr;
     LogicAnd;
     SmallerThan;

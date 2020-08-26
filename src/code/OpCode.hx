@@ -13,4 +13,7 @@ enum OpCode {
     Equal;
     SmallerThan;
     GreaterThan;
+    Minus;
+    Divide;
+    Modulo;
 }

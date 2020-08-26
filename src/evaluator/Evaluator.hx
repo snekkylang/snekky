@@ -31,9 +31,13 @@ class Evaluator {
             try {
                 if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
                     trace(cast(stack[stack.length - 1], IntObject).value);
+
+                    if (cast(stack[stack.length - 1], IntObject).value == 1969) {
+                        Sys.exit(1);
+                    }
                 }
             } catch(e) {
-                trace("error");
+                trace(e);
             }
         }
     }
@@ -43,7 +47,7 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Add | OpCode.Multiply | OpCode.Equal | OpCode.SmallerThan | OpCode.GreaterThan:
+            case OpCode.Add | OpCode.Multiply | OpCode.Equal | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Minus | OpCode.Divide | OpCode.Modulo:
                 final left = cast(stack.pop(), IntObject);
                 final right = cast(stack.pop(), IntObject);
 
@@ -53,6 +57,9 @@ class Evaluator {
                     case OpCode.Equal: left.value == right.value ? 1 : 0;
                     case OpCode.SmallerThan: left.value > right.value ? 1 : 0;
                     case OpCode.GreaterThan: left.value < right.value ? 1 : 0;
+                    case OpCode.Minus: right.value - left.value;
+                    case OpCode.Divide: Std.int(right.value / left.value);
+                    case OpCode.Modulo: right.value % left.value;
                     default: -1; // TODO: Error
                 }
 
