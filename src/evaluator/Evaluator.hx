@@ -57,19 +57,16 @@ class Evaluator {
 
                 stack.push(new IntObject(result));
             case OpCode.Constant:
-                final constantIndex = byteCode.getInt32(byteIndex);
-                byteIndex += 4;
+                final constantIndex = readInt32();
 
                 stack.push(constants[constantIndex]);
             case OpCode.SetLocal:
-                final localIndex = byteCode.getInt32(byteIndex);
-                byteIndex += 4;
+                final localIndex = readInt32();
 
                 final value = stack.pop();
                 env.setVariable(localIndex, value);
             case OpCode.GetLocal:
-                final localIndex = byteCode.getInt32(byteIndex);
-                byteIndex += 4;
+                final localIndex = readInt32();
 
                 final value = env.getVariable(localIndex);
 
@@ -79,17 +76,14 @@ class Evaluator {
 
                 stack.push(value);
             case OpCode.JumpNot:
-                final jumpIndex = byteCode.getInt32(byteIndex);
-                byteIndex += 4;
+                final jumpIndex = readInt32();
                 
                 final conditionValue = cast(stack.pop(), BooleanObject);
                 if (!conditionValue.value) {
                     byteIndex = jumpIndex;
                 }
             case OpCode.Jump:
-                trace("ok");
-                final jumpIndex = byteCode.getInt32(byteIndex);
-                byteIndex += 4;
+                final jumpIndex = readInt32();
 
                 byteIndex = jumpIndex;
             case OpCode.Pop:
@@ -98,5 +92,11 @@ class Evaluator {
             default:
 
         }
+    }
+
+    function readInt32():Int {
+        final value = byteCode.getInt32(byteIndex);
+        byteIndex += 4;
+        return value;
     }
 }
