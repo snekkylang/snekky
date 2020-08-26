@@ -13,6 +13,7 @@ class Keyword {
         "while" => TokenType.While, 
         "return" => TokenType.Return, 
         "import" => TokenType.Import,
+        "break" => TokenType.Break,
     ];
 
     public static function isKeyword(ident:String):Bool {

@@ -27,6 +27,7 @@ enum NodeType {
     Boolean;
 
     Return;
+    Break;
     If;
     While;
 }

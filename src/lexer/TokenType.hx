@@ -48,4 +48,5 @@ enum TokenType {
     While;
     Return;
     Import;
+    Break;
 }

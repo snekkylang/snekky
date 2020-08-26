@@ -1,1 +1,15 @@
-2 + 2 + 3+ 4;
+let a = 42321;
+let b = 20000000;
+
+a = a % b;
+
+let i = 0;
+
+while i < b {
+    if (a * i) % b == 1 {
+        i;
+        break;
+    }
+
+    i = i + 1;
+}

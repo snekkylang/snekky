@@ -23,12 +23,12 @@ class Evaluator {
     }
 
     public function eval() {
-        trace(byteCode.toHex());
+        //trace(byteCode.toHex());
 
         while (byteIndex < byteCode.length) {
             evalInstruction();
 
-            try {
+            /* try {
                 if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
                     trace(cast(stack[stack.length - 1], IntObject).value);
 
@@ -38,7 +38,7 @@ class Evaluator {
                 }
             } catch(e) {
                 trace(e);
-            }
+            } */
         }
     }
 
