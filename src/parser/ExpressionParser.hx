@@ -73,15 +73,17 @@ class ExpressionParser {
     function numeric():Node {
         var left = term();
 
-        while (parser.currentToken.type == TokenType.Plus || parser.currentToken.type == TokenType.Minus) {
-            left = if (parser.currentToken.type == TokenType.Plus) {
-                parser.nextToken();
-                final right = term();
-                new Plus(parser.currentToken.line, left, right);
-            } else {
-                parser.nextToken();
-                final right = term();
-                new Minus(parser.currentToken.line, left, right);
+        while (true) {
+            left = switch(parser.currentToken.type) {
+                case TokenType.Plus:
+                    parser.nextToken();
+                    final right = term();
+                    new Plus(parser.currentToken.line, left, right);
+                case TokenType.Minus:
+                    parser.nextToken();
+                    final right = term();
+                    new Minus(parser.currentToken.line, left, right);
+                default: break;
             }
         }
 
@@ -91,19 +93,21 @@ class ExpressionParser {
     function term():Node {
         var left = signedFactor();
 
-        while (parser.currentToken.type == TokenType.Multiply || parser.currentToken.type == TokenType.Divide || parser.currentToken.type == TokenType.Modulo) {
-            left = if (parser.currentToken.type == TokenType.Multiply) {
-                parser.nextToken();
-                final right = term();
-                new Multiply(parser.currentToken.line, left, right);
-            } else if (parser.currentToken.type == TokenType.Modulo) {
-                parser.nextToken();
-                final right = term();
-                new Modulo(parser.currentToken.line, left, right);
-            } else {
-                parser.nextToken();
-                final right = term();
-                new Divide(parser.currentToken.line, left, right);
+        while (true) {
+            left = switch(parser.currentToken.type) {
+                case TokenType.Multiply:
+                    parser.nextToken();
+                    final right = term();
+                    new Multiply(parser.currentToken.line, left, right);
+                case TokenType.Divide:
+                    parser.nextToken();
+                    final right = term();
+                    new Divide(parser.currentToken.line, left, right);
+                case TokenType.Modulo:
+                    parser.nextToken();
+                    final right = term();
+                    new Modulo(parser.currentToken.line, left, right);
+                default: break;
             }
         }
 
