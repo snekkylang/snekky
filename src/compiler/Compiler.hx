@@ -1,5 +1,6 @@
 package compiler;
 
+import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
 import parser.nodes.operators.Operator;
@@ -21,6 +22,10 @@ class Compiler {
 
     public function new() {
 
+    }
+
+    public function writeByteCode() {
+        File.saveBytes("program.bite", instructions.getBytes());
     }
 
     public function compile(node:Node) {
