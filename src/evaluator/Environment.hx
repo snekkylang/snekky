@@ -4,28 +4,17 @@ import object.objects.Object;
 
 class Environment {
 
-    final variables:Map<Int, Object> = new Map();
-    final parent:Environment;
+    final variables:Array<Object> = [];
 
-    public function new(parent:Environment) {
-        this.parent = parent;
+    public function new() {
+
     }
 
     public function setVariable(index:Int, value:Object) {
-        variables.set(index, value);
-    }
-
-    public function existsVariable(index:Int):Bool {
-        return variables.exists(index);
+        variables[index] = value;
     }
 
     public function getVariable(index:Int):Object {
-        var currentScope = this;
-
-        while (currentScope != null && !currentScope.existsVariable(index)) {
-            currentScope = currentScope.parent;
-        }
-
-        return variables.get(index);
+        return variables[index];
     }
 }
