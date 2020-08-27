@@ -6,10 +6,11 @@ import object.objects.IntObject;
 import object.objects.Object;
 import code.OpCode;
 import haxe.io.Bytes;
+import haxe.ds.GenericStack;
 
 class Evaluator {
 
-    final stack:Array<Object> = [];
+    final stack:GenericStack<Object> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
     final symbolTable:SymbolTable;
@@ -27,12 +28,12 @@ class Evaluator {
 
         while (byteIndex < byteCode.length) {
             evalInstruction();
+/* 
+            try {
+                if (!stack.isEmpty() && stack.first().type == ObjectType.Int) {
+                    trace(cast(stack.first(), IntObject).value);
 
-            /* try {
-                if (stack.length > 0 && stack[stack.length - 1].type == ObjectType.Int) {
-                    trace(cast(stack[stack.length - 1], IntObject).value);
-
-                    if (cast(stack[stack.length - 1], IntObject).value == 1969) {
+                    if (cast(stack.first(), IntObject).value == 1969) {
                         Sys.exit(1);
                     }
                 }
@@ -63,11 +64,11 @@ class Evaluator {
                     default: -1; // TODO: Error
                 }
 
-                stack.push(new IntObject(result));
+                stack.add(new IntObject(result));
             case OpCode.Constant:
                 final constantIndex = readInt32();
 
-                stack.push(constants[constantIndex]);
+                stack.add(constants[constantIndex]);
             case OpCode.SetLocal:
                 final localIndex = readInt32();
 
@@ -82,7 +83,7 @@ class Evaluator {
                     // TODO error
                 }
 
-                stack.push(value);
+                stack.add(value);
             case OpCode.JumpNot:
                 final jumpIndex = readInt32();
                 
