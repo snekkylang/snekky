@@ -1,15 +1,11 @@
-let a = 42;
-let b = 2017;
+let a = 1;
 
-a = a % b;
+if a {
+    let b = 2;
 
-let i = 0;
-
-while i < b {
-    if (a * i) % b == 1 {
-        i;
-        break;
+    if false {
+        b = 3;
     }
 
-    i = i + 1;
+    b;
 }

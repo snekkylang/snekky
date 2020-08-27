@@ -27,9 +27,11 @@ class Compiler {
         switch(node.type) {
             case Block:
                 final cBlock = cast(node, Block);
+                symbolTable.newScope();
                 for (blockNode in cBlock.body) {
                     compile(blockNode);
                 }
+                symbolTable.setParent();
             case Break:
                 lastBreakPos = instructions.length;
                 emit(OpCode.Jump, [0]);
@@ -58,21 +60,18 @@ class Compiler {
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
-                final symbol = symbolTable.define(cVariable.name);
+                final symbolIndex = symbolTable.define(cVariable.name);
                 compile(cVariable.value);
-                emit(OpCode.SetLocal, [symbol.index]);
+                emit(OpCode.SetLocal, [symbolIndex]);
             case VariableAssign:
                 final cVariableAssign = cast(node, VariableAssign);
-                final symbol = symbolTable.resolve(cVariableAssign.name); // TODO: Error if not found
+                final symbolIndex = symbolTable.resolve(cVariableAssign.name); // TODO: Error if not found
                 compile(cVariableAssign.value);
-                emit(OpCode.SetLocal, [symbol.index]);
+                emit(OpCode.SetLocal, [symbolIndex]);
             case Ident:
                 final cIdent = cast(node, Ident);
-                final symbol = symbolTable.resolve(cIdent.value);
-                if (symbol == null) {
-                    // TODO: error
-                }
-                emit(OpCode.GetLocal, [symbol.index]);
+                final symbolIndex = symbolTable.resolve(cIdent.value);
+                emit(OpCode.GetLocal, [symbolIndex]);
             case If:
                 final cIf = cast(node, If);
                 compile(cIf.condition);
