@@ -1,7 +1,6 @@
 package evaluator;
 
 import object.ObjectType;
-import compiler.symbol.SymbolTable;
 import object.objects.IntObject;
 import object.objects.Object;
 import code.OpCode;
@@ -13,14 +12,12 @@ class Evaluator {
     final stack:GenericStack<Object> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
-    final symbolTable:SymbolTable;
     var byteIndex = 0;
     var env = new Environment();
 
-    public function new(byteCode:Bytes, constants:Array<Object>, symbolTable:SymbolTable) {
+    public function new(byteCode:Bytes, constants:Array<Object>) {
         this.byteCode = byteCode;
         this.constants = constants;
-        this.symbolTable = symbolTable;
     }
 
     public function eval() {
