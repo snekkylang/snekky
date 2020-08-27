@@ -10,10 +10,10 @@ enum OpCode {
     Ident;
     Jump;
     JumpNot;
-    Equal;
+    Equals;
     SmallerThan;
     GreaterThan;
-    Minus;
+    Subtract;
     Divide;
     Modulo;
 }
