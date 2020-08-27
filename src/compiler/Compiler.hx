@@ -50,10 +50,10 @@ class Compiler {
                 switch (cOperator.type) {
                     case Plus: emit(OpCode.Add, []);
                     case Multiply: emit(OpCode.Multiply, []);
-                    case Equal: emit(OpCode.Equal, []);
+                    case Equal: emit(OpCode.Equals, []);
                     case SmallerThan: emit(OpCode.SmallerThan, []);
                     case GreaterThan: emit(OpCode.GreaterThan, []);
-                    case Minus: emit(OpCode.Minus, []);
+                    case Minus: emit(OpCode.Subtract, []);
                     case Divide: emit(OpCode.Divide, []);
                     case Modulo: emit(OpCode.Modulo, []);
                     default: // TODO: Error

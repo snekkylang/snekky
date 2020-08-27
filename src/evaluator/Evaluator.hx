@@ -41,17 +41,17 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Add | OpCode.Multiply | OpCode.Equal | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Minus | OpCode.Divide | OpCode.Modulo:
+            case OpCode.Add | OpCode.Multiply | OpCode.Equals | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
                 final left = cast(stack.pop(), IntObject);
                 final right = cast(stack.pop(), IntObject);
 
                 final result = switch (opCode) {
                     case OpCode.Add: left.value + right.value;
                     case OpCode.Multiply: left.value * right.value;
-                    case OpCode.Equal: left.value == right.value ? 1 : 0;
+                    case OpCode.Equals: left.value == right.value ? 1 : 0;
                     case OpCode.SmallerThan: left.value > right.value ? 1 : 0;
                     case OpCode.GreaterThan: left.value < right.value ? 1 : 0;
-                    case OpCode.Minus: right.value - left.value;
+                    case OpCode.Subtract: right.value - left.value;
                     case OpCode.Divide: Std.int(right.value / left.value);
                     case OpCode.Modulo: right.value % left.value;
                     default: -1; // TODO: Error

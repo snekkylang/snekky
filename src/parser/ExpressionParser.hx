@@ -1,6 +1,5 @@
 package parser;
 
-import parser.nodes.operators.Module.Modulo;
 import parser.nodes.Boolean;
 import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
