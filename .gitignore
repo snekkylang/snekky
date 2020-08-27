@@ -1,5 +1,6 @@
 .haxelib/
 cpp/
 java/
+js/
 input.snek
 ast.json
