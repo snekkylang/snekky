@@ -134,7 +134,7 @@ class ExpressionParser {
                 final disjunction = disjunction();
 
                 if (parser.currentToken.type != TokenType.RParen) {
-                    Error.unexpectedToken();
+                    parser.error.unexpectedToken("`)`");
                 }
 
                 parser.nextToken();

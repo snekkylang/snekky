@@ -1,18 +1,22 @@
 package lexer;
 
 class Lexer {
-    final code:String;
+    public final code:String;
+    public final filename:String;
+    public var currentLine = 1;
+    public var currentLineChar = 1;
     var currentChar = ' ';
-    var currentLine = 1;
     var position = 0;
 
-    public function new(code:String) {
+    public function new(code:String, filename:String) {
         this.code = ~/\r\n|\r|\n/.replace(code, "\n");
+        this.filename = filename;
     }
 
     function increaseCurrentLine() {
         if (Helper.isLinebreak(currentChar) || position >= code.length) {
             currentLine++;
+            currentLineChar = 1;
         }
     }
 
@@ -23,6 +27,7 @@ class Lexer {
             code.charAt(position);
         }
 
+        currentLineChar++;
         position++;
     }
 

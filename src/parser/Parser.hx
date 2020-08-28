@@ -1,5 +1,6 @@
 package parser;
 
+import error.ParserError;
 import parser.nodes.datatypes.Function.FunctionN;
 import parser.nodes.datatypes.Int.IntN;
 import sys.io.File;
@@ -13,13 +14,16 @@ class Parser {
 
     final lexer:Lexer;
     final expressionParser:ExpressionParser;
+    public final error:ParserError;
     public var ast = new Block(1);
     public var currentToken:Token;
     
     public function new(lexer:Lexer) {
         this.lexer = lexer;
-        this.expressionParser = new ExpressionParser(this, lexer);
-        this.currentToken = lexer.readToken();
+
+        error = new ParserError(this.lexer, this);
+        expressionParser = new ExpressionParser(this, lexer);
+        currentToken = lexer.readToken();
     }
 
     public function generateAst() {
@@ -49,7 +53,7 @@ class Parser {
 
         while (currentToken.type != TokenType.RBrace) {
             if (currentToken.type == TokenType.Eof) {
-                Error.unexpectedEof();
+                error.unexpectedEof();
             }
 
             parseToken(block);
@@ -61,7 +65,7 @@ class Parser {
 
     public function parseFunction():FunctionN {
         if (currentToken.type != TokenType.LParen) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`(`");
         }
 
         nextToken();
@@ -72,7 +76,7 @@ class Parser {
             if (currentToken.type == TokenType.Ident) {
                 parameters.push(new Ident(currentToken.line, currentToken.literal));
             } else if (currentToken.type != TokenType.Comma) {
-                Error.unexpectedToken();
+                error.unexpectedToken("identifier");
             }
 
             nextToken();
@@ -81,7 +85,7 @@ class Parser {
         nextToken();
 
         if (currentToken.type != TokenType.LBrace) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`{`");
         }
 
         nextToken();
@@ -114,17 +118,16 @@ class Parser {
     function parseVariable():Variable {
         var mutable = currentToken.type == TokenType.Mut;
 
-        if (lexer.peekToken().type != TokenType.Ident) {
-            Error.unexpectedToken();
-        }
-
         nextToken();
+        if (currentToken.type != TokenType.Ident) {
+            error.unexpectedToken("indentifier");
+        }
 
         final name = currentToken.literal;
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`=`");
         }
 
         nextToken();
@@ -154,7 +157,7 @@ class Parser {
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`{`");
         }
 
         nextToken();
@@ -167,7 +170,7 @@ class Parser {
             nextToken();
 
             if (currentToken.type != TokenType.LBrace) {
-                Error.unexpectedToken();
+                error.unexpectedToken("`{`");
             }
 
             nextToken();
@@ -184,7 +187,7 @@ class Parser {
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`{`");
         }
 
         nextToken();
@@ -199,7 +202,7 @@ class Parser {
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            Error.unexpectedToken();
+            error.unexpectedToken("`=`");
         }
 
         nextToken();
@@ -223,6 +226,7 @@ class Parser {
                     final expression = expressionParser.parseExpression();
                     block.addNode(new Statement(currentToken.line, expression));   
                 }
+            case TokenType.Illegal: error.illegalToken();
             default:
                 final expression = expressionParser.parseExpression();
                 block.addNode(new Statement(currentToken.line, expression));

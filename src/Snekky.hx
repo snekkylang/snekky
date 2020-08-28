@@ -9,17 +9,17 @@ class Snekky {
     public static function main() {
         final code = File.getContent("./input.snek");
 
-        final lexer = new Lexer(code);
+        final lexer = new Lexer(code, "input.snek");
 
         final parser = new Parser(lexer);
         parser.generateAst();
         parser.writeAst();
 
-        final compiler = new Compiler();
+/*         final compiler = new Compiler();
         compiler.compile(parser.ast);
-        compiler.writeByteCode();
+        compiler.writeByteCode(); */
 
-        final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
-        evaluator.eval();
+/*         final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
+        evaluator.eval();  */
     }
 }
