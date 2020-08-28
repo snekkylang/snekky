@@ -16,7 +16,7 @@ class ParserError {
     }
 
     function getMinIndentation(code:Array<String>):Int {
-        var min = -1;
+        var min = 0;
 
         for (line in code) {
             if (line.length == 0) {
@@ -33,7 +33,7 @@ class ParserError {
                 }   
             }
 
-            if (spaces < min || min == -1) {
+            if (spaces < min || min == 0) {
                 min = spaces;
             }
         }
@@ -68,7 +68,7 @@ class ParserError {
         final previewStart = clamp(1, errorLine - 2, errorLine - 2);
         final previewEnd = clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
 
-        final codePreview = codePreviewFull.slice(previewStart, previewEnd);
+        final codePreview = codePreviewFull.slice(previewStart - 1, previewEnd);
         final minIndentation = getMinIndentation(codePreview);
 
         final lineCountWidth = Std.string(errorLine + 3).length;
@@ -81,15 +81,15 @@ class ParserError {
                 final literalLength = parser.currentToken.literal.length;
 
                 final codeLineHighlighted = new StringBuf();
-                codeLineHighlighted.add(codeLine.substring(0, lexer.currentLineChar - literalLength - 1));
+                codeLineHighlighted.add(codeLine.substring(0, lexer.currentLineChar - literalLength));
                 codeLineHighlighted.add("<#DE4A3F>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - literalLength - 1, literalLength));
+                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - literalLength, literalLength));
                 codeLineHighlighted.add("</>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - 1, codeLineHighlighted.length));
+                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar, codeLineHighlighted.length));
 
                 Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
 
-                final underline = '${repeatString(lexer.currentLineChar - literalLength - 1, " ")}${repeatString(literalLength, "~")}';
+                final underline = '${repeatString(lexer.currentLineChar - minIndentation - literalLength, " ")}${repeatString(literalLength, "~")}';
 
                 Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$underline</>');
             } else {
