@@ -81,11 +81,11 @@ class ParserError {
                 final literalLength = parser.currentToken.literal.length;
 
                 final codeLineHighlighted = new StringBuf();
-                codeLineHighlighted.add(codeLine.substring(0, lexer.currentLineChar - literalLength));
+                codeLineHighlighted.add(codeLine.substring(0, lexer.currentLineChar - minIndentation - literalLength));
                 codeLineHighlighted.add("<#DE4A3F>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - literalLength, literalLength));
+                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - minIndentation - literalLength, literalLength));
                 codeLineHighlighted.add("</>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar, codeLineHighlighted.length));
+                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - minIndentation, codeLineHighlighted.length));
 
                 Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
 
