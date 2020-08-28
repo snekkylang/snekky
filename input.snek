@@ -8,4 +8,4 @@ mut y = true;
 if true {
     let 12345 = 1;
 }
-print(y);
+    print(y);
