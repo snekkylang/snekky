@@ -4,23 +4,24 @@ class Lexer {
     public final code:String;
     public final filename:String;
     public var currentLine = 1;
-    public var currentLineChar = 1;
+    public var currentLineChar = 0;
     var currentChar = ' ';
     var position = 0;
 
     public function new(code:String, filename:String) {
-        this.code = ~/\r\n|\r|\n/.replace(code, "\n");
+        this.code = ~/\r\n|\r|\n/g.replace(code, "\n");
         this.filename = filename;
     }
 
     function increaseCurrentLine() {
-        if (Helper.isLinebreak(currentChar) || position >= code.length) {
+        if (Helper.isLinebreak(currentChar)) {
             currentLine++;
-            currentLineChar = 1;
+            currentLineChar = 0;
         }
     }
 
     function readChar() {
+        increaseCurrentLine();
         currentChar = if (position >= code.length) {
             "\u{0}";
         } else {
@@ -78,7 +79,6 @@ class Lexer {
     function eatWhitespace() {
         while (currentChar == " " || Helper.isLinebreak(currentChar)) {
             readChar();
-            increaseCurrentLine();
         }
     }
 

@@ -1,3 +1,4 @@
+import lexer.Helper;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
@@ -13,7 +14,7 @@ class Snekky {
 
         final parser = new Parser(lexer);
         parser.generateAst();
-        parser.writeAst();
+        parser.writeAst(); 
 
 /*         final compiler = new Compiler();
         compiler.compile(parser.ast);
