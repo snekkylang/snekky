@@ -1,21 +1,14 @@
 package error;
 
-import parser.Parser;
-import lexer.Lexer;
+import lexer.Token;
 
-class ParserError {
+class CompileError {
 
-    final lexer:Lexer;
-    final parser:Parser;
-
-    public function new(lexer:Lexer, parser:Parser) {
-        this.lexer = lexer;
-        this.parser = parser;
-
+    static final init = {
         Console.logPrefix = "";
-    }
+    };
 
-    function getMinIndentation(code:Array<String>):Int {
+    static function getMinIndentation(code:Array<String>):Int {
         var min = 0;
 
         for (line in code) {
@@ -41,7 +34,7 @@ class ParserError {
         return min;
     }
 
-    function repeatString(length:Int, s:String):String {
+    static function repeatString(length:Int, s:String):String {
         final buffer = new StringBuf();
 
         for (i in 0...length) {
@@ -51,7 +44,7 @@ class ParserError {
         return buffer.toString();
     }
 
-    function clamp(min:Int, max:Int, value:Int):Int {
+    static function clamp(min:Int, max:Int, value:Int):Int {
         return if (value < min) {
             min;
         } else if (value > max) {
@@ -61,10 +54,10 @@ class ParserError {
         }
     }
 
-    function printCode() {
-        final errorLine = lexer.currentLine;
+    static function printCode(token:Token, code:String) {
+        final errorLine = token.line;
 
-        final codePreviewFull = lexer.code.split("\n");
+        final codePreviewFull = code.split("\n");
         final previewStart = clamp(1, errorLine - 2, errorLine - 2);
         final previewEnd = clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
 
@@ -78,18 +71,18 @@ class ParserError {
             final codeLine = codePreviewFull[i - 1].substring(minIndentation);
 
             if (i == errorLine) {
-                final literalLength = parser.currentToken.literal.length;
+                final literalLength = token.literal.length;
 
                 final codeLineHighlighted = new StringBuf();
-                codeLineHighlighted.add(codeLine.substring(0, lexer.currentLineChar - minIndentation - literalLength));
+                codeLineHighlighted.add(codeLine.substring(0, token.linePos - minIndentation));
                 codeLineHighlighted.add("<#DE4A3F>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - minIndentation - literalLength, literalLength));
+                codeLineHighlighted.add(codeLine.substr(token.linePos - minIndentation, literalLength));
                 codeLineHighlighted.add("</>");
-                codeLineHighlighted.add(codeLine.substr(lexer.currentLineChar - minIndentation, codeLineHighlighted.length));
+                codeLineHighlighted.add(codeLine.substr(token.linePos - minIndentation + literalLength, codeLineHighlighted.length));
 
                 Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
 
-                final underline = '${repeatString(lexer.currentLineChar - minIndentation - literalLength, " ")}${repeatString(literalLength, "~")}';
+                final underline = '${repeatString(token.linePos - minIndentation, " ")}${repeatString(literalLength, "~")}';
 
                 Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$underline</>');
             } else {
@@ -98,38 +91,35 @@ class ParserError {
         } 
     }
 
-    function printHead(message:String) {
-        final filename = lexer.filename;
-        final line = lexer.currentLine;
-        final lineChar = lexer.currentLineChar - parser.currentToken.literal.length;
+    static function printHead(token:Token, message:String) {
+        final filename = token.filename;
+        final line = token.line;
+        final linePos = token.linePos;
 
-        Console.log('<b>$filename:$line:$lineChar</> <#DE4A3F>error:</> $message.');
+        Console.log('<b>$filename:$line:$linePos</> <#DE4A3F>error:</> $message.');
     }
 
-    public function unexpectedToken(expected:String) {
-        final currentToken = parser.currentToken;
-        
-        printHead('unexpected token `${currentToken.literal}` (${currentToken.type})');
+    public static function unexpectedToken(token:Token, code:String, expected:String) {
+        printHead(token, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
 
-        printCode();
+        printCode(token, code);
 
         Sys.exit(0);
     }
 
-    public function unexpectedEof() {
-        printHead('unexpected end of file');
+    public static function unexpectedEof(token:Token, code:String) {
+        printHead(token, 'unexpected end of file');
 
-        printCode();
+        printCode(token, code);
 
         Sys.exit(0);
     }
 
-    public function illegalToken() {
-        final currentToken = parser.currentToken;
-        printHead('illegal token `${currentToken.literal}` (${currentToken.type})');
+    public static function illegalToken(token:Token, code:String) {
+        printHead(token, 'illegal token `${token.literal}` (${token.type})');
 
-        printCode();
+        printCode(token, code);
 
         Sys.exit(0);
     }

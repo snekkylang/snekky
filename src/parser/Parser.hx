@@ -1,6 +1,6 @@
 package parser;
 
-import error.ParserError;
+import error.CompileError;
 import parser.nodes.datatypes.Function.FunctionN;
 import parser.nodes.datatypes.Int.IntN;
 import sys.io.File;
@@ -14,14 +14,12 @@ class Parser {
 
     final lexer:Lexer;
     final expressionParser:ExpressionParser;
-    public final error:ParserError;
     public var ast = new Block(1);
     public var currentToken:Token;
     
     public function new(lexer:Lexer) {
         this.lexer = lexer;
 
-        error = new ParserError(this.lexer, this);
         expressionParser = new ExpressionParser(this, lexer);
         currentToken = lexer.readToken();
     }
@@ -53,7 +51,7 @@ class Parser {
 
         while (currentToken.type != TokenType.RBrace) {
             if (currentToken.type == TokenType.Eof) {
-                error.unexpectedEof();
+                CompileError.unexpectedEof(currentToken, lexer.code);
             }
 
             parseToken(block);
@@ -65,7 +63,7 @@ class Parser {
 
     public function parseFunction():FunctionN {
         if (currentToken.type != TokenType.LParen) {
-            error.unexpectedToken("`(`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`(`");
         }
 
         nextToken();
@@ -76,7 +74,7 @@ class Parser {
             if (currentToken.type == TokenType.Ident) {
                 parameters.push(new Ident(currentToken.line, currentToken.literal));
             } else if (currentToken.type != TokenType.Comma) {
-                error.unexpectedToken("identifier");
+                CompileError.unexpectedToken(currentToken, lexer.code, "identifier");
             }
 
             nextToken();
@@ -85,7 +83,7 @@ class Parser {
         nextToken();
 
         if (currentToken.type != TokenType.LBrace) {
-            error.unexpectedToken("`{`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
         }
 
         nextToken();
@@ -120,14 +118,14 @@ class Parser {
 
         nextToken();
         if (currentToken.type != TokenType.Ident) {
-            error.unexpectedToken("indentifier");
+            CompileError.unexpectedToken(currentToken, lexer.code, "indentifier");
         }
 
         final name = currentToken.literal;
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            error.unexpectedToken("`=`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`=`");
         }
 
         nextToken();
@@ -157,7 +155,7 @@ class Parser {
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            error.unexpectedToken("`{`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
         }
 
         nextToken();
@@ -170,7 +168,7 @@ class Parser {
             nextToken();
 
             if (currentToken.type != TokenType.LBrace) {
-                error.unexpectedToken("`{`");
+                CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
             }
 
             nextToken();
@@ -187,7 +185,7 @@ class Parser {
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            error.unexpectedToken("`{`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
         }
 
         nextToken();
@@ -202,7 +200,7 @@ class Parser {
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            error.unexpectedToken("`=`");
+            CompileError.unexpectedToken(currentToken, lexer.code, "`=`");
         }
 
         nextToken();
@@ -226,7 +224,7 @@ class Parser {
                     final expression = expressionParser.parseExpression();
                     block.addNode(new Statement(currentToken.line, expression));   
                 }
-            case TokenType.Illegal: error.illegalToken();
+            case TokenType.Illegal: CompileError.illegalToken(currentToken, lexer.code);
             default:
                 final expression = expressionParser.parseExpression();
                 block.addNode(new Statement(currentToken.line, expression));
