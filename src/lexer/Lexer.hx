@@ -3,8 +3,8 @@ package lexer;
 class Lexer {
     public final code:String;
     public final filename:String;
-    public var currentLine = 1;
-    public var currentLineChar = 0;
+    var currentLine = 1;
+    var currentLinePos = 0;
     var currentChar = ' ';
     var position = 0;
 
@@ -16,7 +16,7 @@ class Lexer {
     function increaseCurrentLine() {
         if (Helper.isLinebreak(currentChar)) {
             currentLine++;
-            currentLineChar = 0;
+            currentLinePos = 0;
         }
     }
 
@@ -28,7 +28,7 @@ class Lexer {
             code.charAt(position);
         }
 
-        currentLineChar++;
+        currentLinePos++;
         position++;
     }
 
@@ -104,70 +104,73 @@ class Lexer {
         eatWhitespace();
 
         return switch (currentChar) {
-            case ".": new Token(TokenType.Dot, currentLine, ".");
-            case ";": new Token(TokenType.Semicolon, currentLine, ";");
-            case "(": new Token(TokenType.LParen, currentLine, "(");
-            case ")": new Token(TokenType.RParen, currentLine, ")");
-            case "{": new Token(TokenType.LBrace, currentLine, "{");
-            case "}": new Token(TokenType.RBrace, currentLine, "}");
-            case "[": new Token(TokenType.LBracket, currentLine, "[");
-            case "]": new Token(TokenType.RBracket, currentLine, "]");
-            case ",": new Token(TokenType.Comma, currentLine, ",");
-            case "+": new Token(TokenType.Plus, currentLine, "+");
-            case "-": new Token(TokenType.Minus, currentLine, "-");
-            case "/": new Token(TokenType.Divide, currentLine, "/");
-            case "*": new Token(TokenType.Multiply, currentLine, "*");
-            case "%": new Token(TokenType.Modulo, currentLine, "%");
-            case ":": new Token(TokenType.Colon, currentLine, ":");
-            case "\"": new Token(TokenType.String, currentLine, readString());
+            case ".": new Token(TokenType.Dot, currentLine, currentLinePos, filename, ".");
+            case ";": new Token(TokenType.Semicolon, currentLine, currentLinePos, filename, ";");
+            case "(": new Token(TokenType.LParen, currentLine, currentLinePos, filename, "(");
+            case ")": new Token(TokenType.RParen, currentLine, currentLinePos, filename, ")");
+            case "{": new Token(TokenType.LBrace, currentLine, currentLinePos, filename, "{");
+            case "}": new Token(TokenType.RBrace, currentLine, currentLinePos, filename, "}");
+            case "[": new Token(TokenType.LBracket, currentLine, currentLinePos, filename, "[");
+            case "]": new Token(TokenType.RBracket, currentLine, currentLinePos, filename, "]");
+            case ",": new Token(TokenType.Comma, currentLine, currentLinePos, filename, ",");
+            case "+": new Token(TokenType.Plus, currentLine, currentLinePos, filename, "+");
+            case "-": new Token(TokenType.Minus, currentLine, currentLinePos, filename, "-");
+            case "/": new Token(TokenType.Divide, currentLine, currentLinePos, filename, "/");
+            case "*": new Token(TokenType.Multiply, currentLine, currentLinePos, filename, "*");
+            case "%": new Token(TokenType.Modulo, currentLine, currentLinePos, filename, "%");
+            case ":": new Token(TokenType.Colon, currentLine, currentLinePos, filename, ":");
+            case "\"": 
+                final string = readString();
+                new Token(TokenType.String, currentLine, currentLinePos, filename, string);
             case "&":
                 if (peekChar() == "&") {
                     readChar();
-                    new Token(TokenType.LogicAnd, currentLine, "&&");
-                } else new Token(TokenType.BitAnd, currentLine, "&");
+                    new Token(TokenType.LogicAnd, currentLine, currentLinePos, filename, "&&");
+                } else new Token(TokenType.BitAnd, currentLine, currentLinePos, filename, "&");
             case "|":
                 if (peekChar() == "|") {
                     readChar();
-                    new Token(TokenType.LogicOr, currentLine, "|");
-                } else new Token(TokenType.BitOr, currentLine, "|");
+                    new Token(TokenType.LogicOr, currentLine, currentLinePos, filename, "|");
+                } else new Token(TokenType.BitOr, currentLine, currentLinePos, filename, "|");
             case "!":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.NotEqual, currentLine, "!=");
-                } else new Token(TokenType.Bang, currentLine, "!");
+                    new Token(TokenType.NotEqual, currentLine, currentLinePos, filename, "!=");
+                } else new Token(TokenType.Bang, currentLine, currentLinePos, filename, "!");
             case "=":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.Equal, currentLine, "==");
-                } else new Token(TokenType.Assign, currentLine, "=");
+                    new Token(TokenType.Equal, currentLine, currentLinePos, filename, "==");
+                } else new Token(TokenType.Assign, currentLine, currentLinePos, filename, "=");
 
             case "<":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.SmallerThanOrEqual, currentLine, "<=");
-                } else new Token(TokenType.SmallerThan, currentLine, "<");
+                    new Token(TokenType.SmallerThanOrEqual, currentLine, currentLinePos, filename, "<=");
+                } else new Token(TokenType.SmallerThan, currentLine, currentLinePos, filename, "<");
             case ">":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.GreaterThanOrEqual, currentLine, ">=");
-                } else new Token(TokenType.GreaterThan, currentLine, ">");
-            case "\u{0}": new Token(TokenType.Eof, currentLine, currentChar);
+                    new Token(TokenType.GreaterThanOrEqual, currentLine, currentLinePos, filename, ">=");
+                } else new Token(TokenType.GreaterThan, currentLine, currentLinePos, filename, ">");
+            case "\u{0}": new Token(TokenType.Eof, currentLine, currentLinePos, filename, currentChar);
             default:
                 if (Helper.isNumber(currentChar)) {
-                    return new Token(TokenType.Number, currentLine, readNumber());
+                    final number = readNumber();
+                    return new Token(TokenType.Number, currentLine, currentLinePos, filename, number);
                 }
 
                 if (Helper.isAscii(currentChar)) {
                     final ident = readIdent();
 
                     if (Keyword.isKeyword(ident)) {
-                        return new Token(Keyword.getKeyword(ident), currentLine, ident);
+                        return new Token(Keyword.getKeyword(ident), currentLine, currentLinePos, filename, ident);
                     } else {
-                        return new Token(TokenType.Ident, currentLine, ident);
+                        return new Token(TokenType.Ident, currentLine, currentLinePos, filename, ident);
                     }
                 }
 
-                return new Token(TokenType.Illegal, currentLine, currentChar);
+                return new Token(TokenType.Illegal, currentLine, currentLinePos, filename, currentChar);
         }
     }
 }

@@ -16,11 +16,11 @@ class Snekky {
         parser.generateAst();
         parser.writeAst(); 
 
-/*         final compiler = new Compiler();
+        final compiler = new Compiler();
         compiler.compile(parser.ast);
-        compiler.writeByteCode(); */
+        compiler.writeByteCode();
 
 /*         final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
-        evaluator.eval();  */
+        evaluator.eval();  */ 
     }
 }

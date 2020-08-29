@@ -1,5 +1,6 @@
 package parser;
 
+import error.CompileError;
 import parser.nodes.Boolean;
 import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
@@ -134,7 +135,7 @@ class ExpressionParser {
                 final disjunction = disjunction();
 
                 if (parser.currentToken.type != TokenType.RParen) {
-                    parser.error.unexpectedToken("`)`");
+                    CompileError.unexpectedToken(parser.currentToken, lexer.code, "`)`");
                 }
 
                 parser.nextToken();
@@ -180,7 +181,7 @@ class ExpressionParser {
                 boolean;
 
             default: 
-                parser.error.unexpectedToken("expression");
+                CompileError.unexpectedToken(parser.currentToken, lexer.code, "expression");
                 new Node(-1, NodeType.Ident);
         }
     }
