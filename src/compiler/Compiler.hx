@@ -5,7 +5,7 @@ import object.objects.*;
 import compiler.symbol.SymbolTable;
 import parser.nodes.operators.Operator;
 import haxe.io.BytesBuffer;
-import parser.nodes.datatypes.Int.IntN;
+import parser.nodes.datatypes.*;
 import code.Code;
 import code.OpCode;
 import parser.nodes.*;

@@ -1,8 +1,7 @@
 package parser;
 
 import error.CompileError;
-import parser.nodes.datatypes.Function.FunctionN;
-import parser.nodes.datatypes.Int.IntN;
+import parser.nodes.datatypes.*;
 import sys.io.File;
 import haxe.format.JsonPrinter;
 import lexer.TokenType;
