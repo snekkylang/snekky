@@ -1,11 +1,11 @@
 package parser;
 
+import parser.nodes.Operator;
 import error.CompileError;
 import parser.nodes.Boolean;
 import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
 import parser.nodes.Node;
-import parser.nodes.operators.*;
 import parser.nodes.Ident;
 import lexer.TokenType;
 import parser.nodes.Expression;
@@ -32,7 +32,7 @@ class ExpressionParser {
             final nodePos = parser.currentToken.position;
             final right = conjunction();
 
-            left = new LogicOr(nodePos, left, right);
+            left = new Operator(nodePos, NodeType.LogicOr, left, right);
         }
 
         return left;
@@ -46,7 +46,7 @@ class ExpressionParser {
             final nodePos = parser.currentToken.position;
             final right = comparison();
 
-            left = new LogicAnd(nodePos, left, right);
+            left = new Operator(nodePos, NodeType.LogicAnd, left, right);
         }
 
         return left;
@@ -55,43 +55,34 @@ class ExpressionParser {
     function comparison():Node {
         final left = numeric();
 
-        return switch (parser.currentToken.type) {
-            case TokenType.SmallerThan:
-                parser.nextToken();
-                final nodePos = parser.currentToken.position;
-                final right = numeric();
-                new SmallerThan(nodePos, left, right);
-            case TokenType.GreaterThan:
-                parser.nextToken();
-                final nodePos = parser.currentToken.position;
-                final right = numeric();
-                new GreaterThan(nodePos, left, right);
-            case TokenType.Equal:
-                parser.nextToken();
-                final nodePos = parser.currentToken.position;
-                final right = numeric();
-                new Equal(nodePos, left, right);
-            default: left;
+        final type = switch (parser.currentToken.type) {
+            case TokenType.SmallerThan: NodeType.SmallerThan;
+            case TokenType.GreaterThan: NodeType.GreaterThan;
+            case TokenType.Equal: NodeType.Equal;
+            default: return left;
         }
+
+        parser.nextToken();
+        final nodePos = parser.currentToken.position;
+        final right = numeric();
+        return new Operator(nodePos, type, left, right);
     }
 
     function numeric():Node {
         var left = term();
 
         while (true) {
-            left = switch(parser.currentToken.type) {
-                case TokenType.Plus:
-                    parser.nextToken();
-                    final nodePos = parser.currentToken.position;
-                    final right = term();
-                    new Plus(nodePos, left, right);
-                case TokenType.Minus:
-                    parser.nextToken();
-                    final nodePos = parser.currentToken.position;
-                    final right = term();
-                    new Minus(nodePos, left, right);
+            final type = switch(parser.currentToken.type) {
+                case TokenType.Plus: NodeType.Plus;
+                case TokenType.Minus: NodeType.Minus;
                 default: break;
             }
+
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new Operator(nodePos, type, left, right);
         }
 
         return left;
@@ -101,24 +92,17 @@ class ExpressionParser {
         var left = signedFactor();
 
         while (true) {
-            left = switch(parser.currentToken.type) {
-                case TokenType.Multiply:
-                    parser.nextToken();
-                    final nodePos = parser.currentToken.position;
-                    final right = term();
-                    new Multiply(nodePos, left, right);
-                case TokenType.Divide:
-                    parser.nextToken();
-                    final nodePos = parser.currentToken.position;
-                    final right = term();
-                    new Divide(nodePos, left, right);
-                case TokenType.Modulo:
-                    parser.nextToken();
-                    final nodePos = parser.currentToken.position;
-                    final right = term();
-                    new Modulo(nodePos, left, right);
+            final type = switch(parser.currentToken.type) {
+                case TokenType.Multiply: NodeType.Multiply;
+                case TokenType.Divide: NodeType.Divide;
+                case TokenType.Modulo: NodeType.Modulo;
                 default: break;
             }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new Operator(nodePos, type, left, right);
         }
 
         return left;
@@ -134,7 +118,7 @@ class ExpressionParser {
         final right = factor();
 
         return if (minus) {
-            new Negation(parser.currentToken.position, right);
+            new Operator(parser.currentToken.position, NodeType.Negation, null, right);
         } else right;
     }
 

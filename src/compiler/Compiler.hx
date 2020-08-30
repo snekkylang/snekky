@@ -3,7 +3,6 @@ package compiler;
 import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
-import parser.nodes.operators.Operator;
 import haxe.io.BytesBuffer;
 import parser.nodes.datatypes.*;
 import code.Code;
