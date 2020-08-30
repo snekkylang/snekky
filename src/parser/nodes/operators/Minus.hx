@@ -2,7 +2,7 @@ package parser.nodes.operators;
 
 class Minus extends Operator {
 
-    public function new(line:Int, left:Node, right:Node) {
-        super(line, NodeType.Minus, left, right);
+    public function new(position:Int, left:Node, right:Node) {
+        super(position, NodeType.Minus, left, right);
     }
 }

@@ -40,17 +40,18 @@ class Parser {
 
     @:nullSafety(Off)
     public function parseNumber():Node {
+        final nodePos = currentToken.position;
         final n = Std.parseInt(currentToken.literal);
 
-        return new IntN(currentToken.line, n);
+        return new IntN(nodePos, n);
     }
 
     function parseBlock():Block {
-        final block = new Block(currentToken.line);
+        final block = new Block(currentToken.position);
 
         while (currentToken.type != TokenType.RBrace) {
             if (currentToken.type == TokenType.Eof) {
-                CompileError.unexpectedEof(currentToken, lexer.code);
+                CompileError.unexpectedEof(currentToken);
             }
 
             parseToken(block);
@@ -61,8 +62,10 @@ class Parser {
     }
 
     public function parseFunction():FunctionN {
+        final nodePos = currentToken.position;
+
         if (currentToken.type != TokenType.LParen) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`(`");
+            CompileError.unexpectedToken(currentToken, "`(`");
         }
 
         nextToken();
@@ -71,9 +74,12 @@ class Parser {
 
         while (currentToken.type != TokenType.RParen) {
             if (currentToken.type == TokenType.Ident) {
-                parameters.push(new Ident(currentToken.line, currentToken.literal));
+                parameters.push(new Ident(currentToken.position, currentToken.literal));
+                if (lexer.peekToken().type != TokenType.Comma && lexer.peekToken().type != TokenType.RParen) {
+                    CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");
+                }
             } else if (currentToken.type != TokenType.Comma) {
-                CompileError.unexpectedToken(currentToken, lexer.code, "identifier");
+                CompileError.unexpectedToken(currentToken, "identifier");
             }
 
             nextToken();
@@ -82,26 +88,33 @@ class Parser {
         nextToken();
 
         if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
+            CompileError.unexpectedToken(currentToken, "`{`");
         }
 
         nextToken();
 
         final block = parseBlock();
 
-        return new FunctionN(currentToken.line, block, parameters);
+        return new FunctionN(nodePos, block, parameters);
     }
 
     public function parseCall(target:Expression):Expression {
-        final callParameters:Array<Expression> = [];
+        final nodePos = currentToken.position;
 
         nextToken();
 
+        final callParameters:Array<Expression> = [];
+
         while (currentToken.type != TokenType.RParen) {
             callParameters.push(expressionParser.parseExpression());
+            if (currentToken.type == TokenType.Comma) {
+                nextToken();
+            } else if (currentToken.type != TokenType.RParen) {
+                CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");
+            }
         }
 
-        final call = new Expression(currentToken.line, new FunctionCall(currentToken.line, target, callParameters));
+        final call = new Expression(nodePos, new FunctionCall(nodePos, target, callParameters));
 
         return if (lexer.peekToken().type == TokenType.LParen) {
             nextToken();
@@ -113,48 +126,55 @@ class Parser {
     }
 
     function parseVariable():Variable {
+        final nodePos = currentToken.position;
+
         var mutable = currentToken.type == TokenType.Mut;
 
         nextToken();
         if (currentToken.type != TokenType.Ident) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "indentifier");
+            CompileError.unexpectedToken(currentToken, "identifier");
         }
 
         final name = currentToken.literal;
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`=`");
+            CompileError.unexpectedToken(currentToken, "`=`");
         }
 
         nextToken();
 
         final value = expressionParser.parseExpression();
 
-        return new Variable(currentToken.line, name, value, mutable);
+        return new Variable(nodePos, name, value, mutable);
     }
 
     function parseReturn():Return {
+        final nodePos = currentToken.position;
+
         nextToken();
 
         final returnValue = expressionParser.parseExpression();
 
-        return new Return(currentToken.line, returnValue);
+        return new Return(nodePos, returnValue);
     }
 
     function parseBreak():Break {
+        final nodePos = currentToken.position;
         nextToken();
 
-        return new Break(currentToken.line);
+        return new Break(nodePos);
     }
 
     function parseIf():If {
+        final nodePos = currentToken.position;
+
         nextToken();
 
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
+            CompileError.unexpectedToken(currentToken, "`{`");
         }
 
         nextToken();
@@ -167,7 +187,7 @@ class Parser {
             nextToken();
 
             if (currentToken.type != TokenType.LBrace) {
-                CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
+                CompileError.unexpectedToken(currentToken, "`{`");
             }
 
             nextToken();
@@ -175,38 +195,42 @@ class Parser {
             alternative = parseBlock();
         }
 
-        return new If(currentToken.line, condition, consequence, alternative);
+        return new If(nodePos, condition, consequence, alternative);
     }
 
     function parseWhile():While {
+        final nodePos = currentToken.position;
+
         nextToken();
 
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`{`");
+            CompileError.unexpectedToken(currentToken, "`{`");
         }
 
         nextToken();
 
         final block = parseBlock();
 
-        return new While(currentToken.line, condition, block);
+        return new While(nodePos, condition, block);
     }
 
     function parseVariableAssign() {
+        final nodePos = currentToken.position;
+
         final name = currentToken.literal;
 
         nextToken();
         if (currentToken.type != TokenType.Assign) {
-            CompileError.unexpectedToken(currentToken, lexer.code, "`=`");
+            CompileError.unexpectedToken(currentToken, "`=`");
         }
 
         nextToken();
 
         final value = expressionParser.parseExpression();
 
-        return new VariableAssign(currentToken.line, name, value);
+        return new VariableAssign(nodePos, name, value);
     }
 
     function parseToken(block:Block) {
@@ -220,13 +244,15 @@ class Parser {
                 if (lexer.peekToken().type == TokenType.Assign) {
                     block.addNode(parseVariableAssign());
                 } else {
+                    final nodePos = currentToken.position;
                     final expression = expressionParser.parseExpression();
-                    block.addNode(new Statement(currentToken.line, expression));   
+                    block.addNode(new Statement(nodePos, expression));   
                 }
             case TokenType.Illegal: CompileError.illegalToken(currentToken, lexer.code);
             default:
+                final nodePos = currentToken.position;
                 final expression = expressionParser.parseExpression();
-                block.addNode(new Statement(currentToken.line, expression));
+                block.addNode(new Statement(nodePos, expression));
         }
     }
 }

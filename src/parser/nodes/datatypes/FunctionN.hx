@@ -5,8 +5,8 @@ class FunctionN extends Node {
     public final parameters:Array<Ident>;
     public final block:Block;
 
-    public function new(line:Int, block:Block, parameters:Array<Ident>) {
-        super(line, NodeType.Function);
+    public function new(position:Int, block:Block, parameters:Array<Ident>) {
+        super(position, NodeType.Function);
 
         this.parameters = parameters;
         this.block = block;

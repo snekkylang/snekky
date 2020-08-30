@@ -6,8 +6,8 @@ class If extends Node {
     public final consequence:Block;
     public final alternative:Block;
 
-    public function new(line:Int, condition:Expression, consequence:Block, alternative:Block) {
-        super(line, NodeType.If);
+    public function new(position:Int, condition:Expression, consequence:Block, alternative:Block) {
+        super(position, NodeType.If);
 
         this.condition = condition;
         this.consequence = consequence;

@@ -4,8 +4,8 @@ class Statement extends Node {
 
     public final value:Expression;
 
-    public function new(line:Int, value:Expression) {
-        super(line, NodeType.Statement);
+    public function new(position:Int, value:Expression) {
+        super(position, NodeType.Statement);
 
         this.value = value;
     }

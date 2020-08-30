@@ -2,7 +2,7 @@ package parser.nodes;
 
 class Break extends Node {
 
-    public function new(line:Int) {
-        super(line, NodeType.Break);
+    public function new(position:Int) {
+        super(position, NodeType.Break);
     }
 }

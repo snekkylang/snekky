@@ -4,8 +4,8 @@ class IntN extends Node {
 
     public final value:Int;
 
-    public function new(line:Int, value:Int) {
-        super(line, NodeType.Int);
+    public function new(position:Int, value:Int) {
+        super(position, NodeType.Int);
 
         this.value = value;
     }
