@@ -54,7 +54,7 @@ class CompileError {
         return min;
     }
 
-    static function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int) {
+    static function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int, message:String = null) {
         final codePreviewFull = Snekky.code.split("\n");
         final previewStart = clamp(1, errorLine - 2, errorLine - 2);
         final previewEnd = clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
@@ -70,7 +70,11 @@ class CompileError {
 
             if (i == errorLine) {
                 if (errorLinePosEnd == -1) {
-                    final highlightPosition = '${repeatString(errorLinePosStart - minIndentation, " ")}^ Error begins here';
+                    final highlightPosition = new StringBuf();
+                    highlightPosition.add('${repeatString(errorLinePosStart - minIndentation, " ")}^ ');
+                    if (message != null) {
+                        highlightPosition.add(message);
+                    }
 
                     Console.log('   $lineCount | $codeLine');
                     Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$highlightPosition</>');
@@ -116,7 +120,7 @@ class CompileError {
     }
 
     static function printHead(line:Int, linePos:Int, message:String) {
-        Console.log('<b>${Snekky.filename}:$line:$linePos</> <#DE4A3F>error:</> $message.');
+        Console.log('<b>${Snekky.filename}:$line:${linePos + 1}</> <#DE4A3F>error:</> $message.');
     }
 
     public static function unexpectedToken(token:Token, expected:String) {
@@ -140,6 +144,14 @@ class CompileError {
         final position = resolvePosition(token.position);
         printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
+
+        Sys.exit(0);
+    }
+
+    public static function symbolUndefined(cPosition:Int, symbol:String) {
+        final position = resolvePosition(cPosition);
+        printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
+        printCode(position.line, position.linePos, -1, "not found in this scope");
 
         Sys.exit(0);
     }

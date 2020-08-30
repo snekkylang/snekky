@@ -1,5 +1,6 @@
 package compiler;
 
+import error.CompileError;
 import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
@@ -60,7 +61,7 @@ class Compiler {
                     case Minus: emit(OpCode.Subtract, []);
                     case Divide: emit(OpCode.Divide, []);
                     case Modulo: emit(OpCode.Modulo, []);
-                    default: // TODO: Error
+                    default:
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
@@ -69,12 +70,18 @@ class Compiler {
                 emit(OpCode.SetLocal, [symbolIndex]);
             case VariableAssign:
                 final cVariableAssign = cast(node, VariableAssign);
-                final symbolIndex = symbolTable.resolve(cVariableAssign.name); // TODO: Error if not found
+                final symbolIndex = symbolTable.resolve(cVariableAssign.name);
+                if (symbolIndex == -1) {
+                    CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
+                }
                 compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, [symbolIndex]);
             case Ident:
                 final cIdent = cast(node, Ident);
                 final symbolIndex = symbolTable.resolve(cIdent.value);
+                if (symbolIndex == -1) {
+                    CompileError.symbolUndefined(cIdent.position, cIdent.value);
+                }
                 emit(OpCode.GetLocal, [symbolIndex]);
             case If:
                 final cIf = cast(node, If);
