@@ -21,7 +21,7 @@ class ExpressionParser {
     }
 
     public function parseExpression():Expression {
-        return new Expression(parser.currentToken.line, disjunction());
+        return new Expression(parser.currentToken.position, disjunction());
     }
 
     function disjunction():Node {
@@ -29,9 +29,10 @@ class ExpressionParser {
 
         while (parser.currentToken.type == TokenType.LogicOr) {
             parser.nextToken();
+            final nodePos = parser.currentToken.position;
             final right = conjunction();
 
-            left = new LogicOr(parser.currentToken.line, left, right);
+            left = new LogicOr(nodePos, left, right);
         }
 
         return left;
@@ -42,9 +43,10 @@ class ExpressionParser {
 
         while (parser.currentToken.type == TokenType.LogicAnd) {
             parser.nextToken();
+            final nodePos = parser.currentToken.position;
             final right = comparison();
 
-            left = new LogicAnd(parser.currentToken.line, left, right);
+            left = new LogicAnd(nodePos, left, right);
         }
 
         return left;
@@ -56,16 +58,19 @@ class ExpressionParser {
         return switch (parser.currentToken.type) {
             case TokenType.SmallerThan:
                 parser.nextToken();
+                final nodePos = parser.currentToken.position;
                 final right = numeric();
-                new SmallerThan(parser.currentToken.line, left, right);
+                new SmallerThan(nodePos, left, right);
             case TokenType.GreaterThan:
                 parser.nextToken();
+                final nodePos = parser.currentToken.position;
                 final right = numeric();
-                new GreaterThan(parser.currentToken.line, left, right);
+                new GreaterThan(nodePos, left, right);
             case TokenType.Equal:
                 parser.nextToken();
+                final nodePos = parser.currentToken.position;
                 final right = numeric();
-                new Equal(parser.currentToken.line, left, right);
+                new Equal(nodePos, left, right);
             default: left;
         }
     }
@@ -77,12 +82,14 @@ class ExpressionParser {
             left = switch(parser.currentToken.type) {
                 case TokenType.Plus:
                     parser.nextToken();
+                    final nodePos = parser.currentToken.position;
                     final right = term();
-                    new Plus(parser.currentToken.line, left, right);
+                    new Plus(nodePos, left, right);
                 case TokenType.Minus:
                     parser.nextToken();
+                    final nodePos = parser.currentToken.position;
                     final right = term();
-                    new Minus(parser.currentToken.line, left, right);
+                    new Minus(nodePos, left, right);
                 default: break;
             }
         }
@@ -97,16 +104,19 @@ class ExpressionParser {
             left = switch(parser.currentToken.type) {
                 case TokenType.Multiply:
                     parser.nextToken();
+                    final nodePos = parser.currentToken.position;
                     final right = term();
-                    new Multiply(parser.currentToken.line, left, right);
+                    new Multiply(nodePos, left, right);
                 case TokenType.Divide:
                     parser.nextToken();
+                    final nodePos = parser.currentToken.position;
                     final right = term();
-                    new Divide(parser.currentToken.line, left, right);
+                    new Divide(nodePos, left, right);
                 case TokenType.Modulo:
                     parser.nextToken();
+                    final nodePos = parser.currentToken.position;
                     final right = term();
-                    new Modulo(parser.currentToken.line, left, right);
+                    new Modulo(nodePos, left, right);
                 default: break;
             }
         }
@@ -124,7 +134,7 @@ class ExpressionParser {
         final right = factor();
 
         return if (minus) {
-            new Negation(parser.currentToken.line, right);
+            new Negation(parser.currentToken.position, right);
         } else right;
     }
 
@@ -135,7 +145,7 @@ class ExpressionParser {
                 final disjunction = disjunction();
 
                 if (parser.currentToken.type != TokenType.RParen) {
-                    CompileError.unexpectedToken(parser.currentToken, lexer.code, "`)`");
+                    CompileError.unexpectedToken(parser.currentToken, "`)`");
                 }
 
                 parser.nextToken();
@@ -143,11 +153,11 @@ class ExpressionParser {
                 disjunction;
 
             case TokenType.Ident:
-                final ident = new Ident(parser.currentToken.line, parser.currentToken.literal);
+                final ident = new Ident(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
 
                 if (parser.currentToken.type == TokenType.LParen) {
-                    parser.parseCall(new Expression(parser.currentToken.line, ident)).value;
+                    parser.parseCall(new Expression(parser.currentToken.position, ident)).value;
                 } else {
                     ident; 
                 }
@@ -159,7 +169,7 @@ class ExpressionParser {
                 number;
 
             case TokenType.String:
-                final string = new StringN(parser.currentToken.line, parser.currentToken.literal);
+                final string = new StringN(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
 
                 string;
@@ -169,19 +179,19 @@ class ExpressionParser {
                 parser.parseFunction();
 
             case TokenType.True:
-                final boolean = new Boolean(parser.currentToken.line, true);
+                final boolean = new Boolean(parser.currentToken.position, true);
                 parser.nextToken();
 
                 boolean;
 
             case TokenType.False:
-                final boolean = new Boolean(parser.currentToken.line, false);
+                final boolean = new Boolean(parser.currentToken.position, false);
                 parser.nextToken();
 
                 boolean;
 
             default: 
-                CompileError.unexpectedToken(parser.currentToken, lexer.code, "expression");
+                CompileError.unexpectedToken(parser.currentToken, "expression");
                 new Node(-1, NodeType.Ident);
         }
     }

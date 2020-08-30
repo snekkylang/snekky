@@ -1,4 +1,3 @@
-import lexer.Helper;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
@@ -6,11 +5,15 @@ import lexer.Lexer;
 import sys.io.File;
 
 class Snekky {
+
+    public static var filename:String;
+    public static var code:String;
     
     public static function main() {
-        final code = File.getContent("./input.snek");
+        filename = "input.snek";
+        code = File.getContent("./input.snek");
 
-        final lexer = new Lexer(code, "input.snek");
+        final lexer = new Lexer(code);
 
         final parser = new Parser(lexer);
         parser.generateAst();
@@ -18,9 +21,9 @@ class Snekky {
 
         final compiler = new Compiler();
         compiler.compile(parser.ast);
-        compiler.writeByteCode();
+        compiler.writeByteCode(); 
 
 /*         final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
-        evaluator.eval();  */ 
+        evaluator.eval(); */
     }
 }

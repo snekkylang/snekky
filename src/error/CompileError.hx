@@ -4,12 +4,32 @@ import lexer.Token;
 
 class CompileError {
 
-    static final init = {
+    static var init = {
         Console.logPrefix = "";
-    };
+    }
+
+    static function repeatString(length:Int, s:String):String {
+        final buffer = new StringBuf();
+
+        for (i in 0...length) {
+            buffer.add(s);
+        }
+
+        return buffer.toString();
+    }
+
+    static function clamp(min:Int, max:Int, value:Int):Int {
+        return if (value < min) {
+            min;
+        } else if (value > max) {
+            max;
+        } else {
+            value;
+        }
+    }
 
     static function getMinIndentation(code:Array<String>):Int {
-        var min = 0;
+        var min = 2147483647;
 
         for (line in code) {
             if (line.length == 0) {
@@ -34,30 +54,8 @@ class CompileError {
         return min;
     }
 
-    static function repeatString(length:Int, s:String):String {
-        final buffer = new StringBuf();
-
-        for (i in 0...length) {
-            buffer.add(s);
-        }
-
-        return buffer.toString();
-    }
-
-    static function clamp(min:Int, max:Int, value:Int):Int {
-        return if (value < min) {
-            min;
-        } else if (value > max) {
-            max;
-        } else {
-            value;
-        }
-    }
-
-    static function printCode(token:Token, code:String) {
-        final errorLine = token.line;
-
-        final codePreviewFull = code.split("\n");
+    static function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int) {
+        final codePreviewFull = Snekky.code.split("\n");
         final previewStart = clamp(1, errorLine - 2, errorLine - 2);
         final previewEnd = clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
 
@@ -71,55 +69,77 @@ class CompileError {
             final codeLine = codePreviewFull[i - 1].substring(minIndentation);
 
             if (i == errorLine) {
-                final literalLength = token.literal.length;
+                if (errorLinePosEnd == -1) {
+                    final highlightPosition = '${repeatString(errorLinePosStart - minIndentation, " ")}^ Error begins here';
 
-                final codeLineHighlighted = new StringBuf();
-                codeLineHighlighted.add(codeLine.substring(0, token.linePos - minIndentation));
-                codeLineHighlighted.add("<#DE4A3F>");
-                codeLineHighlighted.add(codeLine.substr(token.linePos - minIndentation, literalLength));
-                codeLineHighlighted.add("</>");
-                codeLineHighlighted.add(codeLine.substr(token.linePos - minIndentation + literalLength, codeLineHighlighted.length));
+                    Console.log('   $lineCount | $codeLine');
+                    Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$highlightPosition</>');
+                } else {
+                    final literalLength = errorLinePosEnd - errorLinePosStart;
 
-                Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
-
-                final underline = '${repeatString(token.linePos - minIndentation, " ")}${repeatString(literalLength, "~")}';
-
-                Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$underline</>');
+                    final codeLineHighlighted = new StringBuf();
+                    codeLineHighlighted.add(codeLine.substring(0, errorLinePosStart - minIndentation));
+                    codeLineHighlighted.add("<#DE4A3F>");
+                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation, literalLength));
+                    codeLineHighlighted.add("</>");
+                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation + literalLength, codeLineHighlighted.length));
+    
+                    Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
+    
+                    final underline = '${repeatString(errorLinePosStart - minIndentation, " ")}${repeatString(literalLength, "~")}';
+    
+                    Console.log('   ${repeatString(lineCountWidth, " ")} | <#DE4A3F>$underline</>');
+                }
             } else {
                 Console.log('   $lineCount | $codeLine');
             }
         } 
     }
 
-    static function printHead(token:Token, message:String) {
-        final filename = token.filename;
-        final line = token.line;
-        final linePos = token.linePos;
+    static function resolvePosition(position:Int):{line:Int, linePos:Int} {
+        var line = 1;
+        var linePos = 0;
 
-        Console.log('<b>$filename:$line:$linePos</> <#DE4A3F>error:</> $message.');
+        for (i in 0...position) {
+            if (Snekky.code.charAt(i) == "\n") {
+                line++;
+                linePos = 1;
+            } else {
+                linePos++;
+            }
+        }
+        
+        return {
+            line: line,
+            linePos: linePos
+        }
     }
 
-    public static function unexpectedToken(token:Token, code:String, expected:String) {
-        printHead(token, 'unexpected token `${token.literal}` (${token.type})');
+    static function printHead(line:Int, linePos:Int, message:String) {
+        Console.log('<b>${Snekky.filename}:$line:$linePos</> <#DE4A3F>error:</> $message.');
+    }
+
+    public static function unexpectedToken(token:Token, expected:String) {
+        final position = resolvePosition(token.position);
+        printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
-
-        printCode(token, code);
-
-        Sys.exit(0);
-    }
-
-    public static function unexpectedEof(token:Token, code:String) {
-        printHead(token, 'unexpected end of file');
-
-        printCode(token, code);
+        printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
     }
 
+    public static function unexpectedEof(token:Token) {
+        final position = resolvePosition(token.position);
+        printHead(position.line, position.linePos, 'unexpcted end of file');
+        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+
+        Sys.exit(0);
+    }
+    
     public static function illegalToken(token:Token, code:String) {
-        printHead(token, 'illegal token `${token.literal}` (${token.type})');
-
-        printCode(token, code);
+        final position = resolvePosition(token.position);
+        printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
+        printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
     }

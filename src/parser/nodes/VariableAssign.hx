@@ -5,8 +5,8 @@ class VariableAssign extends Node {
     public final name:String;
     public final value:Expression;
 
-    public function new(line:Int, name:String, value:Expression) {
-        super(line, NodeType.VariableAssign);
+    public function new(position:Int, name:String, value:Expression) {
+        super(position, NodeType.VariableAssign);
         
         this.name = name;
         this.value = value;
