@@ -21,9 +21,9 @@ class Snekky {
 
         final compiler = new Compiler();
         compiler.compile(parser.ast);
-        compiler.writeByteCode(); 
+        //compiler.writeByteCode(); 
 
-/*         final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
-        evaluator.eval(); */
+        final evaluator = new Evaluator(compiler.instructions.getBytes(), compiler.constants);
+        evaluator.eval();
     }
 }
