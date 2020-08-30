@@ -29,6 +29,10 @@ class SymbolTable {
             cScope = cScope.parent;
         }
 
+        if (cScope == null) {
+            return -1;
+        }
+
         return cScope.resolve(name);
     }
 }
