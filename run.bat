@@ -1,1 +1,1 @@
-haxe --main Snekky --interp -cp src -lib Console.hx
+haxe --main Snekky --interp -cp src -lib console.hx

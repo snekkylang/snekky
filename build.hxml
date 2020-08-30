@@ -1,4 +1,4 @@
 -cp src
 -main Snekky
 -cpp cpp
--lib Console.hx
+-lib console.hx
