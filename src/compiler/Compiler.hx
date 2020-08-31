@@ -65,24 +65,24 @@ class Compiler {
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
-                final symbolIndex = symbolTable.define(cVariable.name);
+                final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
-                emit(OpCode.SetLocal, [symbolIndex]);
+                emit(OpCode.SetLocal, [symbol.index]);
             case VariableAssign:
                 final cVariableAssign = cast(node, VariableAssign);
-                final symbolIndex = symbolTable.resolve(cVariableAssign.name);
-                if (symbolIndex == -1) {
+                final symbol = symbolTable.resolve(cVariableAssign.name);
+                if (symbol == null) {
                     CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
                 }
                 compile(cVariableAssign.value);
-                emit(OpCode.SetLocal, [symbolIndex]);
+                emit(OpCode.SetLocal, [symbol.index]);
             case Ident:
                 final cIdent = cast(node, Ident);
-                final symbolIndex = symbolTable.resolve(cIdent.value);
-                if (symbolIndex == -1) {
+                final symbol = symbolTable.resolve(cIdent.value);
+                if (symbol == null) {
                     CompileError.symbolUndefined(cIdent.position, cIdent.value);
                 }
-                emit(OpCode.GetLocal, [symbolIndex]);
+                emit(OpCode.GetLocal, [symbol.index]);
             case If:
                 final cIf = cast(node, If);
                 compile(cIf.condition);
