@@ -3,7 +3,7 @@ package lexer;
 class Helper {
     
     public static function isLinebreak(s:String):Bool {
-        return s == "\n";
+        return ~/\r\n|\r|\n/.match(s);
     }
 
     public static function isAscii(s:String):Bool {
