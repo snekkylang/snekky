@@ -43,6 +43,7 @@ class Parser {
     @:nullSafety(Off)
     public function parseNumber():Node {
         final nodePos = currentToken.position;
+        trace(currentToken.position);
         var n:Int64 = 0; 
         try {
             n = Int64Helper.parseString(currentToken.literal);
@@ -181,6 +182,7 @@ class Parser {
         final condition = expressionParser.parseExpression();
 
         if (currentToken.type != TokenType.LBrace) {
+            trace(currentToken.position);
             CompileError.unexpectedToken(currentToken, "`{`");
         }
 
@@ -225,7 +227,6 @@ class Parser {
 
     function parseVariableAssign() {
         final nodePos = currentToken.position;
-
         final name = currentToken.literal;
 
         nextToken();
