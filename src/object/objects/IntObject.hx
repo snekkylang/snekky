@@ -8,6 +8,7 @@ class IntObject extends Object {
 
     public function new(value:Int64) {
         super(ObjectType.Int);
+        
         this.value = value;
     }
 }

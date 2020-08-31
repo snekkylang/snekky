@@ -2,14 +2,14 @@ package compiler.symbol;
 
 class SymbolTable {
 
-    final scopes:Array<SymbolScope> = [];
+    final scopes:Array<Scope> = [];
     var symbolIndex = 0;
-    var currentScope:SymbolScope = null;
+    var currentScope:Scope = null;
 
     public function new() { }
 
     public function newScope() {
-        currentScope = new SymbolScope(currentScope);
+        currentScope = new Scope(currentScope);
     }
 
     public function setParent() {
