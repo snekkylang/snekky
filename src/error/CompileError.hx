@@ -140,7 +140,7 @@ class CompileError {
         Sys.exit(0);
     }
     
-    public static function illegalToken(token:Token, code:String) {
+    public static function illegalToken(token:Token) {
         final position = resolvePosition(token.position);
         printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
