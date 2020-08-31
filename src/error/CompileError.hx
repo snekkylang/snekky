@@ -167,7 +167,7 @@ class CompileError {
 
     public static function redeclareVariable(cPosition:Int, symbol:String) {
         final position = resolvePosition(cPosition);
-        printHead(position.line, position.linePos, 'cannot re-declare variable `$symbol`');
+        printHead(position.line, position.linePos, 'cannot re-declare immutable variable `$symbol`');
         printCode(position.line, position.linePos, -1, "has already been declared in this scope");
 
         Sys.exit(0);
