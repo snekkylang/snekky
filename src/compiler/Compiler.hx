@@ -108,8 +108,9 @@ class Compiler {
             case FunctionCall:
                 final cCall = cast(node, FunctionCall);
                 
-                for (parameter in cCall.parameters) {
-                    compile(parameter);
+                var i = cCall.parameters.length;
+                while (--i >= 0) {
+                    compile(cCall.parameters[i]);
                 }
 
                 compile(cCall.target);
