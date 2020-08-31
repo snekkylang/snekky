@@ -16,13 +16,14 @@ class SymbolTable {
         currentScope = currentScope.parent;
     }
 
-    public function define(name:String):Int {
+    public function define(name:String, mutable:Bool):Symbol {
         symbolIndex++;
-        currentScope.define(name, symbolIndex);
-        return symbolIndex;
+        final symbol = new Symbol(symbolIndex, mutable);
+        currentScope.define(name, symbol);
+        return symbol;
     }
 
-    public function resolve(name:String):Int {
+    public function resolve(name:String):Symbol {
         var cScope = currentScope;
 
         while (cScope != null && !cScope.exists(name)) {
@@ -30,7 +31,7 @@ class SymbolTable {
         }
 
         if (cScope == null) {
-            return -1;
+            return null;
         }
 
         return cScope.resolve(name);

@@ -3,17 +3,17 @@ package compiler.symbol;
 class SymbolScope {
 
     public final parent:SymbolScope = null;
-    final symbols:Map<String, Int> = new Map();
+    final symbols:Map<String, Symbol> = new Map();
 
     public function new(parent:SymbolScope) {
         this.parent = parent;
     }
 
-    public function resolve(name:String):Null<Int> {
+    public function resolve(name:String):Symbol {
         return symbols.get(name);
     }
 
-    public function define(name:String, value:Int) {
+    public function define(name:String, value:Symbol) {
         symbols.set(name, value);
     }
 
