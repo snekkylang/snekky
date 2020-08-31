@@ -1,5 +1,6 @@
 package evaluator;
 
+import object.objects.FunctionObj;
 import haxe.Int64;
 import object.ObjectType;
 import object.objects.IntObject;
@@ -91,7 +92,7 @@ class Evaluator {
 
                 byteIndex = jumpIndex;
             case OpCode.Call:
-                final jumpIndex = cast(stack.pop(), IntObject).value;
+                final jumpIndex = cast(stack.pop(), FunctionObj).position;
                 callStack.add(byteIndex);
 
                 byteIndex = Int64.toInt(jumpIndex);
