@@ -16,4 +16,6 @@ enum OpCode {
     Subtract;
     Divide;
     Modulo;
+    Return;
+    Call;
 }

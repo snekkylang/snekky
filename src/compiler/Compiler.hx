@@ -18,7 +18,7 @@ class Compiler {
     public final symbolTable = new SymbolTable();
 
     // Position of last break instruction
-    private var lastBreakPos:Int = -1;
+    var lastBreakPos:Int = -1;
 
     public function new() {
 
@@ -86,6 +86,41 @@ class Compiler {
                     CompileError.symbolUndefined(cIdent.position, cIdent.value);
                 }
                 emit(OpCode.GetLocal, [symbol.index]);
+            case Function:
+                final cFunction = cast(node, FunctionN);
+                final constantIndex = constants.push(new IntObject(0)) - 1;
+                emit(OpCode.Constant, [constants.length - 1]);
+
+                final jumpInstructionPos = instructions.length;
+                emit(OpCode.Jump, [0]);
+
+                constants[constantIndex] = new IntObject(instructions.length);
+
+                for (parameter in cFunction.parameters) {
+                    final symbol = symbolTable.define(parameter.value, false);
+                    emit(OpCode.SetLocal, [symbol.index]);
+                }
+
+                compile(cFunction.block);
+                emit(OpCode.Return, []);
+
+                overwriteInstruction(jumpInstructionPos, [instructions.length]);
+            case FunctionCall:
+                final cCall = cast(node, FunctionCall);
+                
+                for (parameter in cCall.parameters) {
+                    compile(parameter);
+                }
+
+                compile(cCall.target);
+
+                emit(OpCode.Call, []);
+            case Return:
+                final cReturn = cast(node, Return);
+
+                compile(cReturn.value);
+
+                emit(OpCode.Return, []);
             case If:
                 final cIf = cast(node, If);
                 compile(cIf.condition);

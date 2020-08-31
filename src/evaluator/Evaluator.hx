@@ -11,6 +11,7 @@ import haxe.ds.GenericStack;
 class Evaluator {
 
     final stack:GenericStack<Object> = new GenericStack();
+    final callStack:GenericStack<Int> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
     var byteIndex = 0;
@@ -89,6 +90,15 @@ class Evaluator {
                 final jumpIndex = readInt32();
 
                 byteIndex = jumpIndex;
+            case OpCode.Call:
+                final jumpIndex = cast(stack.pop(), IntObject).value;
+                callStack.add(byteIndex);
+
+                byteIndex = Int64.toInt(jumpIndex);
+            case OpCode.Return:
+                if (!callStack.isEmpty()) {
+                    byteIndex = callStack.pop();
+                }
             case OpCode.Pop:
                 stack.pop();
 
