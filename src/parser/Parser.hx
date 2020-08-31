@@ -249,7 +249,7 @@ class Parser {
                     final expression = expressionParser.parseExpression();
                     block.addNode(new Statement(nodePos, expression));   
                 }
-            case TokenType.Illegal: CompileError.illegalToken(currentToken, lexer.code);
+            case TokenType.Illegal: CompileError.illegalToken(currentToken);
             default:
                 final nodePos = currentToken.position;
                 final expression = expressionParser.parseExpression();
