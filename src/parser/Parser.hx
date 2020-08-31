@@ -1,5 +1,6 @@
 package parser;
 
+import haxe.Int64Helper;
 import error.CompileError;
 import parser.nodes.datatypes.*;
 import sys.io.File;
@@ -41,7 +42,7 @@ class Parser {
     @:nullSafety(Off)
     public function parseNumber():Node {
         final nodePos = currentToken.position;
-        final n = Std.parseInt(currentToken.literal);
+        final n = Int64Helper.parseString(currentToken.literal);
 
         return new IntN(nodePos, n);
     }
