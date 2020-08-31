@@ -1,5 +1,6 @@
 package evaluator;
 
+import haxe.Int64;
 import object.ObjectType;
 import object.objects.IntObject;
 import object.objects.Object;
@@ -45,14 +46,14 @@ class Evaluator {
                 final left = cast(stack.pop(), IntObject);
                 final right = cast(stack.pop(), IntObject);
 
-                final result = switch (opCode) {
+                final result:Int64 = switch (opCode) {
                     case OpCode.Add: left.value + right.value;
                     case OpCode.Multiply: left.value * right.value;
                     case OpCode.Equals: left.value == right.value ? 1 : 0;
                     case OpCode.SmallerThan: left.value > right.value ? 1 : 0;
                     case OpCode.GreaterThan: left.value < right.value ? 1 : 0;
                     case OpCode.Subtract: right.value - left.value;
-                    case OpCode.Divide: Std.int(right.value / left.value);
+                    case OpCode.Divide: right.value / left.value;
                     case OpCode.Modulo: right.value % left.value;
                     default: -1; // TODO: Error
                 }
