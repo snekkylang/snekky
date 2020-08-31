@@ -4,7 +4,7 @@ class SymbolTable {
 
     final scopes:Array<Scope> = [];
     var symbolIndex = 0;
-    var currentScope:Scope = null;
+    public var currentScope:Scope = null;
 
     public function new() { }
 

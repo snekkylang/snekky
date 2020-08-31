@@ -65,6 +65,11 @@ class Compiler {
                 }
             case Variable:
                 final cVariable = cast(node, Variable);
+
+                if (symbolTable.currentScope.exists(cVariable.name)) {
+                    CompileError.redeclareVariable(cVariable.position, cVariable.name);
+                }
+
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, [symbol.index]);
