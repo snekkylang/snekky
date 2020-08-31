@@ -1,4 +1,0 @@
-if true {
-    test;
-    let x = 2;
-}
