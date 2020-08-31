@@ -125,7 +125,6 @@ class CompileError {
 
     public static function unexpectedToken(token:Token, expected:String) {
         final position = resolvePosition(token.position);
-        trace(position.linePos, token.position);
         printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
