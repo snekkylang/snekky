@@ -102,15 +102,15 @@ class CompileError {
 
     static function resolvePosition(position:Int):{line:Int, linePos:Int} {
         var line = 1;
-        var linePos = 0;
+        var linePos = -1;
 
-        for (i in 0...position) {
-            if (Snekky.code.charAt(i) == "\n") {
+        for (i in 0...position + 1) {
+            if (Snekky.code.charAt(i + 1) == "\n") {
                 line++;
-                linePos = 1;
+                linePos = 0;
             } else {
-                linePos++;
-            }
+                linePos++; 
+            }          
         }
         
         return {
@@ -125,6 +125,7 @@ class CompileError {
 
     public static function unexpectedToken(token:Token, expected:String) {
         final position = resolvePosition(token.position);
+        trace(position.linePos, token.position);
         printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
@@ -152,6 +153,14 @@ class CompileError {
         final position = resolvePosition(cPosition);
         printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
         printCode(position.line, position.linePos, -1, "not found in this scope");
+
+        Sys.exit(0);
+    }
+
+    public static function symbolImmutable(cPosition:Int, symbol:String) {
+        final position = resolvePosition(cPosition);
+        printHead(position.line, position.linePos, 'cannot re-assign to immutable variable `$symbol`');
+        printCode(position.line, position.linePos, -1, "unable to re-assign");
 
         Sys.exit(0);
     }

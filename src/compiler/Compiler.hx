@@ -74,6 +74,9 @@ class Compiler {
                 if (symbol == null) {
                     CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
                 }
+                if (!symbol.mutable) {
+                    CompileError.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
+                }
                 compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, [symbol.index]);
             case Ident:
