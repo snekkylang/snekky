@@ -85,6 +85,8 @@ class Parser {
                 if (lexer.peekToken().type != TokenType.Comma && lexer.peekToken().type != TokenType.RParen) {
                     CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");
                 }
+            } else if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
+                CompileError.unexpectedToken(currentToken, "identifier or `)`");
             } else if (currentToken.type != TokenType.Comma) {
                 CompileError.unexpectedToken(currentToken, "identifier");
             }
@@ -114,7 +116,9 @@ class Parser {
 
         while (currentToken.type != TokenType.RParen) {
             callParameters.push(expressionParser.parseExpression());
-            if (currentToken.type == TokenType.Comma) {
+            if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
+                CompileError.unexpectedToken(currentToken, "identifier or `)`");
+            } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             } else if (currentToken.type != TokenType.RParen) {
                 CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");

@@ -6,7 +6,7 @@ class Lexer {
     var position = 0;
 
     public function new(code:String) {
-        this.code = ~/\r\n|\r|\n/g.replace(code, "\n");
+        this.code = code;
     }
 
     function readChar() {

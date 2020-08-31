@@ -102,15 +102,15 @@ class CompileError {
 
     static function resolvePosition(position:Int):{line:Int, linePos:Int} {
         var line = 1;
-        var linePos = -1;
+        var linePos = 0;
 
-        for (i in 0...position + 1) {
-            if (Snekky.code.charAt(i + 1) == "\n") {
+        for (i in 0...position) {
+            if (~/\r\n|\n/.match(Snekky.code.charAt(i))) {
                 line++;
                 linePos = 0;
             } else {
                 linePos++; 
-            }          
+            }
         }
         
         return {
@@ -125,6 +125,7 @@ class CompileError {
 
     public static function unexpectedToken(token:Token, expected:String) {
         final position = resolvePosition(token.position);
+        trace(token.position, position.linePos);
         printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
