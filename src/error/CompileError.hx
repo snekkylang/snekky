@@ -160,7 +160,15 @@ class CompileError {
     public static function symbolImmutable(cPosition:Int, symbol:String) {
         final position = resolvePosition(cPosition);
         printHead(position.line, position.linePos, 'cannot re-assign to immutable variable `$symbol`');
-        printCode(position.line, position.linePos, -1, "unable to re-assign");
+        printCode(position.line, position.linePos, -1, "cannot be re-assgined");
+
+        Sys.exit(0);
+    }
+
+    public static function redeclareVariable(cPosition:Int, symbol:String) {
+        final position = resolvePosition(cPosition);
+        printHead(position.line, position.linePos, 'cannot re-declare variable `$symbol`');
+        printCode(position.line, position.linePos, -1, "has already been declared in this scope");
 
         Sys.exit(0);
     }
