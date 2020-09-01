@@ -80,7 +80,7 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
-                final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
+                final symbol = symbolTable.define(cVariable.name, cVariable.position, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, [symbol.index]);
             case NodeType.VariableAssign:
@@ -112,7 +112,7 @@ class Compiler {
                 constants[constantIndex] = new FunctionObj(instructions.length);
 
                 for (parameter in cFunction.parameters) {
-                    final symbol = symbolTable.define(parameter.value, false);
+                    final symbol = symbolTable.define(parameter.value, parameter.position, false);
                     emit(OpCode.SetLocal, [symbol.index]);
                 }
 
