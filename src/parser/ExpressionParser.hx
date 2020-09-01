@@ -1,14 +1,11 @@
 package parser;
 
-import parser.nodes.Operator;
+import ast.nodes.*;
+import ast.nodes.datatypes.*;
+import ast.NodeType;
 import error.CompileError;
-import parser.nodes.Boolean;
-import parser.nodes.datatypes.StringN;
 import lexer.Lexer;
-import parser.nodes.Node;
-import parser.nodes.Ident;
 import lexer.TokenType;
-import parser.nodes.Expression;
 
 class ExpressionParser {
 

@@ -3,13 +3,13 @@ package parser;
 import haxe.Int64;
 import haxe.Int64Helper;
 import error.CompileError;
-import parser.nodes.datatypes.*;
+import ast.nodes.datatypes.*;
 import sys.io.File;
 import haxe.format.JsonPrinter;
 import lexer.TokenType;
 import lexer.Token;
 import lexer.Lexer;
-import parser.nodes.*;
+import ast.nodes.*;
 
 class Parser {
 

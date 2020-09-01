@@ -1,4 +1,4 @@
-package parser.nodes.datatypes;
+package ast.nodes.datatypes;
 
 import haxe.Int64;
 
