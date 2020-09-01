@@ -1,7 +1,5 @@
 package parser;
 
-import haxe.Int64;
-import haxe.Int64Helper;
 import error.CompileError;
 import ast.nodes.datatypes.*;
 import sys.io.File;
@@ -40,17 +38,10 @@ class Parser {
         currentToken = lexer.readToken();
     }
 
-    @:nullSafety(Off)
-    public function parseNumber():Node {
+    public function parseNumber():Node { // TODO: error check
         final nodePos = currentToken.position;
-        var n:Int64 = 0; 
-        try {
-            n = Int64Helper.parseString(currentToken.literal);
-        } catch (e) {
-            CompileError.unexpectedToken(currentToken, "number");
-        }
-
-        return new IntN(nodePos, n);
+        final n = Std.parseFloat(currentToken.literal);
+        return new FloatN(nodePos, n);
     }
 
     function parseBlock():Block {

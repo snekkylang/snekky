@@ -1,6 +1,6 @@
 package object;
 
 enum ObjectType {
-    Int;
+    Float;
     Function;
 }
