@@ -100,6 +100,9 @@ class Evaluator {
                 if (!callStack.isEmpty()) {
                     byteIndex = callStack.pop();
                 }
+            case OpCode.Negate:
+                final negValue = cast(stack.pop(), IntObject).value;
+                stack.add(new IntObject(-negValue));
             case OpCode.Pop:
                 stack.pop();
 
