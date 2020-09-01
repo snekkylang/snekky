@@ -38,9 +38,12 @@ class Parser {
         currentToken = lexer.readToken();
     }
 
-    public function parseNumber():Node { // TODO: error check
+    public function parseNumber():Node {
         final nodePos = currentToken.position;
         final n = Std.parseFloat(currentToken.literal);
+        if (n == null) {
+            CompileError.unexpectedToken(nodePos, "number");
+        }
         return new FloatN(nodePos, n);
     }
 
