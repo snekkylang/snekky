@@ -16,9 +16,9 @@ class SymbolTable {
         currentScope = currentScope.parent;
     }
 
-    public function define(name:String, mutable:Bool):Symbol {
+    public function define(name:String, position:Int, mutable:Bool):Symbol {
         symbolIndex++;
-        final symbol = new Symbol(symbolIndex, mutable);
+        final symbol = new Symbol(position, name, symbolIndex, mutable);
         currentScope.define(name, symbol);
         return symbol;
     }
