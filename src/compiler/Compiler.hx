@@ -173,12 +173,14 @@ class Compiler {
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
-            case NodeType.Float | NodeType.Boolean:
+            case NodeType.Float | NodeType.Boolean | NodeType.String:
                 switch (node.type) {
                     case NodeType.Float:
                         constants.push(new FloatObj(cast(node, FloatN).value));
                     case NodeType.Boolean:
                         constants.push(new FloatObj(cast(node, Boolean).value ? 1 : 0));
+                    case NodeType.String:
+                        constants.push(new StringObj(cast(node, StringN).value));
                     default:
                 }
 
