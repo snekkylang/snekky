@@ -63,6 +63,10 @@ class Compiler {
                     case Modulo: emit(OpCode.Modulo, []);
                     default:
                 }
+            case Negation:
+                final cNegation = cast(node, Operator);
+                compile(cNegation.right);
+                emit(OpCode.Negate, []);
             case Variable:
                 final cVariable = cast(node, Variable);
 

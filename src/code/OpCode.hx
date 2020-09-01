@@ -18,4 +18,5 @@ enum OpCode {
     Modulo;
     Return;
     Call;
+    Negate;
 }
