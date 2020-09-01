@@ -19,4 +19,5 @@ enum OpCode {
     Return;
     Call;
     Negate;
+    Invert;
 }

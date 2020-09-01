@@ -103,6 +103,9 @@ class Evaluator {
             case OpCode.Negate:
                 final negValue = cast(stack.pop(), IntObject).value;
                 stack.add(new IntObject(-negValue));
+            case OpCode.Invert:
+                final invValue = cast(stack.pop(), IntObject).value;
+                stack.add(new IntObject(invValue == 1 ? 0 : 1));
             case OpCode.Pop:
                 stack.pop();
 
