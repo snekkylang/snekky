@@ -1,16 +1,15 @@
 package compiler;
 
-import parser.NodeType;
+import ast.NodeType;
 import error.CompileError;
 import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
 import haxe.io.BytesBuffer;
-import parser.nodes.datatypes.*;
 import code.Code;
 import code.OpCode;
-import parser.nodes.*;
-import parser.nodes.Node;
+import ast.nodes.*;
+import ast.nodes.datatypes.*;
 
 class Compiler {
 

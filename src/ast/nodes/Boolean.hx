@@ -1,4 +1,4 @@
-package parser.nodes;
+package ast.nodes;
 
 class Boolean extends Node {
 

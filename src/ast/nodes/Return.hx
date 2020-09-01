@@ -1,11 +1,11 @@
-package parser.nodes;
+package ast.nodes;
 
-class Statement extends Node {
+class Return extends Node {
 
     public final value:Expression;
 
     public function new(position:Int, value:Expression) {
-        super(position, NodeType.Statement);
+        super(position, NodeType.Return);
 
         this.value = value;
     }
