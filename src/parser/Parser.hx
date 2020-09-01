@@ -42,7 +42,7 @@ class Parser {
         final nodePos = currentToken.position;
         final n = Std.parseFloat(currentToken.literal);
         if (n == null) {
-            CompileError.unexpectedToken(nodePos, "number");
+            CompileError.unexpectedToken(currentToken, "number");
         }
         return new FloatN(nodePos, n);
     }
