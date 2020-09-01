@@ -1,9 +1,9 @@
 package evaluator;
 
+import object.objects.FloatObj;
 import object.objects.FunctionObj;
 import haxe.Int64;
 import object.ObjectType;
-import object.objects.IntObject;
 import object.objects.Object;
 import code.OpCode;
 import haxe.io.Bytes;
@@ -30,8 +30,8 @@ class Evaluator {
             evalInstruction();
 
             try {
-                if (!stack.isEmpty() && stack.first().type == ObjectType.Int) {
-                    trace(cast(stack.first(), IntObject).value);
+                if (!stack.isEmpty() && stack.first().type == ObjectType.Float) {
+                    trace(cast(stack.first(), FloatObj).value);
                 }
             } catch(e) {
                 trace(e);
@@ -45,10 +45,10 @@ class Evaluator {
         
         switch (opCode) {
             case OpCode.Add | OpCode.Multiply | OpCode.Equals | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final left = cast(stack.pop(), IntObject);
-                final right = cast(stack.pop(), IntObject);
+                final left = cast(stack.pop(), FloatObj);
+                final right = cast(stack.pop(), FloatObj);
 
-                final result:Int64 = switch (opCode) {
+                final result:Float = switch (opCode) {
                     case OpCode.Add: left.value + right.value;
                     case OpCode.Multiply: left.value * right.value;
                     case OpCode.Equals: left.value == right.value ? 1 : 0;
@@ -60,7 +60,7 @@ class Evaluator {
                     default: -1; // TODO: Error
                 }
 
-                stack.add(new IntObject(result));
+                stack.add(new FloatObj(result));
             case OpCode.Constant:
                 final constantIndex = readInt32();
 
@@ -83,7 +83,7 @@ class Evaluator {
             case OpCode.JumpNot:
                 final jumpIndex = readInt32();
                 
-                final conditionValue = cast(stack.pop(), IntObject);
+                final conditionValue = cast(stack.pop(), FloatObj);
                 if (conditionValue.value == 0) {
                     byteIndex = jumpIndex;
                 }
@@ -101,11 +101,11 @@ class Evaluator {
                     byteIndex = callStack.pop();
                 }
             case OpCode.Negate:
-                final negValue = cast(stack.pop(), IntObject).value;
-                stack.add(new IntObject(-negValue));
+                final negValue = cast(stack.pop(), FloatObj).value;
+                stack.add(new FloatObj(-negValue));
             case OpCode.Invert:
-                final invValue = cast(stack.pop(), IntObject).value;
-                stack.add(new IntObject(invValue == 1 ? 0 : 1));
+                final invValue = cast(stack.pop(), FloatObj).value;
+                stack.add(new FloatObj(invValue == 1 ? 0 : 1));
             case OpCode.Pop:
                 stack.pop();
 

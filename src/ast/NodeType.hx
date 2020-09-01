@@ -22,7 +22,7 @@ enum NodeType {
     Negation;
     Inversion;
 
-    Int;
+    Float;
     String;
     Function;
     Boolean;
