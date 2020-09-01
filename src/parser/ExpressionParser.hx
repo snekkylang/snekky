@@ -109,17 +109,21 @@ class ExpressionParser {
     }
 
     function signedFactor():Node {
-        final minus = parser.currentToken.type == TokenType.Minus;
+        return switch (parser.currentToken.type) {
+            case TokenType.Minus:
+                parser.nextToken();
 
-        if (minus) {
-            parser.nextToken();
+                final right = factor();
+
+                new Operator(parser.currentToken.position, NodeType.Negation, null, right);
+            case TokenType.Bang:
+                parser.nextToken();
+
+                final right = factor();
+
+                new Operator(parser.currentToken.position, NodeType.Inversion, null, right);
+            default: factor();
         }
-
-        final right = factor();
-
-        return if (minus) {
-            new Operator(parser.currentToken.position, NodeType.Negation, null, right);
-        } else right;
     }
 
     function factor():Node {

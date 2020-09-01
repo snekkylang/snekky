@@ -1,5 +1,6 @@
 package compiler;
 
+import parser.NodeType;
 import error.CompileError;
 import sys.io.File;
 import object.objects.*;
@@ -30,44 +31,50 @@ class Compiler {
 
     public function compile(node:Node) {
         switch(node.type) {
-            case Block:
+            case NodeType.Block:
                 final cBlock = cast(node, Block);
                 symbolTable.newScope();
                 for (blockNode in cBlock.body) {
                     compile(blockNode);
                 }
                 symbolTable.setParent();
-            case Break:
+            case NodeType.Break:
                 lastBreakPos = instructions.length;
                 emit(OpCode.Jump, [0]);
-            case Statement:
+            case NodeType.Statement:
                 final cStatement = cast(node, Statement);
                 compile(cStatement.value.value);
                 emit(OpCode.Pop, []);
-            case Expression:
+            case NodeType.Expression:
                 final cExpression = cast(node, Expression);
                 compile(cExpression.value);
-            case Plus | Multiply | Equal | SmallerThan | GreaterThan | Minus | Divide | Modulo:
+            case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
+                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo:
+
                 final cOperator = cast(node, Operator);
                 compile(cOperator.left);
                 compile(cOperator.right);
 
                 switch (cOperator.type) {
-                    case Plus: emit(OpCode.Add, []);
-                    case Multiply: emit(OpCode.Multiply, []);
-                    case Equal: emit(OpCode.Equals, []);
-                    case SmallerThan: emit(OpCode.SmallerThan, []);
-                    case GreaterThan: emit(OpCode.GreaterThan, []);
-                    case Minus: emit(OpCode.Subtract, []);
-                    case Divide: emit(OpCode.Divide, []);
-                    case Modulo: emit(OpCode.Modulo, []);
+                    case NodeType.Plus: emit(OpCode.Add, []);
+                    case NodeType.Multiply: emit(OpCode.Multiply, []);
+                    case NodeType.Equal: emit(OpCode.Equals, []);
+                    case NodeType.SmallerThan: emit(OpCode.SmallerThan, []);
+                    case NodeType.GreaterThan: emit(OpCode.GreaterThan, []);
+                    case NodeType.Minus: emit(OpCode.Subtract, []);
+                    case NodeType.Divide: emit(OpCode.Divide, []);
+                    case NodeType.Modulo: emit(OpCode.Modulo, []);
                     default:
                 }
-            case Negation:
-                final cNegation = cast(node, Operator);
-                compile(cNegation.right);
-                emit(OpCode.Negate, []);
-            case Variable:
+            case NodeType.Negation | NodeType.Inversion:
+                final cOperator = cast(node, Operator);
+                compile(cOperator.right);
+                if (cOperator.type == NodeType.Negation) {
+                    emit(OpCode.Negate, []);
+                } else {
+                    emit(OpCode.Invert, []);
+                }
+            case NodeType.Variable:
                 final cVariable = cast(node, Variable);
 
                 if (symbolTable.currentScope.exists(cVariable.name)) {
@@ -77,7 +84,7 @@ class Compiler {
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, [symbol.index]);
-            case VariableAssign:
+            case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssign);
                 final symbol = symbolTable.resolve(cVariableAssign.name);
                 if (symbol == null) {
@@ -88,14 +95,14 @@ class Compiler {
                 }
                 compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, [symbol.index]);
-            case Ident:
+            case NodeType.Ident:
                 final cIdent = cast(node, Ident);
                 final symbol = symbolTable.resolve(cIdent.value);
                 if (symbol == null) {
                     CompileError.symbolUndefined(cIdent.position, cIdent.value);
                 }
                 emit(OpCode.GetLocal, [symbol.index]);
-            case Function:
+            case NodeType.Function:
                 final cFunction = cast(node, FunctionN);
                 final constantIndex = constants.push(new FunctionObj(0)) - 1;
                 emit(OpCode.Constant, [constants.length - 1]);
@@ -114,7 +121,7 @@ class Compiler {
                 emit(OpCode.Return, []);
 
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
-            case FunctionCall:
+            case NodeType.FunctionCall:
                 final cCall = cast(node, FunctionCall);
                 
                 var i = cCall.parameters.length;
@@ -125,13 +132,13 @@ class Compiler {
                 compile(cCall.target);
 
                 emit(OpCode.Call, []);
-            case Return:
+            case NodeType.Return:
                 final cReturn = cast(node, Return);
 
                 compile(cReturn.value);
 
                 emit(OpCode.Return, []);
-            case If:
+            case NodeType.If:
                 final cIf = cast(node, If);
                 compile(cIf.condition);
 
@@ -150,7 +157,7 @@ class Compiler {
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
-            case While:
+            case NodeType.While:
                 final cWhile = cast(node, While);
 
                 final jumpPos = instructions.length;
@@ -167,7 +174,7 @@ class Compiler {
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
-            case Int | Boolean:
+            case NodeType.Int | NodeType.Boolean:
                 emit(OpCode.Constant, [addConstant(node)]);
             default:
         }
@@ -188,9 +195,9 @@ class Compiler {
 
     function addConstant(node:Node):Int {
         switch (node.type) {
-            case Int:
+            case NodeType.Int:
                 constants.push(new IntObject(cast(node, IntN).value));
-            case Boolean:
+            case NodeType.Boolean:
                 constants.push(new IntObject(cast(node, Boolean).value ? 1 : 0));
             default:
         }
