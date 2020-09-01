@@ -1,5 +1,6 @@
 package evaluator;
 
+import object.objects.StringObj;
 import error.RuntimeError;
 import object.objects.FloatObj;
 import object.objects.FunctionObj;
@@ -44,12 +45,32 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Add | OpCode.Multiply | OpCode.Equals | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
+            case OpCode.Equals:
+                final left = stack.pop();
+                final right = stack.pop();
+
+                if (left.type != right.type) {
+                    stack.add(new FloatObj(0));
+                    return;
+                }
+
+                switch (left.type) {
+                    case ObjectType.Float:
+                        final cLeft = cast(left, FloatObj).value;
+                        final cRight = cast(right, FloatObj).value;
+                        stack.add(new FloatObj(cLeft == cRight ? 1 : 0));
+                    case ObjectType.String:
+                        final cLeft = cast(left, StringObj).value;
+                        final cRight = cast(right, StringObj).value;
+                        stack.add(new FloatObj(cLeft == cRight ? 1 : 0));
+                    default:
+                }
+            case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
                 final right = stack.pop();
                 final left = stack.pop();
 
                 if (left.type != ObjectType.Float || right.type != ObjectType.Float) {
-                    RuntimeError.error('cannot perform operation $opCode on ${left.type} and ${right.type}', callStack);
+                    RuntimeError.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value', callStack);
                 }
 
                 final cRight = cast(right, FloatObj).value;
@@ -64,7 +85,7 @@ class Evaluator {
                     case OpCode.Subtract: cLeft - cRight;
                     case OpCode.Divide: cLeft / cRight;
                     case OpCode.Modulo: cLeft % cRight;
-                    default: -1; // TODO: Error
+                    default: -1;
                 }
 
                 stack.add(new FloatObj(result));
@@ -81,11 +102,6 @@ class Evaluator {
                 final localIndex = readInt32();
 
                 final value = env.getVariable(localIndex);
-
-                if (value == null) {
-                    // TODO error
-                }
-
                 stack.add(value);
             case OpCode.JumpNot:
                 final jumpIndex = readInt32();
