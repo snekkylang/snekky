@@ -2,8 +2,8 @@ package compiler.symbol;
 
 class SymbolTable {
 
-    final scopes:Array<Scope> = [];
     var symbolIndex = 0;
+    public var lastSymbol:Symbol = null;
     public var currentScope:Scope = null;
 
     public function new() { }
@@ -19,6 +19,7 @@ class SymbolTable {
     public function define(name:String, position:Int, mutable:Bool):Symbol {
         symbolIndex++;
         final symbol = new Symbol(position, name, symbolIndex, mutable);
+        lastSymbol = symbol;
         currentScope.define(name, symbol);
         return symbol;
     }

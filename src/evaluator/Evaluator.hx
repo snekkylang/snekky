@@ -1,8 +1,8 @@
 package evaluator;
 
+import error.RuntimeError;
 import object.objects.FloatObj;
 import object.objects.FunctionObj;
-import haxe.Int64;
 import object.ObjectType;
 import object.objects.Object;
 import code.OpCode;
@@ -12,7 +12,7 @@ import haxe.ds.GenericStack;
 class Evaluator {
 
     final stack:GenericStack<Object> = new GenericStack();
-    final callStack:GenericStack<Int> = new GenericStack();
+    final callStack:GenericStack<ReturnAddress> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
     var byteIndex = 0;
@@ -45,18 +45,25 @@ class Evaluator {
         
         switch (opCode) {
             case OpCode.Add | OpCode.Multiply | OpCode.Equals | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final left = cast(stack.pop(), FloatObj);
-                final right = cast(stack.pop(), FloatObj);
+                final right = stack.pop();
+                final left = stack.pop();
+
+                if (left.type != ObjectType.Float || right.type != ObjectType.Float) {
+                    RuntimeError.error('cannot perform operation $opCode on ${left.type} and ${right.type}', callStack);
+                }
+
+                final cRight = cast(right, FloatObj).value;
+                final cLeft = cast(left, FloatObj).value;
 
                 final result:Float = switch (opCode) {
-                    case OpCode.Add: left.value + right.value;
-                    case OpCode.Multiply: left.value * right.value;
-                    case OpCode.Equals: left.value == right.value ? 1 : 0;
-                    case OpCode.SmallerThan: left.value > right.value ? 1 : 0;
-                    case OpCode.GreaterThan: left.value < right.value ? 1 : 0;
-                    case OpCode.Subtract: right.value - left.value;
-                    case OpCode.Divide: right.value / left.value;
-                    case OpCode.Modulo: right.value % left.value;
+                    case OpCode.Add: cLeft + cRight;
+                    case OpCode.Multiply: cLeft * cRight;
+                    case OpCode.Equals: cLeft == cRight ? 1 : 0;
+                    case OpCode.SmallerThan: cRight > cLeft ? 1 : 0;
+                    case OpCode.GreaterThan: cRight < cLeft ? 1 : 0;
+                    case OpCode.Subtract: cLeft - cRight;
+                    case OpCode.Divide: cLeft / cRight;
+                    case OpCode.Modulo: cLeft % cRight;
                     default: -1; // TODO: Error
                 }
 
@@ -92,13 +99,13 @@ class Evaluator {
 
                 byteIndex = jumpIndex;
             case OpCode.Call:
-                final jumpIndex = cast(stack.pop(), FunctionObj).position;
-                callStack.add(byteIndex);
+                final calledFunction = cast(stack.pop(), FunctionObj);
+                callStack.add(new ReturnAddress(byteIndex, calledFunction));
 
-                byteIndex = Int64.toInt(jumpIndex);
+                byteIndex = calledFunction.bytePosition;
             case OpCode.Return:
                 if (!callStack.isEmpty()) {
-                    byteIndex = callStack.pop();
+                    byteIndex = callStack.pop().returnAddress;
                 }
             case OpCode.Negate:
                 final negValue = cast(stack.pop(), FloatObj).value;

@@ -103,13 +103,12 @@ class Compiler {
                 emit(OpCode.GetLocal, [symbol.index]);
             case NodeType.Function:
                 final cFunction = cast(node, FunctionN);
-                final constantIndex = constants.push(new FunctionObj(0)) - 1;
-                emit(OpCode.Constant, [constants.length - 1]);
+                emit(OpCode.Constant, [constants.length]);
 
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, [0]);
 
-                constants[constantIndex] = new FunctionObj(instructions.length);
+                constants.push(new FunctionObj(instructions.length, symbolTable.lastSymbol));
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, parameter.position, false);
