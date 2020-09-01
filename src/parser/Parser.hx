@@ -54,6 +54,8 @@ class Parser {
     }
 
     function parseBlock():Block {
+        nextToken();
+        
         final block = new Block(currentToken.position);
 
         while (currentToken.type != TokenType.RBrace) {
@@ -99,8 +101,6 @@ class Parser {
         if (currentToken.type != TokenType.LBrace) {
             CompileError.unexpectedToken(currentToken, "`{`");
         }
-
-        nextToken();
 
         final block = parseBlock();
 
@@ -188,8 +188,6 @@ class Parser {
             CompileError.unexpectedToken(currentToken, "`{`");
         }
 
-        nextToken();
-
         final consequence = parseBlock();
         var alternative:Block = null;
 
@@ -200,8 +198,6 @@ class Parser {
             if (currentToken.type != TokenType.LBrace) {
                 CompileError.unexpectedToken(currentToken, "`{`");
             }
-
-            nextToken();
             
             alternative = parseBlock();
         }
@@ -219,8 +215,6 @@ class Parser {
         if (currentToken.type != TokenType.LBrace) {
             CompileError.unexpectedToken(currentToken, "`{`");
         }
-
-        nextToken();
 
         final block = parseBlock();
 
@@ -250,6 +244,7 @@ class Parser {
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.Break: block.addNode(parseBreak());
+            case TokenType.LBrace: block.addNode(parseBlock());
             case TokenType.Ident:
                 if (lexer.peekToken().type == TokenType.Assign) {
                     block.addNode(parseVariableAssign());
