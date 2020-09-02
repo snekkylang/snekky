@@ -1,6 +1,5 @@
 package evaluator.builtin.functions;
 
-import object.objects.FunctionObj;
 import object.objects.StringObj;
 import object.objects.FloatObj;
 import object.ObjectType;
