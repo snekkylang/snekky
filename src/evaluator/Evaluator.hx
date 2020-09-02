@@ -1,5 +1,7 @@
 package evaluator;
 
+import error.RuntimeError;
+import compiler.LineNumberTable;
 import evaluator.builtin.BuiltInTable;
 import object.ObjectOrigin;
 import object.objects.StringObj;
@@ -17,13 +19,15 @@ class Evaluator {
     final callStack:GenericStack<Int> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
+    final lineNumberTable:LineNumberTable;
     final builtInTable:BuiltInTable;
     var byteIndex = 0;
     var env = new Environment();
 
-    public function new(byteCode:Bytes, constants:Array<Object>) {
+    public function new(byteCode:Bytes, constants:Array<Object>, lineNumberTable:LineNumberTable) {
         this.byteCode = byteCode;
         this.constants = constants;
+        this.lineNumberTable = lineNumberTable;
 
         builtInTable = new BuiltInTable(this);
     }
@@ -62,6 +66,10 @@ class Evaluator {
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
                 final right = stack.pop();
                 final left = stack.pop();
+
+                if (left.type != ObjectType.Float || right.type != ObjectType.Float) {
+                    RuntimeError.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value', callStack, lineNumberTable);
+                }
 
                 final cRight = cast(right, FloatObj).value;
                 final cLeft = cast(left, FloatObj).value;
