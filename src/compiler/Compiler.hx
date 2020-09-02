@@ -1,5 +1,7 @@
 package compiler;
 
+import object.ObjectOrigin;
+import compiler.symbol.SymbolOrigin;
 import ast.NodeType;
 import error.CompileError;
 import sys.io.File;
@@ -20,9 +22,7 @@ class Compiler {
     // Position of last break instruction
     var lastBreakPos:Int = -1;
 
-    public function new() {
-
-    }
+    public function new() { }
 
     public function writeByteCode() {
         File.saveBytes("program.bite", instructions.getBytes());
@@ -80,7 +80,7 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
-                final symbol = symbolTable.define(cVariable.name, cVariable.position, cVariable.mutable);
+                final symbol = symbolTable.define(cVariable.name, cVariable.mutable, SymbolOrigin.UserDefined);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, [symbol.index]);
             case NodeType.VariableAssign:
@@ -100,7 +100,11 @@ class Compiler {
                 if (symbol == null) {
                     CompileError.symbolUndefined(cIdent.position, cIdent.value);
                 }
-                emit(OpCode.GetLocal, [symbol.index]);
+                if (symbol.origin == SymbolOrigin.UserDefined) {
+                    emit(OpCode.GetLocal, [symbol.index]);
+                } else {
+                    emit(OpCode.GetBuiltIn, [symbol.index]);
+                }
             case NodeType.Function:
                 final cFunction = cast(node, FunctionN);
                 emit(OpCode.Constant, [constants.length]);
@@ -108,10 +112,10 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, [0]);
 
-                constants.push(new FunctionObj(instructions.length, symbolTable.lastSymbol));
+                constants.push(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
 
                 for (parameter in cFunction.parameters) {
-                    final symbol = symbolTable.define(parameter.value, parameter.position, false);
+                    final symbol = symbolTable.define(parameter.value, false, SymbolOrigin.UserDefined);
                     emit(OpCode.SetLocal, [symbol.index]);
                 }
 
