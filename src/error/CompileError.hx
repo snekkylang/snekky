@@ -86,9 +86,16 @@ class CompileError {
 
     public static function unexpectedToken(token:Token, expected:String) {
         final position = ErrorHelper.resolvePosition(token.position);
-        trace(token.position, position.linePos);
         printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
+        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+
+        Sys.exit(0);
+    }
+
+    public static function missingSemicolon(token:Token) {
+        final position = ErrorHelper.resolvePosition(token.position);
+        printHead(position.line, position.linePos, "missing semicolon");
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
