@@ -64,9 +64,7 @@ class Parser {
     public function parseFunction():FunctionN {
         final nodePos = currentToken.position;
 
-        if (currentToken.type != TokenType.LParen) {
-            CompileError.unexpectedToken(currentToken, "`(`");
-        }
+        assertToken(TokenType.LParen, "`(`");
 
         nextToken();
 
@@ -80,8 +78,8 @@ class Parser {
                 }
             } else if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
                 CompileError.unexpectedToken(currentToken, "identifier or `)`");
-            } else if (currentToken.type != TokenType.Comma) {
-                CompileError.unexpectedToken(currentToken, "identifier");
+            } else {
+                assertToken(TokenType.Comma, "identifier");
             }
 
             nextToken();
@@ -89,11 +87,11 @@ class Parser {
 
         nextToken();
 
-        if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, "`{`");
-        }
+        assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
+
+        nextToken();
 
         return new FunctionN(nodePos, block, parameters);
     }
@@ -111,8 +109,8 @@ class Parser {
                 CompileError.unexpectedToken(currentToken, "identifier or `)`");
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
-            } else if (currentToken.type != TokenType.RParen) {
-                CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");
+            } else {
+                assertToken(TokenType.RParen, "comma or closing parenthesis");
             }
         }
 
@@ -123,6 +121,7 @@ class Parser {
             parseCall(call);
         } else {
             nextToken();
+            assertSemicolon();
             call;
         }
     }
@@ -133,20 +132,18 @@ class Parser {
         var mutable = currentToken.type == TokenType.Mut;
 
         nextToken();
-        if (currentToken.type != TokenType.Ident) {
-            CompileError.unexpectedToken(currentToken, "identifier");
-        }
+        assertToken(TokenType.Ident, "identifier");
 
         final name = currentToken.literal;
 
         nextToken();
-        if (currentToken.type != TokenType.Assign) {
-            CompileError.unexpectedToken(currentToken, "`=`");
-        }
+        assertToken(TokenType.Assign, "`=`");
 
         nextToken();
 
         final value = expressionParser.parseExpression();
+
+        assertSemicolon();
 
         return new Variable(nodePos, name, value, mutable);
     }
@@ -158,12 +155,16 @@ class Parser {
 
         final returnValue = expressionParser.parseExpression();
 
+        assertSemicolon();
+
         return new Return(nodePos, returnValue);
     }
 
     function parseBreak():Break {
         final nodePos = currentToken.position;
         nextToken();
+
+        assertSemicolon();
 
         return new Break(nodePos);
     }
@@ -175,9 +176,7 @@ class Parser {
 
         final condition = expressionParser.parseExpression();
 
-        if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, "`{`");
-        }
+        assertToken(TokenType.LBrace, "`{`");
 
         final consequence = parseBlock();
         var alternative:Block = null;
@@ -186,9 +185,7 @@ class Parser {
             nextToken();
             nextToken();
 
-            if (currentToken.type != TokenType.LBrace) {
-                CompileError.unexpectedToken(currentToken, "`{`");
-            }
+            assertToken(TokenType.LBrace, "`{`");
             
             alternative = parseBlock();
         }
@@ -203,9 +200,7 @@ class Parser {
 
         final condition = expressionParser.parseExpression();
 
-        if (currentToken.type != TokenType.LBrace) {
-            CompileError.unexpectedToken(currentToken, "`{`");
-        }
+        assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
 
@@ -217,15 +212,27 @@ class Parser {
         final name = currentToken.literal;
 
         nextToken();
-        if (currentToken.type != TokenType.Assign) {
-            CompileError.unexpectedToken(currentToken, "`=`");
-        }
+        assertToken(TokenType.Assign, "`=`");
 
         nextToken();
 
         final value = expressionParser.parseExpression();
 
+        assertSemicolon();
+
         return new VariableAssign(nodePos, name, value);
+    }
+
+    function assertToken(type:TokenType, expected:String) {
+        if (currentToken.type != type) {
+            CompileError.unexpectedToken(currentToken, expected);
+        }
+    }
+
+    function assertSemicolon() {
+        if (currentToken.type != TokenType.Semicolon) {
+            CompileError.missingSemicolon(currentToken);
+        }
     }
 
     function parseToken(block:Block) {
@@ -242,13 +249,15 @@ class Parser {
                 } else {
                     final nodePos = currentToken.position;
                     final expression = expressionParser.parseExpression();
-                    block.addNode(new Statement(nodePos, expression));   
+                    block.addNode(new Statement(nodePos, expression));
+                    assertSemicolon();
                 }
             case TokenType.Illegal: CompileError.illegalToken(currentToken);
             default:
                 final nodePos = currentToken.position;
                 final expression = expressionParser.parseExpression();
                 block.addNode(new Statement(nodePos, expression));
+                assertSemicolon();
         }
     }
 }
