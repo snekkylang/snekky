@@ -64,7 +64,7 @@ class Lexer {
     }
 
     function eatWhitespace() {
-        while (currentChar == " " || Helper.isLinebreak(currentChar)) {
+        while (currentChar == " " || Helper.isLinebreak(currentChar) || currentChar == "\t") {
             readChar();
         }
     }
