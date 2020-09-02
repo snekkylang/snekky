@@ -1,0 +1,13 @@
+let mod_inv = func(a, b) {
+    mut i = 0;
+
+    while i < b {
+        if (a * i) % b == 1 {
+            return i;
+        }
+
+        i = i + 1;
+    }
+};
+
+print(mod_inv(42, 2017));
