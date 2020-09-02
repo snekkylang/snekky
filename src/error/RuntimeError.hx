@@ -1,27 +1,40 @@
 package error;
 
-import compiler.LineNumberTable;
+import evaluator.ReturnAddress;
+import compiler.debug.LocalVariableTable;
+import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;
 
 class RuntimeError {
 
-    static function printHead(message:String) {
+    final callStack:GenericStack<ReturnAddress>;
+    final lineNumberTable:LineNumberTable;
+    final localVariableTable:LocalVariableTable;
+
+    public function new(callStack:GenericStack<ReturnAddress>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable) {
+        this.callStack = callStack;
+        this.lineNumberTable = lineNumberTable;
+        this.localVariableTable = localVariableTable;
+    }
+
+    function printHead(message:String) {
         Console.log('<#DE4A3F>error:</> $message.');
     }
 
-    static function printStackTrace(callStack:GenericStack<Int>, lineNumberTable:LineNumberTable) {
+    function printStackTrace() {
         while (!callStack.isEmpty()) {
             final returnAddress = callStack.pop();
-            final position = lineNumberTable.resolve(returnAddress);
-            Console.log('   at ? (?:${position.line}:${position.linePos + 1})');
+            final position = lineNumberTable.resolve(returnAddress.byteIndex);
+            final functionName = localVariableTable.resolve(returnAddress.calledFunction.index - 2 * 5);
+            Console.log('   at ${functionName == null ? "[native]" : functionName } (???:${position.line}:${position.linePos + 1})');
         }
 
         Console.log("   at (global)");
     }
 
-    public static function error(message:String, callStack:GenericStack<Int>, lineNumberTable:LineNumberTable) {
+    public function error(message:String) {
         printHead(message);
-        printStackTrace(callStack, lineNumberTable);
+        printStackTrace();
 
         Sys.exit(0);
     }
