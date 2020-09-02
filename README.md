@@ -14,18 +14,8 @@ Please do not take this project too seriously. I'm in no way a professional. To 
 
 ## Usage
 
-1. Create a file with .snek extension
-2. Run ist using `Snekky`
-
-## Benchmarks
-Based on <a href="https://benchmarksgame-team.pages.debian.net/benchmarksgame/">Benchmarksgame</a>
-
-|               | C     | Rust  | Go    | Java | NodeJs | Snekky   |
-|---------------|-------|-------|-------|------|--------|----------|
-| Spectral Norm | 1.98s | 1.98s | 3.95s | 4.2s | 4.27s  | 1h 44min |
-
-## Why you should be using Snekky
-<img src="https://axolotl.vip/PmMKa9an.png?key=3fFhm7yeiawmiJ">
+1. Create a file called `input.snek`
+2. Run it using `Snekky`
 
 ## Example
 ```
