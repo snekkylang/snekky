@@ -121,7 +121,6 @@ class Parser {
             parseCall(call);
         } else {
             nextToken();
-            assertSemicolon();
             call;
         }
     }
