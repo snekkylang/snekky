@@ -118,9 +118,7 @@ class Evaluator {
                     builtInTable.execute(calledFunction.index);
                 }
             case OpCode.Return:
-                if (!callStack.isEmpty()) {
-                    byteIndex = callStack.pop();
-                }
+                byteIndex = callStack.pop();
             case OpCode.Negate:
                 final negValue = cast(stack.pop(), FloatObj).value;
                 stack.add(new FloatObj(-negValue));
