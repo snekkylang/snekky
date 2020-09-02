@@ -1,7 +1,8 @@
 package evaluator;
 
+import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
-import compiler.LineNumberTable;
+import compiler.debug.LineNumberTable;
 import evaluator.builtin.BuiltInTable;
 import object.ObjectOrigin;
 import object.objects.StringObj;
@@ -16,20 +17,24 @@ import haxe.ds.GenericStack;
 class Evaluator {
 
     public final stack:GenericStack<Object> = new GenericStack();
-    final callStack:GenericStack<Int> = new GenericStack();
+    public final callStack:GenericStack<ReturnAddress> = new GenericStack();
     final byteCode:Bytes;
     final constants:Array<Object>;
     final lineNumberTable:LineNumberTable;
+    final localVariableTable:LocalVariableTable;
     final builtInTable:BuiltInTable;
     var byteIndex = 0;
-    var env = new Environment();
+    final env = new Environment();
+    public final error:RuntimeError;
 
-    public function new(byteCode:Bytes, constants:Array<Object>, lineNumberTable:LineNumberTable) {
+    public function new(byteCode:Bytes, constants:Array<Object>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable) {
         this.byteCode = byteCode;
         this.constants = constants;
         this.lineNumberTable = lineNumberTable;
+        this.localVariableTable = localVariableTable;
 
         builtInTable = new BuiltInTable(this);
+        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable);
     }
 
     public function eval() {
@@ -68,7 +73,7 @@ class Evaluator {
                 final left = stack.pop();
 
                 if (left.type != ObjectType.Float || right.type != ObjectType.Float) {
-                    RuntimeError.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value', callStack, lineNumberTable);
+                    error.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value');
                 }
 
                 final cRight = cast(right, FloatObj).value;
@@ -118,15 +123,15 @@ class Evaluator {
                 byteIndex = jumpIndex;
             case OpCode.Call:
                 final calledFunction = cast(stack.pop(), FunctionObj);
+                callStack.add(new ReturnAddress(byteIndex, calledFunction));
 
                 if (calledFunction.origin == ObjectOrigin.UserDefined) {
-                    callStack.add(byteIndex);
                     byteIndex = calledFunction.index;
                 } else {
                     builtInTable.execute(calledFunction.index);
                 }
             case OpCode.Return:
-                byteIndex = callStack.pop();
+                byteIndex = callStack.pop().byteIndex;
             case OpCode.Negate:
                 final negValue = cast(stack.pop(), FloatObj).value;
                 stack.add(new FloatObj(-negValue));

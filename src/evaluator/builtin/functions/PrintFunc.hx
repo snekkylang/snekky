@@ -19,5 +19,7 @@ class PrintFunc extends Function {
             case ObjectType.Function: Sys.println("#func");
             default:
         }
+
+        returnValue();
     }
 }

@@ -1,5 +1,7 @@
 package compiler;
 
+import compiler.debug.LocalVariableTable;
+import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
 import object.ObjectOrigin;
 import compiler.symbol.SymbolOrigin;
@@ -19,6 +21,7 @@ class Compiler {
     public final constants:Array<Object> = [];
     public var instructions = new BytesBuffer();
     public final lineNumberTable = new LineNumberTable();
+    public final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
 
     // Position of last break instruction
@@ -84,6 +87,7 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
+                localVariableTable.define(instructions.length, cVariable.name);
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable, SymbolOrigin.UserDefined);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, cVariable.position, [symbol.index]);
