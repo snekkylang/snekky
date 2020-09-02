@@ -39,7 +39,7 @@ add(1, 2);
 
 mut i = 0;
 while i < 10 {
-    if (i > 5) {
+    if i > 5 {
         print("Snek");
     } else {
         print(i);
