@@ -1,11 +1,11 @@
 package compiler.symbol;
 
-class Scope {
+class SymbolScope {
 
-    public final parent:Scope = null;
+    public final parent:SymbolScope = null;
     final symbols:Map<String, Symbol> = new Map();
 
-    public function new(parent:Scope) {
+    public function new(parent:SymbolScope) {
         this.parent = parent;
     }
 

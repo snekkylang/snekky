@@ -1,26 +1,28 @@
 package compiler.symbol;
 
+import compiler.symbol.SymbolScope;
+
 class SymbolTable {
 
     var symbolIndex = 0;
-    public var lastSymbol:Symbol = null;
-    public var currentScope:Scope = null;
+    public var currentScope:SymbolScope = new SymbolScope(null);
 
-    public function new() { }
+    public function new() {
+        define("print", false, SymbolOrigin.BuiltIn);
+    }
 
     public function newScope() {
-        currentScope = new Scope(currentScope);
+        currentScope = new SymbolScope(currentScope);
     }
 
     public function setParent() {
         currentScope = currentScope.parent;
     }
 
-    public function define(name:String, position:Int, mutable:Bool):Symbol {
-        symbolIndex++;
-        final symbol = new Symbol(position, name, symbolIndex, mutable);
-        lastSymbol = symbol;
+    public function define(name:String, mutable:Bool, origin:SymbolOrigin):Symbol {
+        final symbol = new Symbol(symbolIndex, mutable, origin);
         currentScope.define(name, symbol);
+        symbolIndex++;
         return symbol;
     }
 

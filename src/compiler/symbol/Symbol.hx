@@ -2,15 +2,13 @@ package compiler.symbol;
 
 class Symbol {
 
-    public final position:Int;
-    public final name:String;
     public final index:Int;
     public final mutable:Bool;
+    public final origin:SymbolOrigin;
 
-    public function new(position:Int, name:String, index:Int, mutable:Bool) {
-        this.position = position;
-        this.name = name;
+    public function new(index:Int, mutable:Bool, origin:SymbolOrigin) {
         this.index = index;
         this.mutable = mutable;
+        this.origin = origin;
     }
 }

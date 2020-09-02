@@ -7,6 +7,7 @@ enum OpCode {
     Pop;
     SetLocal;
     GetLocal;
+    GetBuiltIn;
     Ident;
     Jump;
     JumpNot;
