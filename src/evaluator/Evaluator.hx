@@ -48,9 +48,14 @@ class Evaluator {
         byteIndex++;
         
         switch (opCode) {
-            case OpCode.Equals:
-                final left = stack.pop();
+            case OpCode.ConcatString:
                 final right = stack.pop();
+                final left = stack.pop();
+                
+                stack.add(new StringObj('${left.toString()}${right.toString()}'));
+            case OpCode.Equals:
+                final right = stack.pop();
+                final left = stack.pop();
 
                 if (left.type != right.type) {
                     stack.add(new FloatObj(0));

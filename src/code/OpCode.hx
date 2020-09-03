@@ -21,4 +21,5 @@ enum OpCode {
     Call;
     Negate;
     Invert;
+    ConcatString;
 }

@@ -72,6 +72,7 @@ class ExpressionParser {
             final type = switch(parser.currentToken.type) {
                 case TokenType.Plus: NodeType.Plus;
                 case TokenType.Minus: NodeType.Minus;
+                case TokenType.Dot: NodeType.StringConc;
                 default: break;
             }
 
