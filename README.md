@@ -2,7 +2,7 @@
 
 The Snekky Programming Language
 
-<a href="https://snekky.senkju.net/">Playground</a>
+<a href="https://snekky-lang.org">Playground</a>
 
 ### Disclaimer!
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
