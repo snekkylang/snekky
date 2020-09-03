@@ -1,5 +1,6 @@
 package compiler;
 
+import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
@@ -10,7 +11,6 @@ import error.CompileError;
 import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
-import haxe.io.BytesBuffer;
 import code.Code;
 import code.OpCode;
 import ast.nodes.*;
@@ -19,7 +19,7 @@ import ast.nodes.datatypes.*;
 class Compiler {
 
     public final constants:Array<Object> = [];
-    public var instructions = new BytesBuffer();
+    public var instructions = new BytesOutput();
     public final lineNumberTable = new LineNumberTable();
     public final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
@@ -177,8 +177,6 @@ class Compiler {
                     if (inExpression) {
                         removeLastPop();
                     }
-                } else if (inExpression) {
-                    CompileError.missingElseBranch(cIf.position);
                 }
                 final jumpPos = instructions.length;
 
@@ -221,25 +219,24 @@ class Compiler {
 
     function removeLastPop() {
         if (lastInstruction == OpCode.Pop) {
-            final buffer = new BytesBuffer();
-            final currentBytes = instructions.getBytes().sub(0, instructions.length - 1);
-            buffer.add(currentBytes);
-            instructions = buffer;
-        } 
+            final currentBytes = instructions.getBytes();
+            instructions = new BytesOutput();
+            instructions.writeBytes(currentBytes, 0, currentBytes.length - 1);
+        }
     }
 
     function overwriteInstruction(pos:Int, operands:Array<Int>) {
-        final buffer = new BytesBuffer();
         final currentBytes = instructions.getBytes();
         currentBytes.setInt32(pos + 1, operands[0]);
-        buffer.add(currentBytes);
-        instructions = buffer;
+        instructions = new BytesOutput();
+        instructions.write(currentBytes);
     }
 
     function emit(op:OpCode, position:Int, operands:Array<Int>) {
         lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
         final instruction = Code.make(op, operands);
         lastInstruction = op;
-        instructions.add(instruction);
+        
+        instructions.write(instruction);
     }
 }
