@@ -11,4 +11,4 @@ jobs:
           haxe-version: 4.1.3
       - run: haxe -version
       - run: haxelib install console.hx
-      - run: haxe ~/build.hxml
+      - run: pwd
