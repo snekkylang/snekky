@@ -100,6 +100,11 @@ class Evaluator {
                 final localIndex = readInt32();
 
                 final value = stack.pop();
+
+                if (value == null) {
+                    error.error("failed to evaluate expression");
+                }
+
                 env.setVariable(localIndex, value);
             case OpCode.GetLocal:
                 final localIndex = readInt32();
@@ -107,7 +112,7 @@ class Evaluator {
                 final value = env.getVariable(localIndex);
 
                 if (value == null) {
-                    error.error("wrong number of arguments to function");
+                    error.error("value of symbol undefined");
                 }
 
                 stack.add(value);

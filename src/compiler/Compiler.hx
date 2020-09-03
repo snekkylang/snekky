@@ -27,6 +27,9 @@ class Compiler {
     // Position of last break instruction
     var lastBreakPos:Int = -1;
 
+    var inExpression = false;
+    var lastInstruction:OpCode = null;
+
     public function new() { }
 
     public function writeByteCode() {
@@ -87,12 +90,17 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
+                inExpression = true;
+
                 localVariableTable.define(instructions.length, cVariable.name);
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable, SymbolOrigin.UserDefined);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, cVariable.position, [symbol.index]);
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssign);
+
+                inExpression = true;
+
                 final symbol = symbolTable.resolve(cVariableAssign.name);
                 if (symbol == null) {
                     CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
@@ -156,17 +164,27 @@ class Compiler {
                 emit(OpCode.JumpNot, node.position, [0]);
 
                 compile(cIf.consequence);
+                if (inExpression) {
+                    removeLastPop();
+                }
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
                 final jumpNotPos = instructions.length;
                 if (cIf.alternative != null) {
                     compile(cIf.alternative);
+                    if (inExpression) {
+                        removeLastPop();
+                    }
+                } else if (inExpression) {
+                    CompileError.missingElseBranch(cIf.position);
                 }
                 final jumpPos = instructions.length;
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
+
+                inExpression = false;
             case NodeType.While:
                 final cWhile = cast(node, While);
 
@@ -200,6 +218,15 @@ class Compiler {
         }
     }
 
+    function removeLastPop() {
+        if (lastInstruction == OpCode.Pop) {
+            final buffer = new BytesBuffer();
+            final currentBytes = instructions.getBytes().sub(0, instructions.length - 1);
+            buffer.add(currentBytes);
+            instructions = buffer;
+        } 
+    }
+
     function overwriteInstruction(pos:Int, operands:Array<Int>) {
         final buffer = new BytesBuffer();
         final currentBytes = instructions.getBytes();
@@ -211,6 +238,7 @@ class Compiler {
     function emit(op:OpCode, position:Int, operands:Array<Int>) {
         lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
         final instruction = Code.make(op, operands);
+        lastInstruction = op;
         instructions.add(instruction);
     }
 }
