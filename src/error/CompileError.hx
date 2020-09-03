@@ -141,14 +141,6 @@ class CompileError {
         Sys.exit(0);
     }
 
-    public static function missingElseBranch(cPosition:Int) {
-        final position = ErrorHelper.resolvePosition(cPosition);
-        printHead(position.line, position.linePos, "missing else branch");
-        printCode(position.line, position.linePos, -1, "else branch required when used as expression");
-
-        Sys.exit(0);
-    }
-
     public static function valueEmpty(cPosition:Int) {
         final position = ErrorHelper.resolvePosition(cPosition);
         printHead(position.line, position.linePos, "expression value could be undefined");
