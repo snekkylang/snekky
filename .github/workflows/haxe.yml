@@ -14,9 +14,3 @@ jobs:
         run: |
           haxelib install console.hx
           haxe build.hxml
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: snekky-linux
-          path: cpp/Snekky
