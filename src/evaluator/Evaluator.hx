@@ -1,5 +1,7 @@
 package evaluator;
 
+import haxe.io.BytesInput;
+import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
@@ -11,14 +13,13 @@ import object.objects.FunctionObj;
 import object.ObjectType;
 import object.objects.Object;
 import code.OpCode;
-import haxe.io.Bytes;
 import haxe.ds.GenericStack;
 
 class Evaluator {
 
     public final stack:GenericStack<Object> = new GenericStack();
     public final callStack:GenericStack<ReturnAddress> = new GenericStack();
-    final byteCode:Bytes;
+    final byteCode:BytesInput;
     final constants:Array<Object>;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
@@ -27,8 +28,8 @@ class Evaluator {
     final env = new Environment();
     public final error:RuntimeError;
 
-    public function new(byteCode:Bytes, constants:Array<Object>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable) {
-        this.byteCode = byteCode;
+    public function new(byteCode:BytesOutput, constants:Array<Object>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable) {
+        this.byteCode = new BytesInput(byteCode.getBytes());
         this.constants = constants;
         this.lineNumberTable = lineNumberTable;
         this.localVariableTable = localVariableTable;
@@ -38,14 +39,13 @@ class Evaluator {
     }
 
     public function eval() {
-        while (byteIndex < byteCode.length) {
+        while (byteCode.position < byteCode.length) {
             evalInstruction();
         }
     }
 
     function evalInstruction() {
-        final opCode = OpCode.createByIndex(byteCode.get(byteIndex));
-        byteIndex++;
+        final opCode = OpCode.createByIndex(byteCode.readByte());
         
         switch (opCode) {
             case OpCode.ConcatString:
@@ -130,23 +130,23 @@ class Evaluator {
                 
                 final conditionValue = cast(stack.pop(), FloatObj);
                 if (conditionValue.value == 0) {
-                    byteIndex = jumpIndex;
+                    byteCode.position = jumpIndex;
                 }
             case OpCode.Jump:
                 final jumpIndex = readInt32();
 
-                byteIndex = jumpIndex;
+                byteCode.position = jumpIndex;
             case OpCode.Call:
                 final calledFunction = cast(stack.pop(), FunctionObj);
-                callStack.add(new ReturnAddress(byteIndex, calledFunction));
+                callStack.add(new ReturnAddress(byteCode.position, calledFunction));
 
                 if (calledFunction.origin == ObjectOrigin.UserDefined) {
-                    byteIndex = calledFunction.index;
+                    byteCode.position = calledFunction.index;
                 } else {
                     builtInTable.execute(calledFunction.index);
                 }
             case OpCode.Return:
-                byteIndex = callStack.pop().byteIndex;
+                byteCode.position = callStack.pop().byteIndex;
             case OpCode.Negate:
                 final negValue = cast(stack.pop(), FloatObj).value;
                 stack.add(new FloatObj(-negValue));
@@ -162,8 +162,7 @@ class Evaluator {
     }
 
     function readInt32():Int {
-        final value = byteCode.getInt32(byteIndex);
-        byteIndex += 4;
+        final value = byteCode.readInt32();
         return value;
     }
 }
