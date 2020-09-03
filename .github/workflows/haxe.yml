@@ -3,8 +3,10 @@ name: snekky
 on: [push]
 
 jobs:
-  linux:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: 
+      - windows-latest 
+      - ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: krdlab/setup-haxe@v1
@@ -17,7 +19,9 @@ jobs:
 
       - name: Build
         run: haxe build.hxml
-
+  upload:
+    runs-on: ubuntu-latest
+    steps:
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
