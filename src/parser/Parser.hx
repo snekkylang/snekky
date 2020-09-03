@@ -168,7 +168,7 @@ class Parser {
         return new Break(nodePos);
     }
 
-    function parseIf():If {
+    public function parseIf():If {
         final nodePos = currentToken.position;
 
         nextToken();
