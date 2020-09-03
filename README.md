@@ -14,7 +14,7 @@ Please do not take this project too seriously. I'm in no way a professional. To 
 3. Compile the project by executing `haxe build.hxml`.
 
 #### Download release binaries
-Release binaries can be found on the [releases tab](https://github.com/snekkylang/snekky/releases).
+Release binaries can be found on the [releases tab](https://github.com/snekkylang/snekky/releases). \
 Binaries of the latest unreleased version can be found on the [actions tab](https://github.com/snekkylang/snekky/actions).
 
 ## Usage
