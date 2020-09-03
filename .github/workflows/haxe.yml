@@ -3,10 +3,8 @@ name: snekky
 on: [push]
 
 jobs:
-  build:
-    runs-on: 
-      - windows-latest 
-      - ubuntu-latest
+  linux:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: krdlab/setup-haxe@v1
@@ -19,11 +17,29 @@ jobs:
 
       - name: Build
         run: haxe build.hxml
-  upload:
-    runs-on: ubuntu-latest
-    steps:
+
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: snekky-linux
           path: cpp/Snekky
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.3
+      - name: Install dependencies
+        run: |
+          haxelib install console.hx
+          haxelib install hxcpp
+
+      - name: Build
+        run: haxe build.hxml
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: snekky-win
+          path: cpp/Snekky.exe
