@@ -58,7 +58,7 @@ class Compiler {
                 final cExpression = cast(node, Expression);
                 compile(cExpression.value);
             case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
-                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo:
+                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc:
 
                 final cOperator = cast(node, Operator);
                 compile(cOperator.left);
@@ -73,6 +73,7 @@ class Compiler {
                     case NodeType.Minus: emit(OpCode.Subtract, node.position, []);
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
                     case NodeType.Modulo: emit(OpCode.Modulo, node.position, []);
+                    case NodeType.StringConc: emit(OpCode.ConcatString, node.position, []);
                     default:
                 }
             case NodeType.Negation | NodeType.Inversion:
