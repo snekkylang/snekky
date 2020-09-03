@@ -10,10 +10,13 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.1.3
-      - run: haxe -version
-      - run: haxelib install console.hx
-      - run: haxelib install hxcpp
-      - run: haxe build.hxml
+      - name: Install dependencies
+        run: |
+          haxelib install console.hx
+          haxelib install hxcpp
+
+      - name: Build
+        run: haxe build.hxml
 
       - name: Upload artifact
         uses: actions/upload-artifact@v1
