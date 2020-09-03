@@ -12,4 +12,3 @@ jobs:
       - run: |
           haxe -version
           haxelib install console.hx
-          haxe build.hxml
