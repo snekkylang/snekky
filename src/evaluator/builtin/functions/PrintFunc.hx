@@ -13,6 +13,10 @@ class PrintFunc extends Function {
     override function execute() {
         final parameter = evaluator.stack.pop();
 
+        if (parameter == null) {
+            evaluator.error.error("wrong number of arguments to function");
+        }
+
         switch (parameter.type) {
             case ObjectType.Float: Sys.println(cast(parameter, FloatObj).value);
             case ObjectType.String: Sys.println(cast(parameter, StringObj).value);
