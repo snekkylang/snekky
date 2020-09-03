@@ -105,6 +105,11 @@ class Evaluator {
                 final localIndex = readInt32();
 
                 final value = env.getVariable(localIndex);
+
+                if (value == null) {
+                    error.error("wrong number of arguments to function");
+                }
+
                 stack.add(value);
             case OpCode.GetBuiltIn:
                 final builtInIndex = readInt32();
