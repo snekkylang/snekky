@@ -161,7 +161,13 @@ class ExpressionParser {
 
             case TokenType.Function:
                 parser.nextToken();
-                parser.parseFunction();
+                final func = parser.parseFunction();
+
+                if (parser.currentToken.type == TokenType.LParen) {
+                    parser.parseCall(new Expression(parser.currentToken.position, func)).value;
+                } else {
+                    func; 
+                }
 
             case TokenType.True:
                 final boolean = new Boolean(parser.currentToken.position, true);
