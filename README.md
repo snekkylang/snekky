@@ -1,4 +1,4 @@
-# Snekky Language
+# Snekky Language 🐍
 
 The Snekky Programming Language
 
@@ -8,14 +8,18 @@ The Snekky Programming Language
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
 
 ## Installation
+#### Compile it yourself
+1. Download and install [Haxe](https://haxe.org/).
+2. Clone this repository.
+3. Compile the project by executing `haxe build.hxml`.
 
-1. Clone repository
-2. Compile it (`haxe build.hxml`)
+#### Download release binaries
+Pre-compiled binaries can be found [here](https://github.com/snekkylang/snekky/releases).
 
 ## Usage
 
 1. Create a file called `input.snek`
-2. Run it using `Snekky`
+2. Run it using `Snekky.exe`
 
 ## Example
 ```
@@ -23,20 +27,26 @@ let add = func(a, b) {
     let result = a + b;
 
     print(result);
-}
+};
 
 add(1, 2);
 
 mut i = 0;
 while i < 10 {
-    if i > 5 {
-        print("Snek");
-    } else {
-        print(i);
-    }
+    print(
+        if (i > 5) {
+            "Snek";
+        } else {
+            i;
+        }
+    );
 
     i = i + 1;
 }
+
+func(msg) {
+    print("Self-invoking function says " . msg);
+}("Axolotls are cool!");
 ```
 
 ## Contributing
