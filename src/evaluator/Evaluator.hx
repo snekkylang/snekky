@@ -24,7 +24,6 @@ class Evaluator {
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
     final builtInTable:BuiltInTable;
-    var byteIndex = 0;
     final env = new Environment();
     public final error:RuntimeError;
 
