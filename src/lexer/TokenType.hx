@@ -1,52 +1,52 @@
 package lexer;
 
-enum abstract TokenType(Int) {
-    final Illegal;
-    final Eof;
+enum TokenType {
+    Illegal;
+    Eof;
 
-    final Ident;
-    final Number;
-    final String;
-    final Assign;
-    final Plus;
-    final Minus;
-    final Multiply;
-    final Divide;
-    final Modulo;
-    final Pow;
-    final Bang;
-    final Equal;
-    final NotEqual;
-    final LogicAnd;
-    final LogicOr;
-    final GreaterThan;
-    final SmallerThan;
-    final GreaterThanOrEqual;
-    final SmallerThanOrEqual;
-    final BitAnd;
-    final BitOr;
+    Ident;
+    Number;
+    String;
+    Assign;
+    Plus;
+    Minus;
+    Multiply;
+    Divide;
+    Modulo;
+    Pow;
+    Bang;
+    Equal;
+    NotEqual;
+    LogicAnd;
+    LogicOr;
+    GreaterThan;
+    SmallerThan;
+    GreaterThanOrEqual;
+    SmallerThanOrEqual;
+    BitAnd;
+    BitOr;
 
-    final Comma;
-    final Semicolon;
-    final Dot;
-    final Colon;
-    final LParen;
-    final RParen;
-    final LBrace;
-    final RBrace;
-    final LBracket;
-    final RBracket;
+    Comma;
+    Semicolon;
+    Dot;
+    Colon;
+    LParen;
+    RParen;
+    LBrace;
+    RBrace;
+    LBracket;
+    RBracket;
     
     // Keywords
-    final Function;
-    final Let;
-    final Mut;
-    final True;
-    final False;
-    final If;
-    final Else;
-    final While;
-    final Return;
-    final Import;
-    final Break;
+    Function;
+    Let;
+    Mut;
+    True;
+    False;
+    If;
+    Else;
+    While;
+    Return;
+    Import;
+    Break;
 }

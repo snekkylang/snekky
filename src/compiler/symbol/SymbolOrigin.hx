@@ -1,6 +1,6 @@
 package compiler.symbol;
 
-enum abstract SymbolOrigin(Int) {
-    final BuiltIn;
-    final UserDefined;
+enum SymbolOrigin {
+    BuiltIn;
+    UserDefined;
 }
