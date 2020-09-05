@@ -1,6 +1,6 @@
 package object;
 
-enum ObjectOrigin {
-    BuiltIn;
-    UserDefined;
+enum abstract ObjectOrigin(Int) {
+    final BuiltIn;
+    final UserDefined;
 }

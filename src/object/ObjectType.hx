@@ -1,7 +1,7 @@
 package object;
 
-enum ObjectType {
-    Float;
-    String;
-    Function;
+enum abstract ObjectType(Int) {
+    final Float;
+    final String;
+    final Function;
 }
