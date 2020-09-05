@@ -34,7 +34,7 @@ class Evaluator {
         this.localVariableTable = localVariableTable;
 
         builtInTable = new BuiltInTable(this);
-        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable);
+        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, this.byteCode);
     }
 
     public function eval() {
