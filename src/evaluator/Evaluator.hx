@@ -76,12 +76,16 @@ class Evaluator {
                 final right = stack.pop();
                 final left = stack.pop();
 
-                if (left.type != ObjectType.Float || right.type != ObjectType.Float) {
-                    error.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value');
-                }
+                var cRight;
+                var cLeft;
 
-                final cRight = cast(right, FloatObj).value;
-                final cLeft = cast(left, FloatObj).value;
+                try {
+                    cRight = cast(right, FloatObj).value;
+                    cLeft = cast(left, FloatObj).value;
+                } catch(e) {
+                    error.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value');
+                    return; 
+                }
 
                 final result:Float = switch (opCode) {
                     case OpCode.Add: cLeft + cRight;
@@ -97,11 +101,11 @@ class Evaluator {
 
                 stack.add(new FloatObj(result));
             case OpCode.Constant:
-                final constantIndex = readInt32();
+                final constantIndex = byteCode.readInt32();
 
                 stack.add(constants[constantIndex]);
             case OpCode.SetLocal:
-                final localIndex = readInt32();
+                final localIndex = byteCode.readInt32();
 
                 final value = stack.pop();
 
@@ -111,7 +115,7 @@ class Evaluator {
 
                 env.setVariable(localIndex, value);
             case OpCode.GetLocal:
-                final localIndex = readInt32();
+                final localIndex = byteCode.readInt32();
 
                 final value = env.getVariable(localIndex);
 
@@ -121,18 +125,18 @@ class Evaluator {
 
                 stack.add(value);
             case OpCode.GetBuiltIn:
-                final builtInIndex = readInt32();
+                final builtInIndex = byteCode.readInt32();
 
                 stack.add(new FunctionObj(builtInIndex, ObjectOrigin.BuiltIn));
             case OpCode.JumpNot:
-                final jumpIndex = readInt32();
+                final jumpIndex = byteCode.readInt32();
                 
                 final conditionValue = cast(stack.pop(), FloatObj);
                 if (conditionValue.value == 0) {
                     byteCode.position = jumpIndex;
                 }
             case OpCode.Jump:
-                final jumpIndex = readInt32();
+                final jumpIndex = byteCode.readInt32();
 
                 byteCode.position = jumpIndex;
             case OpCode.Call:
@@ -158,10 +162,5 @@ class Evaluator {
             default:
 
         }
-    }
-
-    function readInt32():Int {
-        final value = byteCode.readInt32();
-        return value;
     }
 }
