@@ -28,7 +28,7 @@ class Compiler {
     var lastBreakPos:Int = -1;
 
     var inExpression = false;
-    var lastInstruction:OpCode = null;
+    var lastInstruction:Int = -1;
 
     public function new() { }
 
@@ -232,7 +232,7 @@ class Compiler {
         instructions.write(currentBytes);
     }
 
-    function emit(op:OpCode, position:Int, operands:Array<Int>) {
+    function emit(op:Int, position:Int, operands:Array<Int>) {
         lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
         final instruction = Code.make(op, operands);
         lastInstruction = op;
