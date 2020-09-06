@@ -165,13 +165,19 @@ class Evaluator {
 
                 byteCode.position = jumpIndex;
             case OpCode.Call:
-                final calledFunction = cast(stack.pop().object, FunctionObj);
-                callStack.add(new ReturnAddress(byteCode.position, calledFunction));
+                final object = stack.pop().object;
 
-                if (calledFunction.origin == ObjectOrigin.UserDefined) {
-                    byteCode.position = calledFunction.index;
-                } else {
-                    builtInTable.execute(calledFunction.index);
+                try {
+                    final calledFunction = cast(object, FunctionObj);
+                    callStack.add(new ReturnAddress(byteCode.position, calledFunction));
+    
+                    if (calledFunction.origin == ObjectOrigin.UserDefined) {
+                        byteCode.position = calledFunction.index;
+                    } else {
+                        builtInTable.execute(calledFunction.index);
+                    }
+                } catch (e) {
+                    error.error('${object.type} is not a function');
                 }
             case OpCode.Return:
                 byteCode.position = callStack.pop().byteIndex;

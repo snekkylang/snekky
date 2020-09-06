@@ -11,7 +11,9 @@ class BuiltInTable {
         this.evaluator = evaluator;
 
         functions = [
-            new PrintFunc(evaluator)
+            new PrintFunc(evaluator),
+            new ArrayLengthFunc(evaluator),
+            new ArrayPushFunc(evaluator)
         ];
     }
 
