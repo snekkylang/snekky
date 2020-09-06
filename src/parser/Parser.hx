@@ -114,15 +114,9 @@ class Parser {
             }
         }
 
-        final call = new ExpressionNode(nodePos, new CallNode(nodePos, target, callParameters));
+        nextToken();
 
-        return if (lexer.peekToken().type == TokenType.LParen) {
-            nextToken();
-            parseCall(call);
-        } else {
-            nextToken();
-            call;
-        }
+        return new ExpressionNode(nodePos, new CallNode(nodePos, target, callParameters));
     }
 
     function parseVariable():VariableNode {
