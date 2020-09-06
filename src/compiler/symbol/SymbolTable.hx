@@ -11,6 +11,7 @@ class SymbolTable {
         define("print", false, SymbolOrigin.BuiltIn);
         define("array_length", false, SymbolOrigin.BuiltIn);
         define("array_push", false, SymbolOrigin.BuiltIn);
+        define("sqrt", false, SymbolOrigin.BuiltIn);
     }
 
     public function newScope() {

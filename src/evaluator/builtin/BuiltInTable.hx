@@ -13,7 +13,8 @@ class BuiltInTable {
         functions = [
             new PrintFunc(evaluator),
             new ArrayLengthFunc(evaluator),
-            new ArrayPushFunc(evaluator)
+            new ArrayPushFunc(evaluator),
+            new SqrtFunc(evaluator)
         ];
     }
 
