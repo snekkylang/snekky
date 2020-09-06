@@ -96,6 +96,29 @@ class Parser {
         return new FunctionN(nodePos, block, parameters);
     }
 
+    public function parseIndex(target:Expression):Expression {
+        final nodePos = currentToken.position;
+
+        nextToken();
+        final index = expressionParser.parseExpression();
+        assertToken(TokenType.RBracket, "`]`");
+
+        final indexN = new Expression(nodePos, new Index(nodePos, target, index));
+
+        nextToken();
+        return switch (currentToken.type) {
+            case TokenType.LBracket:
+                parseIndex(indexN);
+            case TokenType.Assign:
+                nextToken();
+
+                new Expression(nodePos, new IndexAssign(nodePos, indexN, expressionParser.parseExpression()));
+            case TokenType.LParen:
+                parseCall(indexN);
+            default: indexN;
+        }
+    }
+
     public function parseCall(target:Expression):Expression {
         final nodePos = currentToken.position;
 
@@ -110,19 +133,44 @@ class Parser {
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             } else {
-                assertToken(TokenType.RParen, "comma or closing parenthesis");
+                assertToken(TokenType.RParen, "comma or `)`");
             }
         }
 
         final call = new Expression(nodePos, new FunctionCall(nodePos, target, callParameters));
 
-        return if (lexer.peekToken().type == TokenType.LParen) {
-            nextToken();
-            parseCall(call);
-        } else {
-            nextToken();
-            call;
+        nextToken();
+
+        return switch (currentToken.type) {
+            case TokenType.LBracket:
+                parseIndex(call);
+            case TokenType.LParen:
+                parseCall(call);
+            default: call;
         }
+    }
+
+    public function parseArray() {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        final arrayElements:Array<Expression> = [];
+
+        while (currentToken.type != TokenType.RBracket) {
+            arrayElements.push(expressionParser.parseExpression());
+            if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RBracket) {
+                CompileError.unexpectedToken(currentToken, "identifier or `]`");
+            } else if (currentToken.type == TokenType.Comma) {
+                nextToken();
+            } else {
+                assertToken(TokenType.RBracket, "comma or `]`");
+            }
+        }
+
+        final array = new ArrayN(nodePos, arrayElements);
+
+        return array;
     }
 
     function parseVariable():Variable {

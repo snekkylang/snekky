@@ -2,7 +2,7 @@ package object.objects;
 
 class FloatObj implements Object {
 
-    public final value:Float;
+    public var value:Float;
     public final type = ObjectType.Float;
 
     public function new(value:Float) {        

@@ -27,9 +27,13 @@ enum NodeType {
     String;
     Function;
     Boolean;
+    Array;
 
     Return;
     Break;
     If;
     While;
+
+    Index;
+    IndexAssign;
 }

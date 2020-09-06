@@ -25,4 +25,8 @@ class OpCode {
 
     public static inline final Call = 18;
     public static inline final Return = 19;
+
+    public static inline final Array = 20;
+    public static inline final IndexGet = 21;
+    public static inline final IndexSet = 22;
 }
