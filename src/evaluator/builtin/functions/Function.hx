@@ -11,9 +11,9 @@ class Function {
         this.evaluator = evaluator;
     }
 
-    function returnValue(value:ObjectWrapper = null) {
+    function returnValue(value:Object = null) {
         if (value != null) {
-            evaluator.stack.add(value);
+            evaluator.stack.add(new ObjectWrapper(value));
         }
 
         evaluator.callStack.pop();
