@@ -1,6 +1,6 @@
 package ast.nodes;
 
-class Expression extends Node {
+class ExpressionNode extends Node {
 
     public final value:Node;
 

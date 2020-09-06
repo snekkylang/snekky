@@ -1,6 +1,6 @@
 package ast.nodes;
 
-class Boolean extends Node {
+class BooleanNode extends Node {
 
     public final value:Bool;
 
