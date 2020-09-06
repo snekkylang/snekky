@@ -18,7 +18,21 @@ class ExpressionParser {
     }
 
     public function parseExpression():ExpressionNode {
-        return new ExpressionNode(parser.currentToken.position, disjunction());
+        return new ExpressionNode(parser.currentToken.position, assignment());
+    }
+
+    function assignment():Node {
+        var left = disjunction();
+
+        while (parser.currentToken.type == TokenType.Assign) {
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = disjunction();
+
+            left = new OperatorNode(nodePos, NodeType.Assign, left, right);
+        }
+
+        return left;
     }
 
     function disjunction():Node {
@@ -111,8 +125,8 @@ class ExpressionParser {
 
         while (true) {
             switch (parser.currentToken.type) {
-                case LParen:
-                    left = parser.parseCall(left);
+                case LParen: left = parser.parseCall(left);
+                case LBracket: left = parser.parseIndex(left);
 
                 default: break;
             }
@@ -192,6 +206,9 @@ class ExpressionParser {
                 parser.nextToken();
 
                 ifN;
+
+            case TokenType.LBracket:
+                parser.parseArray();
 
             default: 
                 CompileError.unexpectedToken(parser.currentToken, "expression");

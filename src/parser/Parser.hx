@@ -74,7 +74,7 @@ class Parser {
             if (currentToken.type == TokenType.Ident) {
                 parameters.push(new IdentNode(currentToken.position, currentToken.literal));
                 if (lexer.peekToken().type != TokenType.Comma && lexer.peekToken().type != TokenType.RParen) {
-                    CompileError.unexpectedToken(currentToken, "comma or closing parenthesis");
+                    CompileError.unexpectedToken(currentToken, "`,` or `)`");
                 }
             } else if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
                 CompileError.unexpectedToken(currentToken, "identifier or `)`");
@@ -110,13 +110,50 @@ class Parser {
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             } else {
-                assertToken(TokenType.RParen, "comma or closing parenthesis");
+                assertToken(TokenType.RParen, "`,` or `)`");
             }
         }
 
         nextToken();
 
         return new ExpressionNode(nodePos, new CallNode(nodePos, target, callParameters));
+    }
+
+    public function parseIndex(target:ExpressionNode):ExpressionNode {
+        final nodePos = currentToken.position;
+
+        nextToken();
+        
+        final index = expressionParser.parseExpression();
+
+        assertToken(TokenType.RBracket, "`]`");
+
+        nextToken();
+
+        return new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
+    }
+
+    public function parseArray():ArrayNode {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        final values:Array<ExpressionNode> = [];
+
+        while (currentToken.type != TokenType.RBracket) {
+            values.push(expressionParser.parseExpression());
+            if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RBracket) {
+                CompileError.unexpectedToken(currentToken, "expression or `]`");
+            } else if (currentToken.type == TokenType.Comma) {
+                nextToken();
+            } else {
+                assertToken(TokenType.RBracket, "`,` or `]`");
+            }
+        }
+
+        nextToken();
+
+        return new ArrayNode(nodePos, values);  
     }
 
     function parseVariable():VariableNode {
