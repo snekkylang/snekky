@@ -87,7 +87,7 @@ class ExpressionParser {
     }
 
     function term():Node {
-        var left = signedFactor();
+        var left = access();
 
         while (true) {
             final type = switch(parser.currentToken.type) {
@@ -101,6 +101,21 @@ class ExpressionParser {
             final nodePos = parser.currentToken.position;
             final right = term();
             left = new OperatorNode(nodePos, type, left, right);
+        }
+
+        return left;
+    }
+
+    function access():Node {
+        var left = new ExpressionNode(parser.currentToken.position, signedFactor());
+
+        while (true) {
+            switch (parser.currentToken.type) {
+                case LParen:
+                    left = parser.parseCall(left);
+
+                default: break;
+            }
         }
 
         return left;
@@ -142,11 +157,7 @@ class ExpressionParser {
                 final ident = new IdentNode(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
 
-                if (parser.currentToken.type == TokenType.LParen) {
-                    parser.parseCall(new ExpressionNode(parser.currentToken.position, ident)).value;
-                } else {
-                    ident; 
-                }
+                ident; 
 
             case TokenType.Number:
                 final number = parser.parseNumber();
@@ -162,13 +173,7 @@ class ExpressionParser {
 
             case TokenType.Function:
                 parser.nextToken();
-                final func = parser.parseFunction();
-
-                if (parser.currentToken.type == TokenType.LParen) {
-                    parser.parseCall(new ExpressionNode(parser.currentToken.position, func)).value;
-                } else {
-                    func; 
-                }
+                parser.parseFunction();
 
             case TokenType.True:
                 final boolean = new BooleanNode(parser.currentToken.position, true);
