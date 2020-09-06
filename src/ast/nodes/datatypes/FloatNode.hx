@@ -1,6 +1,6 @@
 package ast.nodes.datatypes;
 
-class FloatN extends Node {
+class FloatNode extends Node {
 
     public final value:Float;
 

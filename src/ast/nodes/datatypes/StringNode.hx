@@ -1,11 +1,11 @@
-package ast.nodes;
+package ast.nodes.datatypes;
 
-class Ident extends Node {
+class StringNode extends Node {
 
     public final value:String;
 
     public function new(position:Int, value:String) {
-        super(position, NodeType.Ident);
+        super(position, NodeType.String);
 
         this.value = value;
     }

@@ -1,6 +1,6 @@
 package ast.nodes;
 
-class Break extends Node {
+class BreakNode extends Node {
 
     public function new(position:Int) {
         super(position, NodeType.Break);

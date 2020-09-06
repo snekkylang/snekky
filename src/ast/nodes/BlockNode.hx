@@ -1,6 +1,6 @@
 package ast.nodes;
 
-class Block extends Node {
+class BlockNode extends Node {
 
     public final body:Array<Node> = [];
 
