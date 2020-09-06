@@ -21,6 +21,10 @@ class ArrayObj implements Object {
         values.unshift(cloneObject(obj));
     }
 
+    public function push(obj:ObjectWrapper) {
+        values.push(cloneObject(obj));
+    }
+
     public function toString():String {
         return Std.string(values);   
     }

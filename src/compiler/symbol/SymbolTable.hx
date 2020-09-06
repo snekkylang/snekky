@@ -9,6 +9,8 @@ class SymbolTable {
 
     public function new() {
         define("print", false, SymbolOrigin.BuiltIn);
+        define("array_length", false, SymbolOrigin.BuiltIn);
+        define("array_push", false, SymbolOrigin.BuiltIn);
     }
 
     public function newScope() {
