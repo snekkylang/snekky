@@ -4,5 +4,4 @@ enum ObjectType {
     Float;
     String;
     Function;
-    Array;
 }
