@@ -1,0 +1,84 @@
+let A = func(i, j) {
+    return 1.0 / ((i + j) * (i + j + 1) / 2 + i + 1);
+};
+
+let Au = func(u, v) {
+    mut i = 0;
+
+    while i < array_length(u) {
+        mut t = 0.0;
+        mut j = 0;
+
+        while j < array_length(u) {
+            t = t + A(i, j) * u[j];
+
+            j = j + 1;
+        } 
+
+        v[i] = t;
+        i = i + 1;
+    }
+};
+
+let Atu = func(u, v) {
+    mut i = 0;
+
+    while i < array_length(u) {
+        mut t = 0.0;
+        mut j = 0;
+
+        while j < array_length(u) {
+            t = t + A(j, i) * u[j];
+
+            j = j + 1;
+        } 
+
+        v[i] = t;
+        i = i + 1;
+    }
+};
+
+let AtAu = func(u, v, w) {
+    Au(u,w);
+    Atu(w,v);
+};
+
+let spectralnorm = func(n) {
+    mut i = 0;
+    mut u = [];
+    mut v = [];
+    mut w = [];
+    
+    mut vv = 0.0;
+    mut vBv = 0.0;
+
+    while i < n {
+        array_push(u, 1);
+        array_push(v, 0);
+        array_push(w, 0);
+
+        i = i + 1;
+    }
+
+    i = 0;
+
+    while i < 10 {
+        AtAu(u, v, w);
+        AtAu(v, u, w);
+
+        i = i + 1;   
+    }
+
+    i = 0;
+
+    while i < n {
+        vBv = vBv + u[i] * v[i];
+        vv = vv + v[i] * v[i];
+
+        i = i + 1;
+    }
+
+    return sqrt(vBv / vv);
+};
+
+print(spectralnorm(5500));
