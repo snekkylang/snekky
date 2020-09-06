@@ -7,26 +7,14 @@ class ArrayObj implements Object {
 
     public function new() {}
 
-    function copyObject(obj:ObjectWrapper):ObjectWrapper {
+    public function unshift(obj:ObjectWrapper) {
         final value = switch (obj.object.type) {
             case ObjectType.Float: new FloatObj(cast(obj.object, FloatObj).value);
             case ObjectType.String: new StringObj(cast(obj.object, StringObj).value);
             default: obj.object;
         }
 
-        return new ObjectWrapper(value);
-    }
-
-    public function unshift(obj:ObjectWrapper) {
-        values.unshift(copyObject(obj));
-    }
-
-    public function push(obj:ObjectWrapper) {
-        values.push(copyObject(obj));
-    }
-
-    public function set(index:Int, value:ObjectWrapper) {
-        values[index] = value;
+        values.unshift(new ObjectWrapper(value));
     }
 
     public function toString():String {
