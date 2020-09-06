@@ -1,6 +1,5 @@
 package compiler;
 
-import object.ObjectWrapper;
 import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
@@ -19,7 +18,7 @@ import ast.nodes.datatypes.*;
 
 class Compiler {
 
-    public final constants:Array<ObjectWrapper> = [];
+    public final constants:Array<Object> = [];
     public var instructions = new BytesOutput();
     public final lineNumberTable = new LineNumberTable();
     public final localVariableTable = new LocalVariableTable();
@@ -112,13 +111,6 @@ class Compiler {
                 }
                 compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, cVariableAssign.position, [symbol.index]);
-            case NodeType.IndexAssign:
-                final cIndexAssign = cast(node, IndexAssign);
-                
-                compile(cIndexAssign.value);
-                compile(cIndexAssign.index);
-
-                emit(OpCode.IndexSet, node.position, []);
             case NodeType.Ident:
                 final cIdent = cast(node, Ident);
                 final symbol = symbolTable.resolve(cIdent.value);
@@ -137,7 +129,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constants.push(new ObjectWrapper(new FunctionObj(instructions.length, ObjectOrigin.UserDefined)));
+                constants.push(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false, SymbolOrigin.UserDefined);
@@ -148,13 +140,6 @@ class Compiler {
                 emit(OpCode.Return, node.position, []);
 
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
-            case NodeType.Index:
-                final cIndex = cast(node, Index);
-
-                compile(cIndex.target);
-                compile(cIndex.index);
-
-                emit(OpCode.IndexGet, node.position, []);
             case NodeType.FunctionCall:
                 final cCall = cast(node, FunctionCall);
                 
@@ -216,22 +201,14 @@ class Compiler {
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
-            case NodeType.Array:
-                final cArray = cast(node, ArrayN);
-
-                for (value in cArray.values) {
-                    compile(value);
-                }
-
-                emit(OpCode.Array, node.position, [cArray.values.length]);
             case NodeType.Float | NodeType.Boolean | NodeType.String:
                 switch (node.type) {
                     case NodeType.Float:
-                        constants.push(new ObjectWrapper(new FloatObj(cast(node, FloatN).value)));
+                        constants.push(new FloatObj(cast(node, FloatN).value));
                     case NodeType.Boolean:
-                        constants.push(new ObjectWrapper(new FloatObj(cast(node, Boolean).value ? 1 : 0)));
+                        constants.push(new FloatObj(cast(node, Boolean).value ? 1 : 0));
                     case NodeType.String:
-                        constants.push(new ObjectWrapper(new StringObj(cast(node, StringN).value)));
+                        constants.push(new StringObj(cast(node, StringN).value));
                     default:
                 }
 

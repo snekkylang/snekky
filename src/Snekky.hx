@@ -24,6 +24,6 @@ class Snekky {
         //compiler.writeByteCode(); 
 
         final evaluator = new Evaluator(compiler.instructions, compiler.constants, compiler.lineNumberTable, compiler.localVariableTable);
-        evaluator.eval();
+        evaluator.eval(); 
     }
 }

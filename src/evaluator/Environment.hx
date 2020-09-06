@@ -1,20 +1,20 @@
 package evaluator;
 
-import object.ObjectWrapper;
+import object.objects.Object;
 
 class Environment {
 
-    final variables:Array<ObjectWrapper> = [];
+    final variables:Array<Object> = [];
 
     public function new() {
 
     }
 
-    public function setVariable(index:Int, value:ObjectWrapper) {
+    public function setVariable(index:Int, value:Object) {
         variables[index] = value;
     }
 
-    public function getVariable(index:Int):ObjectWrapper {
+    public function getVariable(index:Int):Object {
         return variables[index];
     }
 }
