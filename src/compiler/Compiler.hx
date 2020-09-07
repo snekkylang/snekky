@@ -24,8 +24,8 @@ class Compiler {
     public final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
 
-    // Position of last break instruction
-    var lastBreakPos:Int = -1;
+    // Positions of break instructions
+    var breakPositions:Array<Int> = [];
 
     var inExpression = false;
     var lastInstruction:Int = -1;
@@ -81,7 +81,7 @@ class Compiler {
 
                 emit(OpCode.IndexAssign, node.position, []);
             case NodeType.Break:
-                lastBreakPos = instructions.length;
+                breakPositions.push(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);
             case NodeType.Statement:
                 final cStatement = cast(node, StatementNode);
@@ -229,9 +229,8 @@ class Compiler {
                 compile(cWhile.block);
                 emit(OpCode.Jump, node.position, [jumpPos]);
 
-                if (lastBreakPos != -1) {
-                    overwriteInstruction(lastBreakPos, [instructions.length]);
-                    lastBreakPos = -1;
+                for (pos in breakPositions) {
+                    overwriteInstruction(pos, [instructions.length]);
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
