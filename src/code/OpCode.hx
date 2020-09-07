@@ -29,5 +29,5 @@ class OpCode {
     public static inline final Array = 20;
     public static inline final Hash = 21;
     public static inline final Index = 22;
-    public static inline final Assign = 23;
+    public static inline final IndexAssign = 23;
 }

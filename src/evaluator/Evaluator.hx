@@ -96,11 +96,11 @@ class Evaluator {
                 } catch (e) {
                     error.error("index operator cannot be used on this datatype");
                 }
-            case OpCode.Assign:
-                final right = stack.pop();
-                final left = stack.pop();
+            case OpCode.IndexAssign:
+                final value = stack.pop();
+                final target = stack.pop();
 
-                left.object = right.object;
+                target.object = value.object;
             case OpCode.ConcatString:
                 final right = stack.pop().object;
                 final left = stack.pop().object;

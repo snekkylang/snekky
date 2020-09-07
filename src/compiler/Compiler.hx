@@ -73,6 +73,13 @@ class Compiler {
                 compile(cIndex.index);
 
                 emit(OpCode.Index, node.position, []);
+            case NodeType.IndexAssign:
+                final cIndexAssign = cast(node, IndexAssign);
+
+                compile(cIndexAssign.index);
+                compile(cIndexAssign.value);
+
+                emit(OpCode.IndexAssign, node.position, []);
             case NodeType.Break:
                 lastBreakPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
@@ -85,7 +92,7 @@ class Compiler {
                 final cExpression = cast(node, ExpressionNode);
                 compile(cExpression.value);
             case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
-                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc | NodeType.Assign:
+                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc:
 
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.left);
@@ -101,7 +108,6 @@ class Compiler {
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
                     case NodeType.Modulo: emit(OpCode.Modulo, node.position, []);
                     case NodeType.StringConc: emit(OpCode.ConcatString, node.position, []);
-                    case NodeType.Assign: emit(OpCode.Assign, node.position, []);
                     default:
                 }
             case NodeType.Negation | NodeType.Inversion:

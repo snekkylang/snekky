@@ -18,21 +18,7 @@ class ExpressionParser {
     }
 
     public function parseExpression():ExpressionNode {
-        return new ExpressionNode(parser.currentToken.position, assignment());
-    }
-
-    function assignment():Node {
-        var left = disjunction();
-
-        while (parser.currentToken.type == TokenType.Assign) {
-            parser.nextToken();
-            final nodePos = parser.currentToken.position;
-            final right = disjunction();
-
-            left = new OperatorNode(nodePos, NodeType.Assign, left, right);
-        }
-
-        return left;
+        return new ExpressionNode(parser.currentToken.position, disjunction());
     }
 
     function disjunction():Node {
