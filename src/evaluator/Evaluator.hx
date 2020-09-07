@@ -1,5 +1,6 @@
 package evaluator;
 
+import object.objects.HashObj;
 import object.ObjectWrapper;
 import object.objects.ArrayObj;
 import haxe.io.BytesInput;
@@ -58,13 +59,41 @@ class Evaluator {
                 }
 
                 stack.add(new ObjectWrapper(arrayObj));
-            case OpCode.Index:
-                try {
-                    final index = Std.int(cast(stack.pop().object, FloatObj).value);
-                    final target = cast(stack.pop().object, ArrayObj);
+            case OpCode.Hash:
+                final hashLength = byteCode.readInt32();
+                final hashObj = new HashObj();
 
-                    stack.add(target.values[index]);
-                } catch (err) {
+                for (i in 0...hashLength) {
+                    final value = stack.pop();
+                    final key = cast(stack.pop().object, StringObj).value;
+
+                    hashObj.set(key, value);
+                }
+
+                stack.add(new ObjectWrapper(hashObj));
+            case OpCode.Index:
+                final index = stack.pop();
+                final target = stack.pop();
+
+                try {
+                    final value = if (target.object.type == Array) {
+                        final cIndex = Std.int(cast(index.object, FloatObj).value);
+                        final cTarget = cast(target.object, ArrayObj);
+                        
+                        cTarget.values[cIndex]; 
+                    } else {
+                        final cIndex = cast(index.object, StringObj).value;
+                        final cTarget = cast(target.object, HashObj);
+                        
+                        cTarget.get(cIndex);
+                    }
+    
+                    if (value == null) {
+                        error.error("index out of bounds");
+                    }
+    
+                    stack.add(value);
+                } catch (e) {
                     error.error("index operator cannot be used on this datatype");
                 }
             case OpCode.Assign:

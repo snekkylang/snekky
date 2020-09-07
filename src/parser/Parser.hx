@@ -156,6 +156,33 @@ class Parser {
         return new ArrayNode(nodePos, values);  
     }
 
+    public function parseHash():HashNode {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        final values:Map<ExpressionNode, ExpressionNode> = new Map();
+
+        while (currentToken.type != TokenType.RBrace) {
+            final key = expressionParser.parseExpression();
+            assertToken(TokenType.Colon, "`:`");
+            nextToken();
+            
+            final value = expressionParser.parseExpression();
+            if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.RBrace) {
+                CompileError.unexpectedToken(currentToken, "`,` or `}`");
+            } else if (currentToken.type == TokenType.Comma) {
+                nextToken();
+            }
+
+            values.set(key, value);
+        }
+
+        nextToken();
+
+        return new HashNode(nodePos, values);
+    }
+
     function parseVariable():VariableNode {
         final nodePos = currentToken.position;
 

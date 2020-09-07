@@ -210,6 +210,9 @@ class ExpressionParser {
             case TokenType.LBracket:
                 parser.parseArray();
 
+            case TokenType.LBrace:
+                parser.parseHash();
+
             default: 
                 CompileError.unexpectedToken(parser.currentToken, "expression");
                 new Node(-1, NodeType.Ident);
