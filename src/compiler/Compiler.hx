@@ -72,14 +72,14 @@ class Compiler {
                 compile(cIndex.target);
                 compile(cIndex.index);
 
-                emit(OpCode.Index, node.position, []);
+                emit(OpCode.GetIndex, node.position, []);
             case NodeType.IndexAssign:
                 final cIndexAssign = cast(node, IndexAssign);
 
                 compile(cIndexAssign.index);
                 compile(cIndexAssign.value);
 
-                emit(OpCode.IndexAssign, node.position, []);
+                emit(OpCode.SetIndex, node.position, []);
             case NodeType.Break:
                 breakPositions.push(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);

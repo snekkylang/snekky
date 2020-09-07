@@ -71,7 +71,7 @@ class Evaluator {
                 }
 
                 stack.add(new ObjectWrapper(hashObj));
-            case OpCode.Index:
+            case OpCode.GetIndex:
                 final index = stack.pop();
                 final target = stack.pop();
 
@@ -96,7 +96,7 @@ class Evaluator {
                 } catch (e) {
                     error.error("index operator cannot be used on this datatype");
                 }
-            case OpCode.IndexAssign:
+            case OpCode.SetIndex:
                 final value = stack.pop();
                 final target = stack.pop();
 
