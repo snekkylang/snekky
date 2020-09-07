@@ -5,4 +5,5 @@ enum ObjectType {
     String;
     Function;
     Array;
+    Hash;
 }

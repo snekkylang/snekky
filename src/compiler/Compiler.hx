@@ -46,6 +46,18 @@ class Compiler {
                     compile(blockNode);
                 }
                 symbolTable.setParent();
+            case NodeType.Hash:
+                final cHash = cast(node, HashNode);
+
+                var length = 0;
+
+                for (key => value in cHash.values) {
+                    compile(key);
+                    compile(value);
+                    length++;
+                }
+
+                emit(OpCode.Hash, node.position, [length]);
             case NodeType.Array:
                 final cArray = cast(node, ArrayNode);
 

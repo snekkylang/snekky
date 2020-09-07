@@ -7,22 +7,12 @@ class ArrayObj implements Object {
 
     public function new() { }
 
-    function cloneObject(obj:ObjectWrapper):ObjectWrapper {
-        final clone = switch (obj.object.type) {
-            case ObjectType.Float: new FloatObj(cast(obj.object, FloatObj).value);
-            case ObjectType.String: new StringObj(cast(obj.object, StringObj).value);
-            default: obj.object;
-        }
-
-        return new ObjectWrapper(clone);
-    }
-
     public function unshift(obj:ObjectWrapper) {
-        values.unshift(cloneObject(obj));
+        values.unshift(ObjectHelper.cloneObject(obj));
     }
 
     public function push(obj:ObjectWrapper) {
-        values.push(cloneObject(obj));
+        values.push(ObjectHelper.cloneObject(obj));
     }
 
     public function toString():String {
