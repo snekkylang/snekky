@@ -22,7 +22,6 @@ enum NodeType {
     Equal;
     Negation;
     Inversion;
-    Assign;
 
     Float;
     String;
@@ -37,4 +36,5 @@ enum NodeType {
     While;
 
     Index;
+    IndexAssign;
 }

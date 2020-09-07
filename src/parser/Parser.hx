@@ -130,7 +130,16 @@ class Parser {
 
         nextToken();
 
-        return new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
+        final indexNode = new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
+
+        return if (currentToken.type == TokenType.Assign) {
+            nextToken();
+            final value = expressionParser.parseExpression();
+
+            new ExpressionNode(nodePos, new IndexAssign(nodePos, indexNode, value));
+        } else {
+            indexNode;
+        }
     }
 
     public function parseArray():ArrayNode {
