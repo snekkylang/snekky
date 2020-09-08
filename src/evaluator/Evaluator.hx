@@ -19,6 +19,8 @@ import object.objects.Object;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
+using equals.Equal;
+
 class Evaluator {
 
     public final stack:GenericStack<ObjectWrapper> = new GenericStack();
@@ -117,17 +119,29 @@ class Evaluator {
                     return;
                 }
 
-                switch (left.type) {
+                final equals = switch (left.type) {
                     case ObjectType.Float:
                         final cLeft = cast(left, FloatObj).value;
                         final cRight = cast(right, FloatObj).value;
-                        stack.add(new ObjectWrapper(new FloatObj(cLeft == cRight ? 1 : 0)));
+                        cLeft == cRight;
                     case ObjectType.String:
                         final cLeft = cast(left, StringObj).value;
                         final cRight = cast(right, StringObj).value;
-                        stack.add(new ObjectWrapper(new FloatObj(cLeft == cRight ? 1 : 0)));
-                    default:
+                        cLeft == cRight;
+                    case ObjectType.Hash:
+                        final cLeft = cast(left, HashObj).values;
+                        final cRight = cast(right, HashObj).values;
+
+                        cLeft.equals(cRight);
+                    case ObjectType.Array:
+                        final cLeft = cast(left, ArrayObj).values;
+                        final cRight = cast(right, ArrayObj).values;
+
+                        cLeft.equals(cRight);
+                    default: false;
                 }
+
+                stack.add(new ObjectWrapper(new FloatObj(equals ? 1 : 0)));
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
                 final right = stack.pop().object;
                 final left = stack.pop().object;
