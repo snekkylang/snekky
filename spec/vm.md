@@ -15,7 +15,6 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 | f64    | A 64-bit float (little endian).                                                                                                    |
 | byt    | The signed integer value of a single byte.                                                                                         |
 | str    | An UTF-8 encoded string.                                                                                                           |
-<br>
 
 ### Bytcode structure
 The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Litte endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
@@ -27,8 +26,6 @@ Bytecode File {
     <Instructions>
 }
 ```
-
-<br>
 
 ### LineNumberTable
 The LineNumberTable maps the position of an instruction in bytecode (the index) to the position in source code of the structure responsible for it. The LineNumberTable is structured as follows:
@@ -49,8 +46,6 @@ LineNumberTable {
 | source_line       | i32       | Line in source code.                                |
 | source_line_offet | i32       | Offset within the line in source code.              |
 
-<br>
-
 ### LocalVariableTable
 The LocalVariableTable maps the position where a variable is declared in bytecode (the index) to its name in source code. The LocalVariableTable is structured as follows
 ```
@@ -70,8 +65,6 @@ LocalVariableTable {
 | variable_name_length | i32       | Length of the variable name.                                 |
 | variable_name        | str       | Name of the variable in source code.                         |
 
-<br>
-
 ### ConstantPool
 The ConstantPool contains all constants present in the source code. A constant's value cannot change at runtime.
 ```
@@ -85,8 +78,6 @@ ConstantPool {
 | Field name     | Data type | Description              |
 |----------------|-----------|--------------------------|
 | constants_size | i32       | The amount of constants. |
-
-<br>
 
 The structure of `Constant` depends on the data type of the value it contains. The following types exist:
 ```
@@ -103,16 +94,12 @@ Constant {
 |------------|-----------|------------------------------------|
 | data_type  | byt       | Data type of the constant's value. |
 
-<br>
-
 Data types are mapped as follows:
 | data_type | Represented data type |
 |-----------|-----------------------|
 | 0         | Float                 |
 | 1         | String                |
 | 2         | Function              |
-
-<br>
 
 #### Float
 Snekky uses 64-bit floats to represent all numbers and booleans.
@@ -125,7 +112,6 @@ FloatConstant {
 |------------|-----------|------------------------|
 | value      | f64       | Value of the constant. |
 
-<br>
 
 #### String
 Strings are encoded in UTF-8.
@@ -140,8 +126,6 @@ StringConstant {
 | string_length | i32       | Length of the encoded string. |
 | string        | str       | Value of the constant.        |
 
-<br>
-
 ### Function
 ```
 FunctionConstant {
@@ -151,5 +135,3 @@ FunctionConstant {
 | Field name | Data type | Description                                       |
 |------------|-----------|---------------------------------------------------|
 | byte_index | i32       | Position of the function in bytecode (its index). |
-
-<br>
