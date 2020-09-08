@@ -38,7 +38,7 @@ class Evaluator {
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode);
-        instructions = new BytesInput(byteCode.readAll());
+        instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
 
         builtInTable = new BuiltInTable(this);
         error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, instructions);

@@ -39,7 +39,10 @@ class Compiler {
         output.write(lineNumberTable.toByteCode());
         output.write(localVariableTable.toByteCode());
         output.write(constantPool.toByteCode());
-        output.write(instructions.getBytes());
+
+        final instructionsByteCode = instructions.getBytes();
+        output.writeInt32(instructionsByteCode.length);
+        output.write(instructionsByteCode);
 
         return output.getBytes();
     }
