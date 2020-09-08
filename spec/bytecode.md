@@ -26,7 +26,7 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Negate       | 0C              |          | value (f64) -> result (f64)                          | Negats `value`.                                                 |
 | Invert       | 0D              |          | value (f64/1|0) -> result (f64/1|0)                  | Inverts `value` (0 -> 1, 1 -> 0).                               |
 | ConcatString | 0E              |          | value1 (any), value2 (any) -> result (str)           | Concats `value1` and `value2` to new string.                    |
-| SetLocal     | 0F              |          | value (i32) ->                                       | Sets local `index` to `value`.                                  |
+| SetLocal     | 0F              | index    | value (i32) ->                                       | Sets local `index` to `value`.                                  |
 | GetLocal     | 10              | index    | -> value (any)                                       | Pushes value of local at `index` onto the stack.                |
 | GetBuiltIn   | 11              | index    | -> value (any)                                       | Pushes builtin at `index` onto the stack.                       |
 | Call         | 12              |          | index (i32), [arg1, arg2, ...] (any) -> result (any) | Pushes `[arg1, arg2, ...]` onto the stack and jumps to `index`. |
