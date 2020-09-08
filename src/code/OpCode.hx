@@ -12,12 +12,12 @@ class OpCode {
     public static inline final Multiply = 6;
     public static inline final Divide = 7;
     public static inline final Modulo = 8;
-    public static inline final ConcatString = 9;
-    public static inline final Equals = 10;
-    public static inline final SmallerThan = 11;
-    public static inline final GreaterThan = 12;
-    public static inline final Negate = 13;
-    public static inline final Invert = 14;
+    public static inline final Equals = 9;
+    public static inline final SmallerThan = 10;
+    public static inline final GreaterThan = 11;
+    public static inline final Negate = 12;
+    public static inline final Invert = 13;
+    public static inline final ConcatString = 14;
 
     public static inline final SetLocal = 15;
     public static inline final GetLocal = 16;
