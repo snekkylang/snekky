@@ -12,6 +12,8 @@ This document describes the structure of a Snekky bytecode file.
         - [Float](#float)
         - [String](#string)
         - [Function](#function)
+    - [Instructions](#instructions)
+        - [Instruction](#instruction)
 
 ## Syntax Definition
 A JSON-like representation is utilized to visualize the structure of the bytecode. The symbols used for this purpose are defined as follows:
@@ -123,7 +125,7 @@ FloatConstant {
 | value      | f64       | Value of the constant. |
 
 
-### String
+#### String
 Strings are encoded in UTF-8.
 ```
 StringConstant {
@@ -136,7 +138,7 @@ StringConstant {
 | string_length | i32       | Length of the encoded string (in bytes). |
 | string        | str       | Value of the constant.                   |
 
-### Function
+#### Function
 ```
 FunctionConstant {
     i32 byte_index
@@ -145,3 +147,29 @@ FunctionConstant {
 | Field name | Data type | Description                                       |
 |------------|-----------|---------------------------------------------------|
 | byte_index | i32       | Position of the function in bytecode (its index). |
+
+### Instructions
+This part of a bytecode file contains the program's instructions.
+```
+Instructions {
+    i32 instructions_size
+    [
+        <Instruction>
+    ]
+}
+```
+| Field name        | Data type | Description                      |
+|-------------------|-----------|----------------------------------|
+| instructions_size | i32       | The amount of instruction bytes. |
+
+#### Instruction
+An instruction tells the VM to perform exactly one specific operation. A program usually consists of a large number of instructions.
+```
+Instruction {
+    byt op_code
+    [
+        <Operand>
+    ]
+} 
+```
+A list of all supported instructions can be found [here](bytecode.md).
