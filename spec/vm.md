@@ -39,11 +39,11 @@ LineNumberTable {
     ]
 }
 ```
-| Field name        | Data type | Description                                         |
-|-------------------|-----------|-----------------------------------------------------|
-| table_size        | i32       | The length of the table.                            |
-| byte_index        | i32       | Position of an instruction in bytcode (its index).  |
-| source_line       | i32       | Line in source code.                                |
+| Field name         | Data type | Description                                         |
+|--------------------|-----------|-----------------------------------------------------|
+| table_size         | i32       | The length of the table.                            |
+| byte_index         | i32       | Position of an instruction in bytcode (its index).  |
+| source_line        | i32       | Line in source code.                                |
 | source_line_offset | i32       | Offset within the line in source code.              |
 
 ### LocalVariableTable
@@ -62,7 +62,7 @@ LocalVariableTable {
 |----------------------|-----------|--------------------------------------------------------------|
 | table_size           | i32       | The length of the table.                                     |
 | byte_index           | i32       | Position where the variable was set in bytecode (its index). |
-| variable_name_length | i32       | Length of the variable name.                                 |
+| variable_name_length | i32       | Length of the variable name (in bytes)                       |
 | variable_name        | str       | Name of the variable in source code.                         |
 
 ### ConstantPool
@@ -121,10 +121,10 @@ StringConstant {
     str string
 }
 ```
-| Field name    | Data type | Description                   |
-|---------------|-----------|-------------------------------|
-| string_length | i32       | Length of the encoded string. |
-| string        | str       | Value of the constant.        |
+| Field name    | Data type | Description                              |
+|---------------|-----------|------------------------------------------|
+| string_length | i32       | Length of the encoded string (in bytes). |
+| string        | str       | Value of the constant.                   |
 
 ### Function
 ```

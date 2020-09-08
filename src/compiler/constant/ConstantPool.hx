@@ -39,7 +39,7 @@ class ConstantPool {
                     final cString = cast(const, StringObj);
 
                     output.writeByte(ConstantType.String);
-                    output.writeInt32(cString.value.length);
+                    output.writeInt32(Bytes.ofString(cString.value).length);
                     output.writeString(cString.value);
                 case ObjectType.Function:
                     final cFunction = cast(const, FunctionObj);
