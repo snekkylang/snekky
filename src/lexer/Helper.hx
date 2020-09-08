@@ -7,7 +7,7 @@ class Helper {
     }
 
     public static function isAscii(s:String):Bool {
-        return ~/^[a-zA-Z0-9_]*$/.match(s);
+        return ~/^[a-zA-Z0-9_]+$/.match(s);
     }
 
     public static function isNumber(s:String):Bool {
