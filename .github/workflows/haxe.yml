@@ -13,6 +13,7 @@ jobs:
       - name: Install dependencies
         run: |
           haxelib install console.hx
+          haxelib install equals
           haxelib install hxcpp
 
       - name: Build
@@ -33,6 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           haxelib install console.hx
+          haxelib install equals
           haxelib install hxcpp
 
       - name: Build
@@ -53,6 +55,7 @@ jobs:
       - name: Install dependencies
         run: |
           haxelib install console.hx
+          haxelib install equals
           haxelib install hxcpp
 
       - name: Build
