@@ -84,9 +84,9 @@ The structure of `Constant` depends on the data type of the value it contains. T
 Constant {
     byt data_type
     (
-        FloatConstant
-        StringConstant
-        FunctionConstant
+        <FloatConstant>
+        <StringConstant>
+        <FunctionConstant>
     )
 }
 ```
