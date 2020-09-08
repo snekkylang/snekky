@@ -22,7 +22,7 @@ class Snekky {
         final compiler = new Compiler();
         compiler.compile(parser.ast);
 
-        final evaluator = new Evaluator(compiler.instructions, compiler.constants, compiler.lineNumberTable, compiler.localVariableTable);
+        final evaluator = new Evaluator(compiler.getByteCode());
         evaluator.eval(); 
     }
 }
