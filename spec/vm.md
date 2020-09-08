@@ -44,7 +44,7 @@ LineNumberTable {
 | table_size        | i32       | The length of the table.                            |
 | byte_index        | i32       | Position of an instruction in bytcode (its index).  |
 | source_line       | i32       | Line in source code.                                |
-| source_line_offet | i32       | Offset within the line in source code.              |
+| source_line_offset | i32       | Offset within the line in source code.              |
 
 ### LocalVariableTable
 The LocalVariableTable maps the position where a variable is declared in bytecode (the index) to its name in source code. The LocalVariableTable is structured as follows
