@@ -25,7 +25,7 @@ class LocalVariableTable {
 
         for (byteIndex => localName in table) {
             output.writeInt32(byteIndex);
-            output.writeInt32(localName.length);
+            output.writeInt32(Bytes.ofString(localName).length);
             output.writeString(localName);
         }
 
