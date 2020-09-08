@@ -138,6 +138,11 @@ class Evaluator {
                         final cRight = cast(right, ArrayObj).values;
 
                         cLeft.equals(cRight);
+                    case ObjectType.Function:
+                        final cLeft = cast(left, FunctionObj);
+                        final cRight = cast(right, FunctionObj);
+                        
+                        cLeft == cRight;
                     default: false;
                 }
 
