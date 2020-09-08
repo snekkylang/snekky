@@ -219,7 +219,11 @@ class Parser {
 
         nextToken();
 
-        final returnValue = expressionParser.parseExpression();
+        final returnValue = if (currentToken.type != TokenType.Semicolon) {
+            expressionParser.parseExpression();
+        } else {
+            null;
+        }
 
         assertSemicolon();
 
