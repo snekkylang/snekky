@@ -202,7 +202,9 @@ class Compiler {
             case NodeType.Return:
                 final cReturn = cast(node, ReturnNode);
 
-                compile(cReturn.value);
+                if (cReturn.value != null) {
+                    compile(cReturn.value);
+                }
 
                 emit(OpCode.Return, node.position, []);
             case NodeType.If:
