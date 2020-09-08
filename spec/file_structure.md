@@ -13,8 +13,7 @@ This document describes the structure of a Snekky bytecode file.
         - [String](#string)
         - [Function](#function)
 
-
-### Syntax Definition
+## Syntax Definition
 A JSON-like representation is utilized to visualize the structure of the bytecode. The symbols used for this purpose are defined as follows:
 | Symbol | Definition                                                                                                                         |
 |--------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -27,7 +26,7 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 | byt    | The signed integer value of a single byte.                                                                                         |
 | str    | An UTF-8 encoded string.                                                                                                           |
 
-### Bytecode Structure
+## Bytecode Structure
 The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Litte endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
 ```
 Bytecode File {
@@ -38,7 +37,7 @@ Bytecode File {
 }
 ```
 
-#### LineNumberTable
+### LineNumberTable
 The LineNumberTable maps the position of an instruction in bytecode (the index) to the position in source code of the structure responsible for it. The LineNumberTable is structured as follows:
 ```
 LineNumberTable {
@@ -57,7 +56,7 @@ LineNumberTable {
 | source_line        | i32       | Line in source code.                                |
 | source_line_offset | i32       | Offset within the line in source code.              |
 
-#### LocalVariableTable
+### LocalVariableTable
 The LocalVariableTable maps the position where a variable is declared in bytecode (the index) to its name in source code. The LocalVariableTable is structured as follows
 ```
 LocalVariableTable {
@@ -76,7 +75,7 @@ LocalVariableTable {
 | variable_name_length | i32       | Length of the variable name (in bytes)                       |
 | variable_name        | str       | Name of the variable in source code.                         |
 
-#### ConstantPool
+### ConstantPool
 The ConstantPool contains all constants present in the source code. A constant's value cannot change at runtime.
 ```
 ConstantPool {
@@ -112,7 +111,7 @@ Data types are mapped as follows:
 | 1         | String                |
 | 2         | Function              |
 
-##### Float
+#### Float
 Snekky uses 64-bit floats to represent all numbers and booleans.
 ```
 FloatConstant {
@@ -124,7 +123,7 @@ FloatConstant {
 | value      | f64       | Value of the constant. |
 
 
-##### String
+### String
 Strings are encoded in UTF-8.
 ```
 StringConstant {
@@ -137,7 +136,7 @@ StringConstant {
 | string_length | i32       | Length of the encoded string (in bytes). |
 | string        | str       | Value of the constant.                   |
 
-#### Function
+### Function
 ```
 FunctionConstant {
     i32 byte_index
