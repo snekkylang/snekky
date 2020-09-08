@@ -1,5 +1,7 @@
 package compiler;
 
+import haxe.io.Bytes;
+import compiler.constant.ConstantPool;
 import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
@@ -18,9 +20,9 @@ import ast.nodes.datatypes.*;
 
 class Compiler {
 
-    public final constants:Array<Object> = [];
-    public var instructions = new BytesOutput();
-    public final lineNumberTable = new LineNumberTable();
+    final constantPool = new ConstantPool();
+    var instructions = new BytesOutput();
+    final lineNumberTable = new LineNumberTable();
     public final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
 
@@ -32,8 +34,14 @@ class Compiler {
 
     public function new() { }
 
-    public function writeByteCode() {
-        File.saveBytes("program.bite", instructions.getBytes());
+    public function getByteCode():Bytes {
+        final output = new BytesOutput();
+        output.write(lineNumberTable.toByteCode());
+        output.write(localVariableTable.toByteCode());
+        output.write(constantPool.toByteCode());
+        output.write(instructions.getBytes());
+
+        return output.getBytes();
     }
 
     public function compile(node:Node) {
@@ -158,12 +166,12 @@ class Compiler {
                 }
             case NodeType.Function:
                 final cFunction = cast(node, FunctionNode);
-                emit(OpCode.Constant, node.position, [constants.length]);
+                emit(OpCode.Constant, node.position, [constantPool.getSize()]);
 
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constants.push(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
+                constantPool.addConstant(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false, SymbolOrigin.UserDefined);
@@ -237,15 +245,15 @@ class Compiler {
             case NodeType.Float | NodeType.Boolean | NodeType.String:
                 switch (node.type) {
                     case NodeType.Float:
-                        constants.push(new FloatObj(cast(node, FloatNode).value));
+                        constantPool.addConstant(new FloatObj(cast(node, FloatNode).value));
                     case NodeType.Boolean:
-                        constants.push(new FloatObj(cast(node, BooleanNode).value ? 1 : 0));
+                        constantPool.addConstant(new FloatObj(cast(node, BooleanNode).value ? 1 : 0));
                     case NodeType.String:
-                        constants.push(new StringObj(cast(node, StringNode).value));
+                        constantPool.addConstant(new StringObj(cast(node, StringNode).value));
                     default:
                 }
 
-                emit(OpCode.Constant, node.position, [constants.length - 1]);
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
             default:
         }
     }

@@ -1,10 +1,11 @@
 package evaluator;
 
+import compiler.constant.ConstantPool;
+import haxe.io.Bytes;
 import object.objects.HashObj;
 import object.ObjectWrapper;
 import object.objects.ArrayObj;
 import haxe.io.BytesInput;
-import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
@@ -22,36 +23,37 @@ class Evaluator {
 
     public final stack:GenericStack<ObjectWrapper> = new GenericStack();
     public final callStack:GenericStack<ReturnAddress> = new GenericStack();
-    final byteCode:BytesInput;
-    final constants:Array<Object>;
+    final constantPool:Array<Object>;
+    final instructions:BytesInput;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
     final builtInTable:BuiltInTable;
     final env = new Environment();
     public final error:RuntimeError;
 
-    public function new(byteCode:BytesOutput, constants:Array<Object>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable) {
-        this.byteCode = new BytesInput(byteCode.getBytes());
-        this.constants = constants;
-        this.lineNumberTable = lineNumberTable;
-        this.localVariableTable = localVariableTable;
+    public function new(byteCode:Bytes) {
+        final byteCode = new BytesInput(byteCode);
+        lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
+        localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
+        constantPool = ConstantPool.fromByteCode(byteCode);
+        instructions = new BytesInput(byteCode.readAll());
 
         builtInTable = new BuiltInTable(this);
-        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, this.byteCode);
+        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, instructions);
     }
 
     public function eval() {
-        while (byteCode.position < byteCode.length) {
+        while (instructions.position < instructions.length) {
             evalInstruction();
         }
     }
 
     function evalInstruction() {
-        final opCode = byteCode.readByte();
+        final opCode = instructions.readByte();
         
         switch (opCode) {
             case OpCode.Array:
-                final arrayLength = byteCode.readInt32();
+                final arrayLength = instructions.readInt32();
                 final arrayObj = new ArrayObj();
 
                 for (i in 0...arrayLength) {
@@ -60,7 +62,7 @@ class Evaluator {
 
                 stack.add(new ObjectWrapper(arrayObj));
             case OpCode.Hash:
-                final hashLength = byteCode.readInt32();
+                final hashLength = instructions.readInt32();
                 final hashObj = new HashObj();
 
                 for (i in 0...hashLength) {
@@ -155,11 +157,11 @@ class Evaluator {
 
                 stack.add(new ObjectWrapper(new FloatObj(result)));
             case OpCode.Constant:
-                final constantIndex = byteCode.readInt32();
+                final constantIndex = instructions.readInt32();
 
-                stack.add(new ObjectWrapper(constants[constantIndex]));
+                stack.add(new ObjectWrapper(constantPool[constantIndex]));
             case OpCode.SetLocal:
-                final localIndex = byteCode.readInt32();
+                final localIndex = instructions.readInt32();
 
                 final value = stack.pop();
 
@@ -169,7 +171,7 @@ class Evaluator {
 
                 env.setVariable(localIndex, value);
             case OpCode.GetLocal:
-                final localIndex = byteCode.readInt32();
+                final localIndex = instructions.readInt32();
 
                 final value = env.getVariable(localIndex);
 
@@ -179,29 +181,29 @@ class Evaluator {
 
                 stack.add(value);
             case OpCode.GetBuiltIn:
-                final builtInIndex = byteCode.readInt32();
+                final builtInIndex = instructions.readInt32();
 
                 stack.add(new ObjectWrapper(new FunctionObj(builtInIndex, ObjectOrigin.BuiltIn)));
             case OpCode.JumpNot:
-                final jumpIndex = byteCode.readInt32();
+                final jumpIndex = instructions.readInt32();
                 
                 final conditionValue = cast(stack.pop().object, FloatObj);
                 if (conditionValue.value == 0) {
-                    byteCode.position = jumpIndex;
+                    instructions.position = jumpIndex;
                 }
             case OpCode.Jump:
-                final jumpIndex = byteCode.readInt32();
+                final jumpIndex = instructions.readInt32();
 
-                byteCode.position = jumpIndex;
+                instructions.position = jumpIndex;
             case OpCode.Call:
                 final object = stack.pop().object;
 
                 try {
                     final calledFunction = cast(object, FunctionObj);
-                    callStack.add(new ReturnAddress(byteCode.position, calledFunction));
+                    callStack.add(new ReturnAddress(instructions.position, calledFunction));
     
                     if (calledFunction.origin == ObjectOrigin.UserDefined) {
-                        byteCode.position = calledFunction.index;
+                        instructions.position = calledFunction.index;
                     } else {
                         builtInTable.execute(calledFunction.index);
                     }
@@ -209,7 +211,7 @@ class Evaluator {
                     error.error('${object.type} is not a function');
                 }
             case OpCode.Return:
-                byteCode.position = callStack.pop().byteIndex;
+                instructions.position = callStack.pop().byteIndex;
             case OpCode.Negate:
                 final negValue = cast(stack.pop().object, FloatObj).value;
                 stack.add(new ObjectWrapper(new FloatObj(-negValue)));
