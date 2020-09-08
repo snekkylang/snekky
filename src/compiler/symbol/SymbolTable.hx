@@ -7,14 +7,7 @@ class SymbolTable {
     var symbolIndex = 0;
     public var currentScope:SymbolScope = new SymbolScope(null);
 
-    public function new() {
-        define("print", false, SymbolOrigin.BuiltIn);
-        define("array_length", false, SymbolOrigin.BuiltIn);
-        define("array_push", false, SymbolOrigin.BuiltIn);
-        define("sqrt", false, SymbolOrigin.BuiltIn);
-
-        symbolIndex = 100;
-    }
+    public function new() { }
 
     public function newScope() {
         currentScope = new SymbolScope(currentScope);
@@ -24,8 +17,8 @@ class SymbolTable {
         currentScope = currentScope.parent;
     }
 
-    public function define(name:String, mutable:Bool, origin:SymbolOrigin):Symbol {
-        final symbol = new Symbol(symbolIndex, mutable, origin);
+    public function define(name:String, mutable:Bool):Symbol {
+        final symbol = new Symbol(symbolIndex, mutable);
         currentScope.define(name, symbol);
         symbolIndex++;
         return symbol;

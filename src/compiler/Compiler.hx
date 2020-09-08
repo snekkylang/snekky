@@ -1,5 +1,6 @@
 package compiler;
 
+import evaluator.builtin.BuiltInTable;
 import haxe.io.Bytes;
 import compiler.constant.ConstantPool;
 import haxe.io.BytesOutput;
@@ -7,7 +8,6 @@ import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
 import object.ObjectOrigin;
-import compiler.symbol.SymbolOrigin;
 import ast.NodeType;
 import error.CompileError;
 import sys.io.File;
@@ -136,7 +136,7 @@ class Compiler {
                 inExpression = true;
 
                 localVariableTable.define(instructions.length, cVariable.name);
-                final symbol = symbolTable.define(cVariable.name, cVariable.mutable, SymbolOrigin.UserDefined);
+                final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.SetLocal, cVariable.position, [symbol.index]);
             case NodeType.VariableAssign:
@@ -157,12 +157,14 @@ class Compiler {
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
                 if (symbol == null) {
-                    CompileError.symbolUndefined(cIdent.position, cIdent.value);
-                }
-                if (symbol.origin == SymbolOrigin.UserDefined) {
-                    emit(OpCode.GetLocal, node.position, [symbol.index]);
+                    final builtInIndex = BuiltInTable.getSymbolIndex(cIdent.value);
+                    if (builtInIndex != -1) {
+                        emit(OpCode.GetBuiltIn, node.position, [builtInIndex]);
+                    } else {
+                        CompileError.symbolUndefined(cIdent.position, cIdent.value);
+                    }
                 } else {
-                    emit(OpCode.GetBuiltIn, node.position, [symbol.index]);
+                    emit(OpCode.GetLocal, node.position, [symbol.index]);     
                 }
             case NodeType.Function:
                 final cFunction = cast(node, FunctionNode);
@@ -174,7 +176,7 @@ class Compiler {
                 constantPool.addConstant(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
 
                 for (parameter in cFunction.parameters) {
-                    final symbol = symbolTable.define(parameter.value, false, SymbolOrigin.UserDefined);
+                    final symbol = symbolTable.define(parameter.value, false);
                     emit(OpCode.SetLocal, node.position, [symbol.index]);
                 }
 
