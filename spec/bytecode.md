@@ -29,7 +29,7 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | SetLocal     | 0F              | index    | value (i32) ->                                       | Sets local `index` to `value`.                                  |
 | GetLocal     | 10              | index    | -> value (any)                                       | Pushes value of local at `index` onto the stack.                |
 | GetBuiltIn   | 11              | index    | -> value (any)                                       | Pushes builtin at `index` onto the stack.                       |
-| Call         | 12              |          | index (i32), [arg1, arg2, ...] (any) -> result (any) | Pushes `[arg1, arg2, ...]` onto the stack and jumps to `index`. |
+| Call         | 12              |          | func (function) -> result (any)                      | Pushes `[arg1, arg2, ...]` onto the stack and jumps to `index`. |
 | Return       | 13              |          | [no change]                                          | Pops callstack and jumps to popped position.                    |
 | Array        | 14              | length   | [value1, value2, ...] (any) ->                       | Constructs array object with `length` elements.                 |
 | Hash         | 15              | length   | [value1, value2, ...] (any) ->                       | Constructs hash object with `length` elements.                  |
