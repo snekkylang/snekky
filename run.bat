@@ -1,1 +1,1 @@
-haxe --main Snekky --interp -cp src -lib console.hx
+haxe --main Snekky --interp -cp src -lib console.hx -lib equals

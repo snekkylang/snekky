@@ -2,3 +2,4 @@
 -main Snekky
 -cpp cpp
 -lib console.hx
+-lib equals
