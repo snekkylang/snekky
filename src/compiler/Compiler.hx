@@ -151,6 +151,7 @@ class Compiler {
                 if (!symbol.mutable) {
                     CompileError.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
                 }
+                localVariableTable.define(instructions.length, cVariableAssign.name);
                 compile(cVariableAssign.value);
                 emit(OpCode.SetLocal, cVariableAssign.position, [symbol.index]);
             case NodeType.Ident:
