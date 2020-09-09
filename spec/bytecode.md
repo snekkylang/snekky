@@ -15,14 +15,14 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Pop          | 01              |          | value (any) ->                                       | Pops top element from stack and discards it.                    |
 | Jump         | 02              | position | [no change]                                          | Jumps to `position` in bytecode.                                |
 | JumpNot      | 03              | position | value (i32) ->                                       | Jumps to `position` in bytecode if top element on stack is `0`. |
-| Add          | 04              |          | value1 (f62), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
-| Subtract     | 05              |          | value1 (f62), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
-| Multiply     | 06              |          | value1 (f62), value2 (f64) -> result (f64)           | Multiplies `value1` with `value2`.                              |
-| Divide       | 07              |          | value1 (f62), value2 (f64) -> result (f64)           | Divides `value2` by `value1`.                                   |
-| Modulo       | 08              |          | value1 (f62), value2 (f64) -> result (f64)           | Performs modulo operation on `value1` with `value2`.            |
-| Equals       | 09              |          | value1 (f62), value2 (f64) -> result (f64/1 or 0)    | Compares `value1` with `value2`.                                |
-| SmallerThan  | 0A              |          | value1 (f62), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is smaller than `value2`.               |
-| GreaterThan  | 0B              |          | value1 (f62), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is greater than `value2`.               |
+| Add          | 04              |          | value1 (f64), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
+| Subtract     | 05              |          | value1 (f64), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
+| Multiply     | 06              |          | value1 (f64), value2 (f64) -> result (f64)           | Multiplies `value1` with `value2`.                              |
+| Divide       | 07              |          | value1 (f64), value2 (f64) -> result (f64)           | Divides `value2` by `value1`.                                   |
+| Modulo       | 08              |          | value1 (f64), value2 (f64) -> result (f64)           | Performs modulo operation on `value1` with `value2`.            |
+| Equals       | 09              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Compares `value1` with `value2`.                                |
+| SmallerThan  | 0A              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is smaller than `value2`.               |
+| GreaterThan  | 0B              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is greater than `value2`.               |
 | Negate       | 0C              |          | value (f64) -> result (f64)                          | Negats `value`.                                                 |
 | Invert       | 0D              |          | value (f64/1 or 0) -> result (f64/1 or 0)            | Inverts `value` (0 -> 1, 1 -> 0).                               |
 | ConcatString | 0E              |          | value1 (any), value2 (any) -> result (str)           | Concats `value1` and `value2` to new string.                    |
@@ -33,8 +33,8 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Return       | 13              |          | [no change]                                          | Pops callstack and jumps to popped position.                    |
 | Array        | 14              | length   | [value1, value2, ...] (any) ->                       | Constructs array object with `length` elements.                 |
 | Hash         | 15              | length   | [value1, value2, ...] (any) ->                       | Constructs hash object with `length` elements.                  |
-| GetIndex     | 16              | index    | index (i32), target (array/hash) -> value (any)      | Pushes value of `target` at `index` onto the stack.             |
-| SetIndex     | 17              | index    | value (any), index (f64/str) target (array/hash) ->  fix | Sets value of `index` to `value`.                               |
+| GetIndex     | 16              | index    | index (f64/str), target (array/hash) -> value (any)  | Pushes value of `target` at `index` onto the stack.             |
+| SetIndex     | 17              | index    | value (any), index (f64/str) target (array/hash) ->  | Sets value of `index` to `value`.                               |
 
 ## Notes
 Notes must be followed to implement certain behaviors correctly.
