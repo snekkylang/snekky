@@ -162,8 +162,8 @@ class Evaluator {
 
                 stack.add(new FloatObj(equals ? 1 : 0));
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final right = stack.pop(); // val 1
-                final left = stack.pop(); // val2
+                final right = stack.pop();
+                final left = stack.pop();
 
                 var cRight;
                 var cLeft;
