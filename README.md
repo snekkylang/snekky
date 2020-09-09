@@ -20,7 +20,7 @@ Binaries of the latest unreleased version can be found on the [actions tab](http
 ## Usage
 
 1. Create a file called `input.snek`
-2. Run it using `Snekky.exe`
+2. Run it using `Snekky.exe input.snek`
 
 ## Example
 ```
