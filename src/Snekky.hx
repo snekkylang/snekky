@@ -26,7 +26,13 @@ class Snekky {
             final compiler = new Compiler();
             compiler.compile(parser.ast);
 
-            compiler.getByteCode();
+            final byteCode = compiler.getByteCode();
+
+            if (args.contains("--dump")) {
+                File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
+            }
+
+            byteCode;
         } else {
             File.getBytes('./$filename'); 
         }
