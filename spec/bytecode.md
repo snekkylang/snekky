@@ -17,15 +17,15 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | JumpNot      | 03              | position | value (i32) ->                                       | Jumps to `position` in bytecode if top element on stack is `0`. |
 | Add          | 04              |          | value1 (f64), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
 | Subtract     | 05              |          | value1 (f64), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
-| Multiply     | 06              |          | value1 (f64), value2 (f64) -> result (f64)           | Multiplies `value1` with `value2`.                              |
+| Multiply     | 06              |          | value1 (f64), value2 (f64) -> result (f64)           | Multiplies `value2` with `value1`.                              |
 | Divide       | 07              |          | value1 (f64), value2 (f64) -> result (f64)           | Divides `value2` by `value1`.                                   |
-| Modulo       | 08              |          | value1 (f64), value2 (f64) -> result (f64)           | Performs modulo operation on `value1` with `value2`.            |
-| Equals       | 09              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Compares `value1` with `value2`.                                |
-| SmallerThan  | 0A              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is smaller than `value2`.               |
-| GreaterThan  | 0B              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value1` is greater than `value2`.               |
+| Modulo       | 08              |          | value1 (f64), value2 (f64) -> result (f64)           | Performs modulo operation on `value2` with `value1`.            |
+| Equals       | 09              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Compares `value2` with `value1`.                                |
+| SmallerThan  | 0A              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is smaller than `value1`.               |
+| GreaterThan  | 0B              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is greater than `value1`.               |
 | Negate       | 0C              |          | value (f64) -> result (f64)                          | Negats `value`.                                                 |
 | Invert       | 0D              |          | value (f64/1 or 0) -> result (f64/1 or 0)            | Inverts `value` (0 -> 1, 1 -> 0).                               |
-| ConcatString | 0E              |          | value1 (any), value2 (any) -> result (str)           | Concats `value1` and `value2` to new string.                    |
+| ConcatString | 0E              |          | value1 (any), value2 (any) -> result (str)           | Concats `value2` and `value1` to new string.                    |
 | SetLocal     | 0F              | index    | value (i32) ->                                       | Sets local `index` to `value`.                                  |
 | GetLocal     | 10              | index    | -> value (any)                                       | Pushes value of local at `index` onto the stack.                |
 | GetBuiltIn   | 11              | index    | -> value (any)                                       | Pushes builtin at `index` onto the stack.                       |
