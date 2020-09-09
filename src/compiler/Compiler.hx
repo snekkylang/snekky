@@ -10,7 +10,6 @@ import error.ErrorHelper;
 import object.ObjectOrigin;
 import ast.NodeType;
 import error.CompileError;
-import sys.io.File;
 import object.objects.*;
 import compiler.symbol.SymbolTable;
 import code.Code;
@@ -23,7 +22,7 @@ class Compiler {
     final constantPool = new ConstantPool();
     var instructions = new BytesOutput();
     final lineNumberTable = new LineNumberTable();
-    public final localVariableTable = new LocalVariableTable();
+    final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
 
     // Positions of break instructions

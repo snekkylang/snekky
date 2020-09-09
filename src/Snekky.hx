@@ -1,3 +1,4 @@
+import haxe.io.Path;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
@@ -10,19 +11,27 @@ class Snekky {
     public static var code:String;
     
     public static function main() {
-        filename = "input.snek";
-        code = File.getContent("./input.snek");
+        final args = Sys.args();
 
-        final lexer = new Lexer(code);
+        filename = args[0];
 
-        final parser = new Parser(lexer);
-        parser.generateAst();
-        parser.writeAst(); 
+        final byteCode = if (Path.extension(filename) == "snek") {
+            code = File.getContent('./$filename');
 
-        final compiler = new Compiler();
-        compiler.compile(parser.ast);
+            final lexer = new Lexer(code);
 
-        final evaluator = new Evaluator(compiler.getByteCode());
+            final parser = new Parser(lexer);
+            parser.generateAst();
+
+            final compiler = new Compiler();
+            compiler.compile(parser.ast);
+
+            compiler.getByteCode();
+        } else {
+            File.getBytes('./$filename'); 
+        }
+
+        final evaluator = new Evaluator(byteCode);
         evaluator.eval(); 
     }
 }
