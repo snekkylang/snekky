@@ -14,7 +14,7 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Constant     | 00              | index    | -> value (any)                                       | Pushes constant at `index` onto the stack.                      |
 | Pop          | 01              |          | value (any) ->                                       | Pops top element from stack and discards it.                    |
 | Jump         | 02              | position | [no change]                                          | Jumps to `position` in bytecode.                                |
-| JumpNot      | 03              | position | value (i32) ->                                       | Jumps to `position` in bytecode if top element on stack is `1`. |
+| JumpNot      | 03              | position | value (i32) ->                                       | Jumps to `position` in bytecode if top element on stack is `0`. |
 | Add          | 04              |          | value1 (f62), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
 | Subtract     | 05              |          | value1 (f62), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
 | Multiply     | 06              |          | value1 (f62), value2 (f64) -> result (f64)           | Multiplies `value1` with `value2`.                              |
