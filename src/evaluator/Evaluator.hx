@@ -3,7 +3,6 @@ package evaluator;
 import compiler.constant.ConstantPool;
 import haxe.io.Bytes;
 import object.objects.HashObj;
-import object.ObjectWrapper;
 import object.objects.ArrayObj;
 import haxe.io.BytesInput;
 import compiler.debug.LocalVariableTable;
@@ -23,7 +22,7 @@ using equals.Equal;
 
 class Evaluator {
 
-    public final stack:GenericStack<ObjectWrapper> = new GenericStack();
+    public final stack:GenericStack<Object> = new GenericStack();
     public final callStack:GenericStack<ReturnAddress> = new GenericStack();
     final constantPool:Array<Object>;
     final instructions:BytesInput;
@@ -62,32 +61,32 @@ class Evaluator {
                     arrayObj.unshift(stack.pop());
                 }
 
-                stack.add(new ObjectWrapper(arrayObj));
+                stack.add(arrayObj);
             case OpCode.Hash:
                 final hashLength = instructions.readInt32();
                 final hashObj = new HashObj();
 
                 for (i in 0...hashLength) {
                     final value = stack.pop();
-                    final key = cast(stack.pop().object, StringObj).value;
+                    final key = cast(stack.pop(), StringObj).value;
 
                     hashObj.set(key, value);
                 }
 
-                stack.add(new ObjectWrapper(hashObj));
+                stack.add(hashObj);
             case OpCode.GetIndex:
                 final index = stack.pop();
                 final target = stack.pop();
 
                 try {
-                    final value = if (target.object.type == Array) {
-                        final cIndex = Std.int(cast(index.object, FloatObj).value);
-                        final cTarget = cast(target.object, ArrayObj);
+                    final value = if (target.type == Array) {
+                        final cIndex = Std.int(cast(index, FloatObj).value);
+                        final cTarget = cast(target, ArrayObj);
                         
                         cTarget.values[cIndex]; 
                     } else {
-                        final cIndex = cast(index.object, StringObj).value;
-                        final cTarget = cast(target.object, HashObj);
+                        final cIndex = cast(index, StringObj).value;
+                        final cTarget = cast(target, HashObj);
                         
                         cTarget.get(cIndex);
                     }
@@ -102,20 +101,35 @@ class Evaluator {
                 }
             case OpCode.SetIndex:
                 final value = stack.pop();
+                final index = stack.pop();
                 final target = stack.pop();
 
-                target.object = value.object;
+                try {
+                    if (target.type == Array) {
+                        final cIndex = Std.int(cast(index, FloatObj).value);
+                        final cTarget = cast(target, ArrayObj);
+                        
+                        cTarget.values[cIndex] = value; 
+                    } else {
+                        final cIndex = cast(index, StringObj).value;
+                        final cTarget = cast(target, HashObj);
+                        
+                        cTarget.set(cIndex, value);
+                    }
+                } catch (e) {
+                    error.error("index operator cannot be used on this datatype");
+                }
             case OpCode.ConcatString:
-                final right = stack.pop().object;
-                final left = stack.pop().object;
+                final right = stack.pop();
+                final left = stack.pop();
                 
-                stack.add(new ObjectWrapper(new StringObj('${left.toString()}${right.toString()}')));
+                stack.add(new StringObj('${left.toString()}${right.toString()}'));
             case OpCode.Equals:
-                final right = stack.pop().object;
-                final left = stack.pop().object;
+                final right = stack.pop();
+                final left = stack.pop();
 
                 if (left.type != right.type) {
-                    stack.add(new ObjectWrapper(new FloatObj(0)));
+                    stack.add(new FloatObj(0));
                     return;
                 }
 
@@ -146,10 +160,10 @@ class Evaluator {
                     default: false;
                 }
 
-                stack.add(new ObjectWrapper(new FloatObj(equals ? 1 : 0)));
+                stack.add(new FloatObj(equals ? 1 : 0));
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final right = stack.pop().object;
-                final left = stack.pop().object;
+                final right = stack.pop();
+                final left = stack.pop();
 
                 var cRight;
                 var cLeft;
@@ -174,11 +188,11 @@ class Evaluator {
                     default: -1;
                 }
 
-                stack.add(new ObjectWrapper(new FloatObj(result)));
+                stack.add(new FloatObj(result));
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
-                stack.add(new ObjectWrapper(constantPool[constantIndex]));
+                stack.add(constantPool[constantIndex]);
             case OpCode.SetLocal:
                 final localIndex = instructions.readInt32();
 
@@ -202,11 +216,11 @@ class Evaluator {
             case OpCode.GetBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
-                stack.add(new ObjectWrapper(new FunctionObj(builtInIndex, ObjectOrigin.BuiltIn)));
+                stack.add(new FunctionObj(builtInIndex, ObjectOrigin.BuiltIn));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
                 
-                final conditionValue = cast(stack.pop().object, FloatObj);
+                final conditionValue = cast(stack.pop(), FloatObj);
                 if (conditionValue.value == 0) {
                     instructions.position = jumpIndex;
                 }
@@ -215,7 +229,7 @@ class Evaluator {
 
                 instructions.position = jumpIndex;
             case OpCode.Call:
-                final object = stack.pop().object;
+                final object = stack.pop();
 
                 try {
                     final calledFunction = cast(object, FunctionObj);
@@ -232,11 +246,11 @@ class Evaluator {
             case OpCode.Return:
                 instructions.position = callStack.pop().byteIndex;
             case OpCode.Negate:
-                final negValue = cast(stack.pop().object, FloatObj).value;
-                stack.add(new ObjectWrapper(new FloatObj(-negValue)));
+                final negValue = cast(stack.pop(), FloatObj).value;
+                stack.add(new FloatObj(-negValue));
             case OpCode.Invert:
                 final invValue = cast(stack.pop(), FloatObj).value;
-                stack.add(new ObjectWrapper(new FloatObj(invValue == 1 ? 0 : 1)));
+                stack.add(new FloatObj(invValue == 1 ? 0 : 1));
             case OpCode.Pop:
                 stack.pop();
 

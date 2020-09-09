@@ -87,6 +87,7 @@ class Compiler {
                 final cIndexAssign = cast(node, IndexAssign);
 
                 compile(cIndexAssign.index);
+                removeLastInstruction();
                 compile(cIndexAssign.value);
 
                 emit(OpCode.SetIndex, node.position, []);
@@ -214,8 +215,8 @@ class Compiler {
                 emit(OpCode.JumpNot, node.position, [0]);
 
                 compile(cIf.consequence);
-                if (inExpression) {
-                    removeLastPop();
+                if (inExpression && lastInstruction == OpCode.Pop) {
+                    removeLastInstruction();
                 }
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
@@ -223,8 +224,8 @@ class Compiler {
                 final jumpNotPos = instructions.length;
                 if (cIf.alternative != null) {
                     compile(cIf.alternative);
-                    if (inExpression) {
-                        removeLastPop();
+                    if (inExpression && lastInstruction == OpCode.Pop) {
+                        removeLastInstruction();
                     }
                 }
                 final jumpPos = instructions.length;
@@ -265,12 +266,10 @@ class Compiler {
         }
     }
 
-    function removeLastPop() {
-        if (lastInstruction == OpCode.Pop) {
-            final currentBytes = instructions.getBytes();
-            instructions = new BytesOutput();
-            instructions.writeBytes(currentBytes, 0, currentBytes.length - 1);
-        }
+    function removeLastInstruction() {
+        final currentBytes = instructions.getBytes();
+        instructions = new BytesOutput();
+        instructions.writeBytes(currentBytes, 0, currentBytes.length - 1);
     }
 
     function overwriteInstruction(pos:Int, operands:Array<Int>) {
