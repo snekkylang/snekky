@@ -57,7 +57,7 @@ class Evaluator {
                 final arrayLength = instructions.readInt32();
                 final arrayObj = new ArrayObj();
 
-                for (i in 0...arrayLength) {
+                for (_ in 0...arrayLength) {
                     arrayObj.unshift(stack.pop());
                 }
 
@@ -162,8 +162,8 @@ class Evaluator {
 
                 stack.add(new FloatObj(equals ? 1 : 0));
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final right = stack.pop();
-                final left = stack.pop();
+                final right = stack.pop(); // val 1
+                final left = stack.pop(); // val2
 
                 var cRight;
                 var cLeft;
@@ -179,9 +179,8 @@ class Evaluator {
                 final result:Float = switch (opCode) {
                     case OpCode.Add: cLeft + cRight;
                     case OpCode.Multiply: cLeft * cRight;
-                    case OpCode.Equals: cLeft == cRight ? 1 : 0;
-                    case OpCode.SmallerThan: cRight > cLeft ? 1 : 0;
-                    case OpCode.GreaterThan: cRight < cLeft ? 1 : 0;
+                    case OpCode.SmallerThan: cLeft < cRight ? 1 : 0;
+                    case OpCode.GreaterThan: cLeft > cRight ? 1 : 0;
                     case OpCode.Subtract: cLeft - cRight;
                     case OpCode.Divide: cLeft / cRight;
                     case OpCode.Modulo: cLeft % cRight;
