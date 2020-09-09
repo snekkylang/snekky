@@ -10,7 +10,7 @@ class ArrayPushFunc extends Function {
 
     override function execute() {
         try {
-            final array = cast(evaluator.stack.pop().object, ArrayObj);
+            final array = cast(evaluator.stack.pop(), ArrayObj);
             final value = evaluator.stack.pop();
 
             array.push(value);

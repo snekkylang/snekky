@@ -11,7 +11,7 @@ class ArrayLengthFunc extends Function {
 
     override function execute() {
         try {
-            final array = cast(evaluator.stack.pop().object, ArrayObj);
+            final array = cast(evaluator.stack.pop(), ArrayObj);
 
             returnValue(new FloatObj(array.values.length));
         } catch (e) {

@@ -1,7 +1,6 @@
 package evaluator.builtin.functions;
 
 import object.objects.Object;
-import object.ObjectWrapper;
 
 class Function {
 
@@ -13,7 +12,7 @@ class Function {
 
     function returnValue(value:Object = null) {
         if (value != null) {
-            evaluator.stack.add(new ObjectWrapper(value));
+            evaluator.stack.add(value);
         }
 
         evaluator.callStack.pop();

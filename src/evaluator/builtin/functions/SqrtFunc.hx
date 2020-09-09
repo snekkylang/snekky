@@ -10,7 +10,7 @@ class SqrtFunc extends Function {
 
     override function execute() {
         try {
-            final value = cast(evaluator.stack.pop().object, FloatObj);
+            final value = cast(evaluator.stack.pop(), FloatObj);
 
             returnValue(new FloatObj(Math.sqrt(value.value)));
         } catch (e) {
