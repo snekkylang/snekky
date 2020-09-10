@@ -8,7 +8,6 @@ import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
 import evaluator.builtin.BuiltInTable;
-import object.ObjectOrigin;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
@@ -133,7 +132,9 @@ class Evaluator {
                         leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]:
                         leftVal == rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.Function(leftIndex, _), Object.Function(rightIndex, _)]:
+                    case [OpCode.Equals, Object.UserFunction(leftPos), Object.UserFunction(rightPos)]:
+                        leftPos == rightPos ? 1 : 0;
+                    case [OpCode.Equals, Object.BuiltInFunction(leftIndex), Object.BuiltInFunction(rightIndex)]:
                         leftIndex == rightIndex ? 1 : 0;
                     case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]:
                         leftVal.equals(rightVal) ? 1 : 0;
@@ -172,7 +173,7 @@ class Evaluator {
             case OpCode.GetBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
-                stack.add(Object.Function(builtInIndex, ObjectOrigin.BuiltIn));
+                stack.add(Object.BuiltInFunction(builtInIndex));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
                 final conditionValue = stack.pop();
@@ -191,15 +192,13 @@ class Evaluator {
             case OpCode.Call:
                 final object = stack.pop();
 
-                switch (object) {
-                    case Object.Function(index, origin):
-                        callStack.add(new ReturnAddress(instructions.position, object));
+                callStack.add(new ReturnAddress(instructions.position, object));
 
-                        if (origin == ObjectOrigin.UserDefined) {
-                            instructions.position = index;
-                        } else {
-                            builtInTable.execute(index);
-                        }
+                switch (object) {
+                    case Object.UserFunction(position):
+                        instructions.position = position;
+                    case Object.BuiltInFunction(index):
+                        builtInTable.execute(index);
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:

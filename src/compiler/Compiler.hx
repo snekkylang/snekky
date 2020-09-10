@@ -7,7 +7,6 @@ import haxe.io.BytesOutput;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
-import object.ObjectOrigin;
 import ast.NodeType;
 import error.CompileError;
 import object.objects.*;
@@ -177,7 +176,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constantPool.addConstant(Object.Function(instructions.length, ObjectOrigin.UserDefined));
+                constantPool.addConstant(Object.UserFunction(instructions.length));
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false);
