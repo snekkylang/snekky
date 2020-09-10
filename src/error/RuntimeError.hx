@@ -7,8 +7,6 @@ import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;
 
-using object.ObjectHelper;
-
 class RuntimeError {
 
     final callStack:GenericStack<ReturnAddress>;
@@ -32,7 +30,10 @@ class RuntimeError {
 
         while (!callStack.isEmpty()) {
             final returnAddress = callStack.pop();
-            final functionIndex:Int = returnAddress.calledFunction.extract(Object.Function(index, _) => index);
+            final functionIndex:Int = switch (returnAddress.calledFunction) {
+                case Object.Function(index, _): index;
+                default: -1;
+            }
             final functionName = localVariableTable.resolve(functionIndex - 2 * 5);
             Console.log('   at ${functionName == null ? "[native]" : functionName } (???:${position.line}:${position.linePos + 1})');
 
