@@ -136,7 +136,7 @@ class Parser {
             nextToken();
             final value = expressionParser.parseExpression();
 
-            new ExpressionNode(nodePos, new IndexAssign(nodePos, indexNode, value));
+            new ExpressionNode(nodePos, new IndexAssignNode(nodePos, indexNode, value));
         } else {
             indexNode;
         }

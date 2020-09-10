@@ -84,7 +84,7 @@ class Compiler {
 
                 emit(OpCode.GetIndex, node.position, []);
             case NodeType.IndexAssign:
-                final cIndexAssign = cast(node, IndexAssign);
+                final cIndexAssign = cast(node, IndexAssignNode);
 
                 compile(cIndexAssign.index);
                 removeLastInstruction();

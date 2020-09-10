@@ -1,11 +1,11 @@
 package ast.nodes;
 
-class IndexAssign extends Node {
+class IndexAssignNode extends Node {
 
-    public final index:ExpressionNode;
+    public final index:Node;
     public final value:ExpressionNode;
 
-    public function new(position, index:ExpressionNode, value:ExpressionNode) {
+    public function new(position, index:Node, value:ExpressionNode) {
         super(position, NodeType.IndexAssign);
 
         this.index = index;
