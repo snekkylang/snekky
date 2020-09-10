@@ -13,6 +13,7 @@ import code.OpCode;
 import haxe.ds.GenericStack;
 
 using equals.Equal;
+using object.ObjectHelper;
 
 class Evaluator {
 
@@ -105,8 +106,8 @@ class Evaluator {
                         error.error("index operator cannot be used on this datatype");      
                 }
             case OpCode.ConcatString:
-                final right = stack.pop();
-                final left = stack.pop();
+                final right = stack.pop().toString();
+                final left = stack.pop().toString();
 
                 stack.add(Object.String('$left$right'));
             case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo | OpCode.Equals:
