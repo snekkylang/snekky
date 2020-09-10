@@ -17,7 +17,7 @@ class PrintFunc extends Function {
             evaluator.error.error("wrong number of arguments to function");
         }
 
-        Sys.print(parameter.toString());
+        Sys.println(parameter.toString());
 
         returnValue();
     }
