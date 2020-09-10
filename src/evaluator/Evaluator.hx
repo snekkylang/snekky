@@ -114,32 +114,19 @@ class Evaluator {
                 final left = stack.pop();
 
                 final result = switch [opCode, left, right] {
-                    case [OpCode.Add, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal + rightVal;
-                    case [OpCode.Subtract, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal - rightVal;
-                    case [OpCode.Multiply, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal * rightVal;
-                    case [OpCode.Divide, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal / rightVal;
-                    case [OpCode.Modulo, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal % rightVal;
-                    case [OpCode.SmallerThan, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal < rightVal ? 1 : 0;
-                    case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal > rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]:
-                        leftVal == rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]:
-                        leftVal == rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.UserFunction(leftPos), Object.UserFunction(rightPos)]:
-                        leftPos == rightPos ? 1 : 0;
-                    case [OpCode.Equals, Object.BuiltInFunction(leftIndex), Object.BuiltInFunction(rightIndex)]:
-                        leftIndex == rightIndex ? 1 : 0;
-                    case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]:
-                        leftVal.equals(rightVal) ? 1 : 0;
-                    case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]:
-                        leftVal.equals(rightVal) ? 1 : 0;
+                    case [OpCode.Add, Object.Float(leftVal), Object.Float(rightVal)]: leftVal + rightVal;
+                    case [OpCode.Subtract, Object.Float(leftVal), Object.Float(rightVal)]: leftVal - rightVal;
+                    case [OpCode.Multiply, Object.Float(leftVal), Object.Float(rightVal)]: leftVal * rightVal;
+                    case [OpCode.Divide, Object.Float(leftVal), Object.Float(rightVal)]: leftVal / rightVal;
+                    case [OpCode.Modulo, Object.Float(leftVal), Object.Float(rightVal)]: leftVal % rightVal;
+                    case [OpCode.SmallerThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal < rightVal ? 1 : 0;
+                    case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal > rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]: leftVal == rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]: leftVal == rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.UserFunction(leftPos), Object.UserFunction(rightPos)]: leftPos == rightPos ? 1 : 0;
+                    case [OpCode.Equals, Object.BuiltInFunction(leftIndex), Object.BuiltInFunction(rightIndex)]: leftIndex == rightIndex ? 1 : 0;
+                    case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
+                    case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     default:
                         error.error('cannot perform operation');
                         -1;
