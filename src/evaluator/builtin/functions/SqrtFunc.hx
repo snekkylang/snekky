@@ -1,6 +1,6 @@
 package evaluator.builtin.functions;
 
-import object.objects.FloatObj;
+import object.Object;
 
 class SqrtFunc extends Function {
 
@@ -9,12 +9,12 @@ class SqrtFunc extends Function {
     }
 
     override function execute() {
-        try {
-            final value = cast(evaluator.stack.pop(), FloatObj);
+        final parameter = evaluator.stack.pop();
 
-            returnValue(new FloatObj(Math.sqrt(value.value)));
-        } catch (e) {
-            evaluator.error.error("first parameter must be a float");
+        switch (parameter) {
+            case Object.Float(value):
+                returnValue(Object.Float(Math.sqrt(value)));
+            default: evaluator.error.error("first parameter must be a float");
         }
     }
 }

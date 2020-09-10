@@ -1,8 +1,6 @@
 package object;
 
-import object.objects.Object;
-import object.objects.StringObj;
-import object.objects.FloatObj;
+import haxe.macro.Expr;
 
 class ObjectHelper {
 
@@ -11,12 +9,24 @@ class ObjectHelper {
             return obj;
         }
 
-        final clone = switch (obj.type) {
-            case ObjectType.Float: new FloatObj(cast(obj, FloatObj).value);
-            case ObjectType.String: new StringObj(cast(obj, StringObj).value);
+        final clone = switch (obj) {
+            case Object.Float(value): Object.Float(value);
+            case Object.String(value): Object.String(value);
             default: obj;
         }
 
         return clone;
+    }
+
+    public static macro function extract(value:ExprOf<EnumValue>, pattern:Expr):Expr {
+        switch (pattern) {
+            case macro $a => $b:
+                return macro switch ($value) {
+                    case $a: $b;
+                    default: throw "no match";
+                }
+            default:
+                throw new Error("Invalid enum value extraction pattern", pattern.pos);
+        }
     }
 }

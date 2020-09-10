@@ -1,10 +1,13 @@
 package error;
 
 import haxe.io.BytesInput;
+import object.Object;
 import evaluator.ReturnAddress;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;
+
+using object.ObjectHelper;
 
 class RuntimeError {
 
@@ -29,7 +32,8 @@ class RuntimeError {
 
         while (!callStack.isEmpty()) {
             final returnAddress = callStack.pop();
-            final functionName = localVariableTable.resolve(returnAddress.calledFunction.index - 2 * 5);
+            final functionIndex:Int = returnAddress.calledFunction.extract(Object.Function(index, _) => index);
+            final functionName = localVariableTable.resolve(functionIndex - 2 * 5);
             Console.log('   at ${functionName == null ? "[native]" : functionName } (???:${position.line}:${position.linePos + 1})');
 
             position = lineNumberTable.resolve(returnAddress.byteIndex);

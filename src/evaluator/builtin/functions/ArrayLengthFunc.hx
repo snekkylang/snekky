@@ -1,7 +1,6 @@
 package evaluator.builtin.functions;
 
-import object.objects.FloatObj;
-import object.objects.ArrayObj;
+import object.Object;
 
 class ArrayLengthFunc extends Function {
 
@@ -10,12 +9,12 @@ class ArrayLengthFunc extends Function {
     }
 
     override function execute() {
-        try {
-            final array = cast(evaluator.stack.pop(), ArrayObj);
+        final array = evaluator.stack.pop();
 
-            returnValue(new FloatObj(array.values.length));
-        } catch (e) {
-            evaluator.error.error("first parameter must be an array");
+        switch (array) {
+            case Object.Array(values):
+                returnValue(Object.Float(values.length));
+            default: evaluator.error.error("first parameter must be an array");
         }
     }
 }
