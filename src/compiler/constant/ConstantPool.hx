@@ -1,7 +1,6 @@
 package compiler.constant;
 
 import object.Object;
-import object.ObjectOrigin;
 import haxe.io.BytesInput;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
@@ -33,9 +32,9 @@ class ConstantPool {
                     output.writeByte(ConstantType.String);
                     output.writeInt32(Bytes.ofString(value).length);
                     output.writeString(value);
-                case Object.Function(index, origin):
-                    output.writeByte(ConstantType.Function);
-                    output.writeInt32(index);
+                case Object.UserFunction(position):
+                    output.writeByte(ConstantType.UserFunction);
+                    output.writeInt32(position);
                 default:
             }
         }
@@ -58,9 +57,9 @@ class ConstantPool {
                     final length = byteCode.readInt32();
                     final value = byteCode.readString(length);
                     pool.push(Object.String(value));
-                case ConstantType.Function:
-                    final index = byteCode.readInt32();
-                    pool.push(Object.Function(index, ObjectOrigin.UserDefined));
+                case ConstantType.UserFunction:
+                    final position = byteCode.readInt32();
+                    pool.push(Object.UserFunction(position));
                 default:
             }    
         }

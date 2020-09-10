@@ -6,7 +6,8 @@ class ObjectHelper {
         return switch (obj) {
             case Object.Float(value): Std.string(value);
             case Object.String(value): value;
-            case Object.Function(index, origin): '#($index, $origin)';
+            case Object.UserFunction(position): '#func($position, UserDefined)';
+            case Object.BuiltInFunction(index): '#func($index, BuiltIn)';
             case Object.Array(values):
                 final stringArray:Array<String> = [];
                 for (value in values) {
