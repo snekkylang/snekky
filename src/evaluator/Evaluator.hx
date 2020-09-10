@@ -165,10 +165,6 @@ class Evaluator {
 
                 final value = env.getVariable(localIndex);
 
-                if (value == null) {
-                    error.error("value of symbol undefined");
-                }
-
                 stack.add(value);
             case OpCode.GetBuiltIn:
                 final builtInIndex = instructions.readInt32();
