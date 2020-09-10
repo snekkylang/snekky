@@ -1,6 +1,5 @@
 package evaluator;
 
-import object.ObjectHelper;
 import object.Object;
 import compiler.constant.ConstantPool;
 import haxe.io.Bytes;
@@ -53,7 +52,7 @@ class Evaluator {
                 final arrayValues:Array<Object> = [];
 
                 for (_ in 0...arrayLength) {
-                    arrayValues.unshift(ObjectHelper.cloneObject(stack.pop()));
+                    arrayValues.unshift(stack.pop());
                 }
 
                 stack.add(Object.Array(arrayValues));
