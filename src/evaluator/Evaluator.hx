@@ -1,20 +1,15 @@
 package evaluator;
 
+import object.ObjectHelper;
+import object.Object;
 import compiler.constant.ConstantPool;
 import haxe.io.Bytes;
-import object.objects.HashObj;
-import object.objects.ArrayObj;
 import haxe.io.BytesInput;
 import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
 import evaluator.builtin.BuiltInTable;
 import object.ObjectOrigin;
-import object.objects.StringObj;
-import object.objects.FloatObj;
-import object.objects.FunctionObj;
-import object.ObjectType;
-import object.objects.Object;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
@@ -55,139 +50,101 @@ class Evaluator {
         switch (opCode) {
             case OpCode.Array:
                 final arrayLength = instructions.readInt32();
-                final arrayObj = new ArrayObj();
+                final arrayValues:Array<Object> = [];
 
                 for (_ in 0...arrayLength) {
-                    arrayObj.unshift(stack.pop());
+                    arrayValues.unshift(ObjectHelper.cloneObject(stack.pop()));
                 }
 
-                stack.add(arrayObj);
+                stack.add(Object.Array(arrayValues));
             case OpCode.Hash:
                 final hashLength = instructions.readInt32();
-                final hashObj = new HashObj();
+                final hashValues:Map<String, Object> = new Map();
 
                 for (i in 0...hashLength) {
                     final value = stack.pop();
-                    final key = cast(stack.pop(), StringObj).value;
+                    final key = stack.pop();
 
-                    hashObj.set(key, value);
+                    switch key {
+                        case Object.String(keyVal):
+                            hashValues.set(keyVal, value);
+                        default: error.error("hash key must be a string");
+                    }
                 }
 
-                stack.add(hashObj);
+                stack.add(Object.Hash(hashValues));
             case OpCode.GetIndex:
                 final index = stack.pop();
                 final target = stack.pop();
 
-                try {
-                    final value = if (target.type == Array) {
-                        final cIndex = Std.int(cast(index, FloatObj).value);
-                        final cTarget = cast(target, ArrayObj);
-                        
-                        cTarget.values[cIndex]; 
-                    } else {
-                        final cIndex = cast(index, StringObj).value;
-                        final cTarget = cast(target, HashObj);
-                        
-                        cTarget.get(cIndex);
-                    }
-    
-                    if (value == null) {
-                        error.error("index out of bounds");
-                    }
-    
-                    stack.add(value);
-                } catch (e) {
-                    error.error("index operator cannot be used on this datatype");
+                final value = switch [target, index] {
+                    case [Object.Array(array), Object.Float(arrayIndex)]:
+                        array[Std.int(arrayIndex)];
+                    case [Object.Hash(hash), Object.String(hashIndex)]:
+                        hash.get(hashIndex);
+                    default: 
+                        error.error("index operator cannot be used on this datatype");      
+                        Object.Float(-1);
                 }
+
+                if (value == null) {
+                    error.error("index out of bounds");
+                }
+
+                stack.add(value);
             case OpCode.SetIndex:
                 final value = stack.pop();
                 final index = stack.pop();
                 final target = stack.pop();
 
-                try {
-                    if (target.type == Array) {
-                        final cIndex = Std.int(cast(index, FloatObj).value);
-                        final cTarget = cast(target, ArrayObj);
-                        
-                        cTarget.values[cIndex] = value; 
-                    } else {
-                        final cIndex = cast(index, StringObj).value;
-                        final cTarget = cast(target, HashObj);
-                        
-                        cTarget.set(cIndex, value);
-                    }
-                } catch (e) {
-                    error.error("index operator cannot be used on this datatype");
+                switch [target, index] {
+                    case [Object.Array(array), Object.Float(arrayIndex)]:
+                        array[Std.int(arrayIndex)] = value;
+                    case [Object.Hash(hash), Object.String(hashIndex)]:
+                        hash.set(hashIndex, value);
+                    default: 
+                        error.error("index operator cannot be used on this datatype");      
                 }
             case OpCode.ConcatString:
                 final right = stack.pop();
                 final left = stack.pop();
-                
-                stack.add(new StringObj('${left.toString()}${right.toString()}'));
-            case OpCode.Equals:
+
+                stack.add(Object.String('$left$right'));
+            case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo | OpCode.Equals:
                 final right = stack.pop();
                 final left = stack.pop();
 
-                if (left.type != right.type) {
-                    stack.add(new FloatObj(0));
-                    return;
+                final result = switch [opCode, left, right] {
+                    case [OpCode.Add, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal + rightVal;
+                    case [OpCode.Subtract, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal - rightVal;
+                    case [OpCode.Multiply, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal * rightVal;
+                    case [OpCode.Divide, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal / rightVal;
+                    case [OpCode.Modulo, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal % rightVal;
+                    case [OpCode.SmallerThan, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal < rightVal ? 1 : 0;
+                    case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal > rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]:
+                        leftVal == rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]:
+                        leftVal == rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.Function(leftIndex, _), Object.Function(rightIndex, _)]:
+                        leftIndex == rightIndex ? 1 : 0;
+                    case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]:
+                        leftVal.equals(rightVal) ? 1 : 0;
+                    case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]:
+                        leftVal.equals(rightVal) ? 1 : 0;
+                    default:
+                        error.error('cannot perform operation');
+                        -1;
                 }
 
-                final equals = switch (left.type) {
-                    case ObjectType.Float:
-                        final cLeft = cast(left, FloatObj).value;
-                        final cRight = cast(right, FloatObj).value;
-                        cLeft == cRight;
-                    case ObjectType.String:
-                        final cLeft = cast(left, StringObj).value;
-                        final cRight = cast(right, StringObj).value;
-                        cLeft == cRight;
-                    case ObjectType.Hash:
-                        final cLeft = cast(left, HashObj).values;
-                        final cRight = cast(right, HashObj).values;
-
-                        cLeft.equals(cRight);
-                    case ObjectType.Array:
-                        final cLeft = cast(left, ArrayObj).values;
-                        final cRight = cast(right, ArrayObj).values;
-
-                        cLeft.equals(cRight);
-                    case ObjectType.Function:
-                        final cLeft = cast(left, FunctionObj);
-                        final cRight = cast(right, FunctionObj);
-                        
-                        cLeft == cRight;
-                    default: false;
-                }
-
-                stack.add(new FloatObj(equals ? 1 : 0));
-            case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
-                final right = stack.pop();
-                final left = stack.pop();
-
-                var cRight;
-                var cLeft;
-
-                try {
-                    cRight = cast(right, FloatObj).value;
-                    cLeft = cast(left, FloatObj).value;
-                } catch(e) {
-                    error.error('cannot perform operation $opCode on left (${left.type}) and right (${right.type}) value');
-                    return; 
-                }
-
-                final result:Float = switch (opCode) {
-                    case OpCode.Add: cLeft + cRight;
-                    case OpCode.Multiply: cLeft * cRight;
-                    case OpCode.SmallerThan: cLeft < cRight ? 1 : 0;
-                    case OpCode.GreaterThan: cLeft > cRight ? 1 : 0;
-                    case OpCode.Subtract: cLeft - cRight;
-                    case OpCode.Divide: cLeft / cRight;
-                    case OpCode.Modulo: cLeft % cRight;
-                    default: -1;
-                }
-
-                stack.add(new FloatObj(result));
+                stack.add(Object.Float(result));
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
@@ -215,13 +172,17 @@ class Evaluator {
             case OpCode.GetBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
-                stack.add(new FunctionObj(builtInIndex, ObjectOrigin.BuiltIn));
+                stack.add(Object.Function(builtInIndex, ObjectOrigin.BuiltIn));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
-                
-                final conditionValue = cast(stack.pop(), FloatObj);
-                if (conditionValue.value == 0) {
-                    instructions.position = jumpIndex;
+                final conditionValue = stack.pop();
+
+                switch (conditionValue) {
+                    case Object.Float(value):
+                        if (value == 0) {
+                            instructions.position = jumpIndex;
+                        }
+                    default: 
                 }
             case OpCode.Jump:
                 final jumpIndex = instructions.readInt32();
@@ -230,26 +191,35 @@ class Evaluator {
             case OpCode.Call:
                 final object = stack.pop();
 
-                try {
-                    final calledFunction = cast(object, FunctionObj);
-                    callStack.add(new ReturnAddress(instructions.position, calledFunction));
-    
-                    if (calledFunction.origin == ObjectOrigin.UserDefined) {
-                        instructions.position = calledFunction.index;
-                    } else {
-                        builtInTable.execute(calledFunction.index);
-                    }
-                } catch (e) {
-                    error.error('${object.type} is not a function');
+                switch (object) {
+                    case Object.Function(index, origin):
+                        callStack.add(new ReturnAddress(instructions.position, object));
+
+                        if (origin == ObjectOrigin.UserDefined) {
+                            instructions.position = index;
+                        } else {
+                            builtInTable.execute(index);
+                        }
+                    default: error.error("object is not a function");
                 }
             case OpCode.Return:
                 instructions.position = callStack.pop().byteIndex;
             case OpCode.Negate:
-                final negValue = cast(stack.pop(), FloatObj).value;
-                stack.add(new FloatObj(-negValue));
+                final negValue = stack.pop();
+
+                switch (negValue) {
+                    case Object.Float(value):
+                        stack.add(Object.Float(-value));
+                    default: error.error("only floats can be negated");
+                }
             case OpCode.Invert:
-                final invValue = cast(stack.pop(), FloatObj).value;
-                stack.add(new FloatObj(invValue == 1 ? 0 : 1));
+                final invValue = stack.pop();
+
+                switch (invValue) {
+                    case Object.Float(value):
+                        stack.add(Object.Float(value == 1 ? 0 : 1));
+                    default: error.error("only floats can be inverted");
+                }
             case OpCode.Pop:
                 stack.pop();
 

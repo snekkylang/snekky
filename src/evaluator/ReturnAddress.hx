@@ -1,13 +1,13 @@
 package evaluator;
 
-import object.objects.FunctionObj;
+import object.Object;
 
 class ReturnAddress {
 
     public final byteIndex:Int;
-    public final calledFunction:FunctionObj;
+    public final calledFunction:Object;
 
-    public function new(byteIndex:Int, calledFunction:FunctionObj) {
+    public function new(byteIndex:Int, calledFunction:Object) {
         this.byteIndex = byteIndex;
         this.calledFunction = calledFunction;
     }

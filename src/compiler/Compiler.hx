@@ -177,7 +177,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constantPool.addConstant(new FunctionObj(instructions.length, ObjectOrigin.UserDefined));
+                constantPool.addConstant(Object.Function(instructions.length, ObjectOrigin.UserDefined));
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false);
@@ -253,11 +253,11 @@ class Compiler {
             case NodeType.Float | NodeType.Boolean | NodeType.String:
                 switch (node.type) {
                     case NodeType.Float:
-                        constantPool.addConstant(new FloatObj(cast(node, FloatNode).value));
+                        constantPool.addConstant(Object.Float(cast(node, FloatNode).value));
                     case NodeType.Boolean:
-                        constantPool.addConstant(new FloatObj(cast(node, BooleanNode).value ? 1 : 0));
+                        constantPool.addConstant(Object.Float(cast(node, BooleanNode).value ? 1 : 0));
                     case NodeType.String:
-                        constantPool.addConstant(new StringObj(cast(node, StringNode).value));
+                        constantPool.addConstant(Object.String(cast(node, StringNode).value));
                     default:
                 }
 

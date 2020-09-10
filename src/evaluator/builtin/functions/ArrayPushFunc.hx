@@ -1,6 +1,6 @@
 package evaluator.builtin.functions;
 
-import object.objects.ArrayObj;
+import object.Object;
 
 class ArrayPushFunc extends Function {
 
@@ -9,15 +9,14 @@ class ArrayPushFunc extends Function {
     }
 
     override function execute() {
-        try {
-            final array = cast(evaluator.stack.pop(), ArrayObj);
-            final value = evaluator.stack.pop();
+        final array = evaluator.stack.pop();
+        final value = evaluator.stack.pop();
 
-            array.push(value);
-
-            returnValue();
-        } catch (e) {
-            evaluator.error.error("first parameter must be an array");
+        switch (array) {
+            case Object.Array(values):
+                values.push(value);
+                returnValue();
+            default: evaluator.error.error("first parameter must be an array");
         }
     }
 }

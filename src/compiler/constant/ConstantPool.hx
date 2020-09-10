@@ -1,14 +1,10 @@
 package compiler.constant;
 
+import object.Object;
 import object.ObjectOrigin;
 import haxe.io.BytesInput;
 import haxe.io.Bytes;
-import object.objects.FunctionObj;
-import object.objects.StringObj;
-import object.objects.FloatObj;
-import object.ObjectType;
 import haxe.io.BytesOutput;
-import object.objects.Object;
 
 class ConstantPool {
 
@@ -29,23 +25,17 @@ class ConstantPool {
 
         output.writeInt32(constants.length);
         for (const in constants) {
-            switch (const.type) {
-                case ObjectType.Float:
-                    final cFloat = cast(const, FloatObj);
-
+            switch (const) {
+                case Object.Float(value):
                     output.writeByte(ConstantType.Float);
-                    output.writeDouble(cFloat.value);
-                case ObjectType.String:
-                    final cString = cast(const, StringObj);
-
+                    output.writeDouble(value);
+                case Object.String(value):
                     output.writeByte(ConstantType.String);
-                    output.writeInt32(Bytes.ofString(cString.value).length);
-                    output.writeString(cString.value);
-                case ObjectType.Function:
-                    final cFunction = cast(const, FunctionObj);
-
+                    output.writeInt32(Bytes.ofString(value).length);
+                    output.writeString(value);
+                case Object.Function(index, origin):
                     output.writeByte(ConstantType.Function);
-                    output.writeInt32(cFunction.index);
+                    output.writeInt32(index);
                 default:
             }
         }
@@ -63,14 +53,14 @@ class ConstantPool {
             switch (type) {
                 case ConstantType.Float:
                     final value = byteCode.readDouble();
-                    pool.push(new FloatObj(value));
+                    pool.push(Object.Float(value));
                 case ConstantType.String:
                     final length = byteCode.readInt32();
                     final value = byteCode.readString(length);
-                    pool.push(new StringObj(value));
+                    pool.push(Object.String(value));
                 case ConstantType.Function:
                     final index = byteCode.readInt32();
-                    pool.push(new FunctionObj(index, ObjectOrigin.UserDefined));
+                    pool.push(Object.Function(index, ObjectOrigin.UserDefined));
                 default:
             }    
         }

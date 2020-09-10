@@ -1,6 +1,6 @@
 package evaluator;
 
-import object.objects.Object;
+import object.Object;
 
 class Environment {
 

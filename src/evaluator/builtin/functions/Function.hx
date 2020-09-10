@@ -1,6 +1,6 @@
 package evaluator.builtin.functions;
 
-import object.objects.Object;
+import object.Object;
 
 class Function {
 
