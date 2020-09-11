@@ -36,9 +36,9 @@ mut i = 0;
 while i < 10 {
     print(
         if (i > 5) {
-            "Snek";
+            "Snek"
         } else {
-            i;
+            i
         }
     );
 
