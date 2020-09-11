@@ -160,10 +160,7 @@ class ExpressionParser {
                 ident; 
 
             case TokenType.Number:
-                final number = parser.parseNumber();
-                parser.nextToken();
-                
-                number;
+                parser.parseNumber();
 
             case TokenType.String:
                 final string = new StringNode(parser.currentToken.position, parser.currentToken.literal);
@@ -189,7 +186,6 @@ class ExpressionParser {
 
             case TokenType.If:
                 final ifN = parser.parseIf();
-                parser.nextToken();
 
                 ifN;
 
