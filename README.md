@@ -24,6 +24,7 @@ Binaries of the latest unreleased version can be found on the [actions tab](http
 
 ## Example
 ```
+// This is a comment
 let add = func(a, b) {
     let result = a + b;
 

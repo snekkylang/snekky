@@ -1,0 +1,31 @@
+// Simple array
+let simple_array = [1, "Axolotl", 2.3];
+print(simple_array[1]);
+simple_array[1] = "Gods";
+array_push(simple_array, 42);
+print(array_length(simple_array));
+
+// Arrays may contain any expression
+let complex_array = [
+    func() {
+        2 + 3
+    },
+    42,
+    3.4,
+    [
+        "Another array"
+    ],
+    {
+        "my_key": 5
+    }
+];
+
+// Hashes contain key-value-pairs
+let my_hash = {
+    "my_func": func(a) {
+        a + 7
+    },
+    "number": 23
+};
+
+print(my_hash["my_func"](my_hash["number"]));
