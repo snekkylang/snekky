@@ -9,7 +9,6 @@ import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
 import ast.NodeType;
 import error.CompileError;
-import object.objects.*;
 import compiler.symbol.SymbolTable;
 import code.Code;
 import code.OpCode;
@@ -26,9 +25,6 @@ class Compiler {
 
     // Positions of break instructions
     var breakPositions:Array<Int> = [];
-
-    var inExpression = false;
-    var lastInstruction:Int = -1;
 
     public function new() { }
 
@@ -135,16 +131,12 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
-                inExpression = true;
-
                 localVariableTable.define(instructions.length, cVariable.name);
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.Store, cVariable.position, [symbol.index]);
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
-
-                inExpression = true;
 
                 final symbol = symbolTable.resolve(cVariableAssign.name);
                 if (symbol == null) {
@@ -214,25 +206,18 @@ class Compiler {
                 emit(OpCode.JumpNot, node.position, [0]);
 
                 compile(cIf.consequence);
-                if (inExpression && lastInstruction == OpCode.Pop) {
-                    removeLastInstruction();
-                }
+
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
                 final jumpNotPos = instructions.length;
                 if (cIf.alternative != null) {
                     compile(cIf.alternative);
-                    if (inExpression && lastInstruction == OpCode.Pop) {
-                        removeLastInstruction();
-                    }
                 }
                 final jumpPos = instructions.length;
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
-
-                inExpression = false;
             case NodeType.While:
                 final cWhile = cast(node, WhileNode);
 
@@ -281,7 +266,6 @@ class Compiler {
     function emit(op:Int, position:Int, operands:Array<Int>) {
         lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
         final instruction = Code.make(op, operands);
-        lastInstruction = op;
         
         instructions.write(instruction);
     }
