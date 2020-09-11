@@ -26,7 +26,6 @@ class Parser {
     public function generateAst() {
         while (currentToken.type != TokenType.Eof) {
             parseToken(ast);
-            nextToken();
         }
     }
 
@@ -41,6 +40,7 @@ class Parser {
     public function parseNumber():Node {
         final nodePos = currentToken.position;
         final n = Std.parseFloat(currentToken.literal);
+        nextToken();
         return new FloatNode(nodePos, n);
     }
 
@@ -55,7 +55,6 @@ class Parser {
             }
 
             parseToken(block);
-            nextToken();
         }
 
         return block;
@@ -210,6 +209,7 @@ class Parser {
         final value = expressionParser.parseExpression();
 
         assertSemicolon();
+        nextToken();
 
         return new VariableNode(nodePos, name, value, mutable);
     }
@@ -226,6 +226,7 @@ class Parser {
         }
 
         assertSemicolon();
+        nextToken();
 
         return new ReturnNode(nodePos, returnValue);
     }
@@ -235,6 +236,7 @@ class Parser {
         nextToken();
 
         assertSemicolon();
+        nextToken();
 
         return new BreakNode(nodePos);
     }
@@ -260,6 +262,8 @@ class Parser {
             alternative = parseBlock();
         }
 
+        nextToken();
+
         return new IfNode(nodePos, condition, consequence, alternative);
     }
 
@@ -273,6 +277,8 @@ class Parser {
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
+
+        nextToken();
 
         return new WhileNode(nodePos, condition, block);
     }
@@ -289,8 +295,23 @@ class Parser {
         final value = expressionParser.parseExpression();
 
         assertSemicolon();
+        nextToken();
 
         return new VariableAssignNode(nodePos, name, value);
+    }
+
+    function parseStatement():Node {
+        final nodePos = currentToken.position;
+        final expression = expressionParser.parseExpression();
+        final statement = if (currentToken.type == TokenType.RBrace) {
+            expression;
+        } else {
+            assertSemicolon();
+            nextToken();    
+            new StatementNode(nodePos, expression);
+        }
+
+        return statement;
     }
 
     function assertToken(type:TokenType, expected:String) {
@@ -312,22 +333,17 @@ class Parser {
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.Break: block.addNode(parseBreak());
-            case TokenType.LBrace: block.addNode(parseBlock());
+            case TokenType.LBrace: 
+                block.addNode(parseBlock()); 
+                nextToken();
             case TokenType.Ident:
                 if (lexer.peekToken().type == TokenType.Assign) {
                     block.addNode(parseVariableAssign());
                 } else {
-                    final nodePos = currentToken.position;
-                    final expression = expressionParser.parseExpression();
-                    block.addNode(new StatementNode(nodePos, expression));
-                    assertSemicolon();
+                    block.addNode(parseStatement());
                 }
             case TokenType.Illegal: CompileError.illegalToken(currentToken);
-            default:
-                final nodePos = currentToken.position;
-                final expression = expressionParser.parseExpression();
-                block.addNode(new StatementNode(nodePos, expression));
-                assertSemicolon();
+            default: block.addNode(parseStatement());
         }
     }
 }
