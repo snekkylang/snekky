@@ -81,7 +81,7 @@ class Compiler {
                 compile(cIndex.target);
                 compile(cIndex.index);
 
-                emit(OpCode.GetIndex, node.position, []);
+                emit(OpCode.LoadIndex, node.position, []);
             case NodeType.IndexAssign:
                 final cIndexAssign = cast(node, IndexAssignNode);
 
@@ -89,7 +89,7 @@ class Compiler {
                 removeLastInstruction();
                 compile(cIndexAssign.value);
 
-                emit(OpCode.SetIndex, node.position, []);
+                emit(OpCode.StoreIndex, node.position, []);
             case NodeType.Break:
                 breakPositions.push(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);
@@ -112,7 +112,7 @@ class Compiler {
                     case NodeType.Plus: emit(OpCode.Add, node.position, []);
                     case NodeType.Multiply: emit(OpCode.Multiply, node.position, []);
                     case NodeType.Equal: emit(OpCode.Equals, node.position, []);
-                    case NodeType.SmallerThan: emit(OpCode.SmallerThan, node.position, []);
+                    case NodeType.SmallerThan: emit(OpCode.LessThan, node.position, []);
                     case NodeType.GreaterThan: emit(OpCode.GreaterThan, node.position, []);
                     case NodeType.Minus: emit(OpCode.Subtract, node.position, []);
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
@@ -126,7 +126,7 @@ class Compiler {
                 if (cOperator.type == NodeType.Negation) {
                     emit(OpCode.Negate, node.position, []);
                 } else {
-                    emit(OpCode.Invert, node.position, []);
+                    emit(OpCode.Not, node.position, []);
                 }
             case NodeType.Variable:
                 final cVariable = cast(node, VariableNode);
@@ -140,7 +140,7 @@ class Compiler {
                 localVariableTable.define(instructions.length, cVariable.name);
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
-                emit(OpCode.SetLocal, cVariable.position, [symbol.index]);
+                emit(OpCode.Store, cVariable.position, [symbol.index]);
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
 
@@ -155,19 +155,19 @@ class Compiler {
                 }
                 localVariableTable.define(instructions.length, cVariableAssign.name);
                 compile(cVariableAssign.value);
-                emit(OpCode.SetLocal, cVariableAssign.position, [symbol.index]);
+                emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
                 if (symbol == null) {
                     final builtInIndex = BuiltInTable.getSymbolIndex(cIdent.value);
                     if (builtInIndex != -1) {
-                        emit(OpCode.GetBuiltIn, node.position, [builtInIndex]);
+                        emit(OpCode.LoadBuiltIn, node.position, [builtInIndex]);
                     } else {
                         CompileError.symbolUndefined(cIdent.position, cIdent.value);
                     }
                 } else {
-                    emit(OpCode.GetLocal, node.position, [symbol.index]);     
+                    emit(OpCode.Load, node.position, [symbol.index]);     
                 }
             case NodeType.Function:
                 final cFunction = cast(node, FunctionNode);
@@ -180,7 +180,7 @@ class Compiler {
 
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false);
-                    emit(OpCode.SetLocal, node.position, [symbol.index]);
+                    emit(OpCode.Store, node.position, [symbol.index]);
                 }
 
                 compile(cFunction.block);
