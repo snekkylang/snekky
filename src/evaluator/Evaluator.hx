@@ -72,7 +72,7 @@ class Evaluator {
                 }
 
                 stack.add(Object.Hash(hashValues));
-            case OpCode.GetIndex:
+            case OpCode.LoadIndex:
                 final index = stack.pop();
                 final target = stack.pop();
 
@@ -91,7 +91,7 @@ class Evaluator {
                 }
 
                 stack.add(value);
-            case OpCode.SetIndex:
+            case OpCode.StoreIndex:
                 final value = stack.pop();
                 final index = stack.pop();
                 final target = stack.pop();
@@ -109,7 +109,7 @@ class Evaluator {
                 final left = stack.pop().toString();
 
                 stack.add(Object.String('$left$right'));
-            case OpCode.Add | OpCode.Multiply | OpCode.SmallerThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo | OpCode.Equals:
+            case OpCode.Add | OpCode.Multiply | OpCode.LessThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo | OpCode.Equals:
                 final right = stack.pop();
                 final left = stack.pop();
 
@@ -119,7 +119,7 @@ class Evaluator {
                     case [OpCode.Multiply, Object.Float(leftVal), Object.Float(rightVal)]: leftVal * rightVal;
                     case [OpCode.Divide, Object.Float(leftVal), Object.Float(rightVal)]: leftVal / rightVal;
                     case [OpCode.Modulo, Object.Float(leftVal), Object.Float(rightVal)]: leftVal % rightVal;
-                    case [OpCode.SmallerThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal < rightVal ? 1 : 0;
+                    case [OpCode.LessThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal < rightVal ? 1 : 0;
                     case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal > rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]: leftVal == rightVal ? 1 : 0;
@@ -137,7 +137,7 @@ class Evaluator {
                 final constantIndex = instructions.readInt32();
 
                 stack.add(constantPool[constantIndex]);
-            case OpCode.SetLocal:
+            case OpCode.Store:
                 final localIndex = instructions.readInt32();
 
                 final value = stack.pop();
@@ -147,13 +147,13 @@ class Evaluator {
                 }
 
                 env.setVariable(localIndex, value);
-            case OpCode.GetLocal:
+            case OpCode.Load:
                 final localIndex = instructions.readInt32();
 
                 final value = env.getVariable(localIndex);
 
                 stack.add(value);
-            case OpCode.GetBuiltIn:
+            case OpCode.LoadBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
                 stack.add(Object.BuiltInFunction(builtInIndex));
@@ -194,7 +194,7 @@ class Evaluator {
                         stack.add(Object.Float(-value));
                     default: error.error("only floats can be negated");
                 }
-            case OpCode.Invert:
+            case OpCode.Not:
                 final invValue = stack.pop();
 
                 switch (invValue) {
