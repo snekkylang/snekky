@@ -17,6 +17,8 @@ class Lexer {
         }
 
         position++;
+
+        eatComment();
     }
 
     function peekChar():String {
@@ -66,6 +68,14 @@ class Lexer {
     function eatWhitespace() {
         while (currentChar == " " || Helper.isLinebreak(currentChar) || currentChar == "\t") {
             readChar();
+        }
+    }
+
+    function eatComment() {
+        if (currentChar == "/" && peekChar() == "/") {
+            while (!Helper.isLinebreak(currentChar)) {
+                readChar();
+            }
         }
     }
 
