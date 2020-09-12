@@ -129,7 +129,7 @@ class Evaluator {
                     case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Null, Object.Null]: 1;
                     default:
-                        error.error('cannot perform operation');
+                        error.error("cannot perform operation");
                         -1;
                 }
 
@@ -144,10 +144,10 @@ class Evaluator {
                 final value = stack.pop();
 
                 if (value == null) {
-                    error.error("failed to evaluate expression");
+                    env.setVariable(localIndex, Object.Null);
+                } else {
+                    env.setVariable(localIndex, value);
                 }
-
-                env.setVariable(localIndex, value);
             case OpCode.Load:
                 final localIndex = instructions.readInt32();
 
