@@ -73,7 +73,7 @@ class Lexer {
 
     function eatComment() {
         if (currentChar == "/" && peekChar() == "/") {
-            while (!Helper.isLinebreak(currentChar)) {
+            while (!Helper.isLinebreak(currentChar) && currentChar != "\u{0}") {
                 readChar();
             }
         }
