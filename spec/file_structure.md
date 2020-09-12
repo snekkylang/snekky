@@ -12,6 +12,7 @@ This document describes the structure of a Snekky bytecode file.
         - [Float](#float)
         - [String](#string)
         - [Function](#function)
+        - [Null](#null)
     - [Instructions](#instructions)
         - [Instruction](#instruction)
 
@@ -112,6 +113,7 @@ Data types are mapped as follows:
 | 0         | Float                 |
 | 1         | String                |
 | 2         | Function              |
+| 3         | Null                  |
 
 #### Float
 Snekky uses 64-bit floats to represent all numbers and booleans.
@@ -147,6 +149,9 @@ FunctionConstant {
 | Field name | Data type | Description                                       |
 |------------|-----------|---------------------------------------------------|
 | byte_index | i32       | Position of the function in bytecode (its index). |
+
+#### Null
+Null does not have any additional data.
 
 ### Instructions
 This part of a bytecode file contains the program's instructions.
