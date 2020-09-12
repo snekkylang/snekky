@@ -46,5 +46,6 @@ Notes must be followed to implement certain behaviors correctly.
 - `ConcatString` converts both operands to strings.
 - `Equals` performs deep-comparison on arrays and hashes. Strings are compared by value.
 - An error if thrown if expression cannot be evaluted (eg. when assigning function call without return value to a variable).
+- If stack is emtpty after `Call` has been executed, a `Null` object has to be pushed onto the stack.
 
 
