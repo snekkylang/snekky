@@ -10,10 +10,8 @@ class Function {
         this.evaluator = evaluator;
     }
 
-    function returnValue(value:Object = null) {
-        if (value != null) {
-            evaluator.stack.add(value);
-        }
+    function returnValue(value:Object = Object.Null) {
+        evaluator.stack.add(value);
 
         evaluator.callStack.pop();
     }

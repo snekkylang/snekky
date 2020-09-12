@@ -29,6 +29,7 @@ enum NodeType {
     Boolean;
     Array;
     Hash;
+    Null;
 
     Return;
     Break;

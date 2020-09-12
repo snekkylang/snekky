@@ -35,6 +35,8 @@ class ConstantPool {
                 case Object.UserFunction(position):
                     output.writeByte(ConstantType.UserFunction);
                     output.writeInt32(position);
+                case Object.Null:
+                    output.writeByte(ConstantType.Null);
                 default:
             }
         }
@@ -60,6 +62,8 @@ class ConstantPool {
                 case ConstantType.UserFunction:
                     final position = byteCode.readInt32();
                     pool.push(Object.UserFunction(position));
+                case ConstantType.Null:
+                    pool.push(Object.Null);
                 default:
             }    
         }

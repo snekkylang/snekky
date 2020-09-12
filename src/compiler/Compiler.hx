@@ -14,6 +14,7 @@ import code.Code;
 import code.OpCode;
 import ast.nodes.*;
 import ast.nodes.datatypes.*;
+import object.Object;
 
 class Compiler {
 
@@ -196,7 +197,7 @@ class Compiler {
                 if (cReturn.value != null) {
                     compile(cReturn.value);
                 }
-
+                
                 emit(OpCode.Return, node.position, []);
             case NodeType.If:
                 final cIf = cast(node, IfNode);
@@ -234,7 +235,7 @@ class Compiler {
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
-            case NodeType.Float | NodeType.Boolean | NodeType.String:
+            case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 switch (node.type) {
                     case NodeType.Float:
                         constantPool.addConstant(Object.Float(cast(node, FloatNode).value));
@@ -242,6 +243,8 @@ class Compiler {
                         constantPool.addConstant(Object.Float(cast(node, BooleanNode).value ? 1 : 0));
                     case NodeType.String:
                         constantPool.addConstant(Object.String(cast(node, StringNode).value));
+                    case NodeType.Null:
+                        constantPool.addConstant(Object.Null);
                     default:
                 }
 
