@@ -14,6 +14,7 @@ class Keyword {
         "return" => TokenType.Return, 
         "import" => TokenType.Import,
         "break" => TokenType.Break,
+        "null" => TokenType.Null
     ];
 
     public static function isKeyword(ident:String):Bool {

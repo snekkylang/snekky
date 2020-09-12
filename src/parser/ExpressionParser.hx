@@ -195,6 +195,12 @@ class ExpressionParser {
             case TokenType.LBrace:
                 parser.parseHash();
 
+            case TokenType.Null:
+                final nullN = new NullNode(parser.currentToken.position);
+                parser.nextToken();
+
+                nullN;
+
             default: 
                 CompileError.unexpectedToken(parser.currentToken, "expression");
                 new Node(-1, NodeType.Ident);

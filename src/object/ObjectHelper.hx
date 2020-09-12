@@ -20,6 +20,7 @@ class ObjectHelper {
                     stringMap.set(key, toString(value));
                 }
                 Std.string(stringMap);
+            case Object.Null: "null";
         }
     }
 }

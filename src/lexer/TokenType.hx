@@ -49,4 +49,5 @@ enum TokenType {
     Return;
     Import;
     Break;
+    Null;
 }
