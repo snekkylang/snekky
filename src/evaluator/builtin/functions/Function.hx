@@ -11,7 +11,9 @@ class Function {
     }
 
     function returnValue(value:Object = null) {
-        evaluator.stack.add(value);
+        if (value != null) {
+            evaluator.stack.add(value);
+        }
 
         evaluator.callStack.pop();
     }
