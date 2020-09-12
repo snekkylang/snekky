@@ -1,5 +1,6 @@
 -cp src
 -main Snekky
 -cpp cpp
+-D HXCPP_M64
 -lib console.hx
 -lib equals
