@@ -122,10 +122,16 @@ class Parser {
         final nodePos = currentToken.position;
 
         nextToken();
-        
-        final index = expressionParser.parseExpression();
 
-        assertToken(TokenType.RBracket, "`]`");
+        final index = if (currentToken.type == TokenType.Ident) {
+            new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
+        } else {    
+            final eIndex = expressionParser.parseExpression();
+
+            assertToken(TokenType.RBracket, "`]`");
+
+            eIndex;
+        }
 
         nextToken();
 

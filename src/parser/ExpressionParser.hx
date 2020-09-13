@@ -110,9 +110,10 @@ class ExpressionParser {
         var left = new ExpressionNode(parser.currentToken.position, signedFactor());
 
         while (true) {
-            switch (parser.currentToken.type) {
-                case LParen: left = parser.parseCall(left);
-                case LBracket: left = parser.parseIndex(left);
+            left = switch (parser.currentToken.type) {
+                case LParen: parser.parseCall(left);
+                case LBracket: parser.parseIndex(left);
+                case Dot: parser.parseIndex(left);
 
                 default: break;
             }
