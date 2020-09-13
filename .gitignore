@@ -5,3 +5,4 @@ js/
 input.snek
 ast.json
 program.bite
+debug.log
