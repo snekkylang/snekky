@@ -54,16 +54,12 @@ let eval = func(code) {
 
         if (instruction.name == "push") {
             stack.push(instruction.value);
-        }
-
-        if (instruction.name == "add") {
+        } else if (instruction.name == "add") {
             let right = stack.pop();
             let left = stack.pop();
 
             stack.push(left + right);
-        }
-
-        if (instruction.name == "sub") {
+        } else if (instruction.name == "sub") {
             let right = stack.pop();
             let left = stack.pop();
 
