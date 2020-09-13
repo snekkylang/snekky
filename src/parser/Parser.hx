@@ -121,26 +121,29 @@ class Parser {
     public function parseIndex(target:ExpressionNode):ExpressionNode {
         final nodePos = currentToken.position;
 
-        nextToken();
-
         final index = switch (currentToken.type) {
-            case TokenType.Number:
-                new ExpressionNode(currentToken.position, parseNumber());
-            case TokenType.Ident:
+            case TokenType.Dot:
+                nextToken();
+                assertToken(TokenType.Ident, "identifier");
+
                 final eIndex = new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
                 nextToken();
 
                 eIndex;
-            default:
+            case TokenType.LBracket:
+                nextToken();
+
                 final eIndex = expressionParser.parseExpression();
 
                 assertToken(TokenType.RBracket, "`]`");
-
                 nextToken();
     
                 eIndex;
+            default: 
+                CompileError.unexpectedToken(currentToken, "`[` or `.`");
+                null;
         }
-
+        
         final indexNode = new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
 
         return if (currentToken.type == TokenType.Assign) {
