@@ -14,7 +14,7 @@ Please do not take this project too seriously. I'm in no way a professional. To 
 - Lambdas and closures are supported.
 - `If`s and functions may implicitly return a value.
 - Final (`let`) and mutable (`mut`) variables.
-- As flexible and dynamic like a snek.
+- As flexible and dynamic as a snek.
 
 ## Installation
 #### Compile it yourself
