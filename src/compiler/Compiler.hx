@@ -171,6 +171,7 @@ class Compiler {
 
                 constantPool.addConstant(Object.UserFunction(instructions.length));
 
+                symbolTable.newScope();
                 for (parameter in cFunction.parameters) {
                     final symbol = symbolTable.define(parameter.value, false);
                     emit(OpCode.Store, node.position, [symbol.index]);
@@ -180,6 +181,8 @@ class Compiler {
                 emit(OpCode.Return, node.position, []);
 
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
+
+                symbolTable.setParent();
             case NodeType.FunctionCall:
                 final cCall = cast(node, CallNode);
                 
