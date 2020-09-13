@@ -187,7 +187,26 @@ class Parser {
         final values:Map<ExpressionNode, ExpressionNode> = new Map();
 
         while (currentToken.type != TokenType.RBrace) {
-            final key = expressionParser.parseExpression();
+
+            final key = if (currentToken.type == TokenType.LBracket) {
+                nextToken();
+                final eKey = expressionParser.parseExpression();
+                assertToken(TokenType.RBracket, "`]");
+                nextToken();
+
+                eKey;
+            } else {
+                if (currentToken.type == TokenType.Ident || currentToken.type == TokenType.String) {
+                    final eKey = new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
+                    nextToken();
+
+                    eKey;
+                } else {
+                    CompileError.unexpectedToken(currentToken, "identifier or string");
+                    null;
+                }
+            }
+
             assertToken(TokenType.Colon, "`:`");
             nextToken();
             
