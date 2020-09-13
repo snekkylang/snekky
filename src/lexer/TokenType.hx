@@ -25,6 +25,7 @@ enum TokenType {
     SmallerThanOrEqual;
     BitAnd;
     BitOr;
+    StringConcat;
 
     Comma;
     Semicolon;
