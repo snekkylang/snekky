@@ -47,7 +47,7 @@ while i < 10 {
 }
 
 func(msg) {
-    print("Self-invoking function says " . msg);
+    print("Self-invoking function says " >< msg);
 }("Axolotls are cool!");
 ```
 
