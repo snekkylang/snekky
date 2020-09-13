@@ -25,16 +25,16 @@ let ins = {
 let Stack = func() {
 
     let stack = [];
-    mut stackPointer = -1;
+    mut stackPointer = 0;
 
     let push = func(value) {
-        stackPointer = stackPointer + 1;
         stack[stackPointer] = value;
+        stackPointer = stackPointer + 1;
     };
 
     let pop = func() {
-        let value = stack[stackPointer];
         stackPointer = stackPointer - 1;
+        let value = stack[stackPointer];
         return value;
     };
 
