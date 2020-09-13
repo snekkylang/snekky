@@ -1,0 +1,89 @@
+// A simple virtual machine with only three instructions.
+
+let ins = {
+    // Pushes `value` onto the stack.
+    Push: func(value) {
+        return {
+            name: "push",
+            value: value
+        };
+    },
+    // Pops two values from the stack, adds them and pushes result back onto the stack.
+    Add: func() {
+        return {
+            name: "add"
+        };
+    },
+    // Pops two values from the stack, substracts one from the other and pushes reult back onto the stack.
+    Sub: func() {
+        return {
+            name: "sub"
+        };
+    }
+};
+
+let Stack = func() {
+
+    let stack = [];
+    mut stackPointer = -1;
+
+    let push = func(value) {
+        stackPointer = stackPointer + 1;
+        stack[stackPointer] = value;
+    };
+
+    let pop = func() {
+        let value = stack[stackPointer];
+        stackPointer = stackPointer - 1;
+        return value;
+    };
+
+    return {
+        push: push,
+        pop: pop,
+        values: stack
+    };
+};
+
+let eval = func(code) {
+    let stack = Stack();
+    mut i = 0;
+
+    while i < array_length(code) {
+        let instruction = code[i];
+
+        if (instruction.name == "push") {
+            stack.push(instruction.value);
+        }
+
+        if (instruction.name == "add") {
+            let right = stack.pop();
+            let left = stack.pop();
+
+            stack.push(left + right);
+        }
+
+        if (instruction.name == "sub") {
+            let right = stack.pop();
+            let left = stack.pop();
+
+            stack.push(left - right);
+        }
+
+        i = i + 1;
+    }
+
+    print(stack.values[0]);
+};
+
+
+// Evaluates to `3`.
+let code = [
+    ins.Push(2),
+    ins.Push(3),
+    ins.Add(),
+    ins.Push(2),
+    ins.Sub()
+];
+
+eval(code);
