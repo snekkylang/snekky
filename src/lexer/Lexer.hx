@@ -144,10 +144,15 @@ class Lexer {
                     new Token(TokenType.SmallerThanOrEqual, position, "<=");
                 } else new Token(TokenType.SmallerThan, position, "<");
             case ">":
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.GreaterThanOrEqual, position, ">=");
-                } else new Token(TokenType.GreaterThan,position, ">");
+                switch (peekChar()) {
+                    case "=":
+                        readChar();
+                        new Token(TokenType.GreaterThanOrEqual, position, ">=");
+                    case "<":
+                        readChar();
+                        new Token(TokenType.StringConcat, position, "><");
+                    default: new Token(TokenType.GreaterThan,position, ">");
+                }
             case "\u{0}": new Token(TokenType.Eof, position, currentChar);
             default:
                 if (Helper.isNumber(currentChar)) {

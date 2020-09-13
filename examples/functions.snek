@@ -14,7 +14,7 @@ print(add_impl(1, 2));
 
 // Functions are expressions
 func(name) {
-    print("Hello, my name is " . name);
+    print("Hello, my name is " >< name);
 }("Senk Ju");
 
 let func_arr = [
@@ -30,7 +30,7 @@ let my_closure = func() {
     let name = "Senk Ju";
 
     let print_name = func() {
-        print("Hello, my name is " . name);
+        print("Hello, my name is " >< name);
     };
 
     print_name();
