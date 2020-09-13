@@ -285,18 +285,25 @@ class Parser {
         assertToken(TokenType.LBrace, "`{`");
 
         final consequence = parseBlock();
-        var alternative:BlockNode = null;
+        var alternative:Node = null;
 
         if (lexer.peekToken().type == TokenType.Else) {
             nextToken();
             nextToken();
 
-            assertToken(TokenType.LBrace, "`{`");
+            alternative = if (currentToken.type == TokenType.If) {
+                parseIf();
+            } else {
+                assertToken(TokenType.LBrace, "`{`");
             
-            alternative = parseBlock();
-        }
+                final block = parseBlock();
+                nextToken();
 
-        nextToken();
+                block;
+            }
+        } else {
+            nextToken();
+        }
 
         return new IfNode(nodePos, condition, consequence, alternative);
     }
