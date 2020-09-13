@@ -7,6 +7,15 @@ The Snekky Programming Language
 ### Disclaimer!
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
 
+## Features
+- Familiar syntax.
+- Compiles to a custom bytecode.
+- Arrays and hashes.
+- Lambdas and closures are supported.
+- `If`s and functions may implicitly return a value.
+- Final (`let`) and mutable (`mut`) variables.
+- As flexible and dynamic like a snek.
+
 ## Installation
 #### Compile it yourself
 1. Download and install [Haxe](https://haxe.org/).
