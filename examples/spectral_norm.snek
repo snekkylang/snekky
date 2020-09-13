@@ -81,4 +81,4 @@ let spectralnorm = func(n) {
     return sqrt(vBv / vv);
 };
 
-print(spectralnorm(5500));
+print(spectralnorm(5));
