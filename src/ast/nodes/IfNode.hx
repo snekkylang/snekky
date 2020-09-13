@@ -4,9 +4,9 @@ class IfNode extends Node {
 
     public final condition:ExpressionNode;
     public final consequence:BlockNode;
-    public final alternative:BlockNode;
+    public final alternative:Node;
 
-    public function new(position:Int, condition:ExpressionNode, consequence:BlockNode, alternative:BlockNode) {
+    public function new(position:Int, condition:ExpressionNode, consequence:BlockNode, alternative:Node) {
         super(position, NodeType.If);
 
         this.condition = condition;
