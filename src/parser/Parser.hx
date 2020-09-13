@@ -123,17 +123,23 @@ class Parser {
 
         nextToken();
 
-        final index = if (currentToken.type == TokenType.Ident) {
-            new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
-        } else {    
-            final eIndex = expressionParser.parseExpression();
+        final index = switch (currentToken.type) {
+            case TokenType.Number:
+                new ExpressionNode(currentToken.position, parseNumber());
+            case TokenType.Ident:
+                final eIndex = new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
+                nextToken();
 
-            assertToken(TokenType.RBracket, "`]`");
+                eIndex;
+            default:
+                final eIndex = expressionParser.parseExpression();
 
-            eIndex;
+                assertToken(TokenType.RBracket, "`]`");
+
+                nextToken();
+    
+                eIndex;
         }
-
-        nextToken();
 
         final indexNode = new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
 
