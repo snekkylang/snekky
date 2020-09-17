@@ -24,10 +24,14 @@ class Compiler {
     final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
 
+    final noDebug:Bool;
+
     // Positions of break instructions
     var breakPositions:Array<Int> = [];
 
-    public function new() { }
+    public function new(noDebug:Bool) {
+        this.noDebug = noDebug;
+    }
 
     public function getByteCode():Bytes {
         final output = new BytesOutput();
@@ -132,7 +136,9 @@ class Compiler {
                     CompileError.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
-                localVariableTable.define(instructions.length, cVariable.name);
+                if (!noDebug) {
+                    localVariableTable.define(instructions.length, cVariable.name);
+                }
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 compile(cVariable.value);
                 emit(OpCode.Store, cVariable.position, [symbol.index]);
@@ -142,11 +148,13 @@ class Compiler {
                 final symbol = symbolTable.resolve(cVariableAssign.name);
                 if (symbol == null) {
                     CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
-                }
-                if (!symbol.mutable) {
+                } else if (!symbol.mutable) {
                     CompileError.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
                 }
-                localVariableTable.define(instructions.length, cVariableAssign.name);
+                
+                if (!noDebug) {
+                    localVariableTable.define(instructions.length, cVariableAssign.name);
+                }
                 compile(cVariableAssign.value);
                 emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
             case NodeType.Ident:
@@ -270,7 +278,9 @@ class Compiler {
     }
 
     function emit(op:Int, position:Int, operands:Array<Int>) {
-        lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
+        if (!noDebug) {
+            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
+        }
         final instruction = Code.make(op, operands);
         
         instructions.write(instruction);

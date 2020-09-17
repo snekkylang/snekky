@@ -14,6 +14,7 @@ class Snekky {
         final args = Sys.args();
 
         filename = args[0];
+        final noDebug = args.contains("--no-debug");
 
         final byteCode = if (Path.extension(filename) == "snek") {
             code = File.getContent('./$filename');
@@ -23,7 +24,7 @@ class Snekky {
             final parser = new Parser(lexer);
             parser.generateAst();
 
-            final compiler = new Compiler();
+            final compiler = new Compiler(noDebug);
             compiler.compile(parser.ast);
 
             final byteCode = compiler.getByteCode();
