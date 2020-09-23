@@ -87,7 +87,7 @@ class ExpressionParser {
     }
 
     function term():Node {
-        var left = access();
+        var left = signedFactor();
 
         while (true) {
             final type = switch(parser.currentToken.type) {
@@ -106,8 +106,26 @@ class ExpressionParser {
         return left;
     }
 
+    function signedFactor():Node {
+        return switch (parser.currentToken.type) {
+            case TokenType.Minus:
+                parser.nextToken();
+
+                final right = access();
+
+                new OperatorNode(parser.currentToken.position, NodeType.Negation, null, right);
+            case TokenType.Bang:
+                parser.nextToken();
+
+                final right = access();
+
+                new OperatorNode(parser.currentToken.position, NodeType.Inversion, null, right);
+            default: access();
+        }
+    }
+
     function access():Node {
-        var left = new ExpressionNode(parser.currentToken.position, signedFactor());
+        var left = new ExpressionNode(parser.currentToken.position, factor());
 
         while (true) {
             left = switch (parser.currentToken.type) {
@@ -120,24 +138,6 @@ class ExpressionParser {
         }
 
         return left;
-    }
-
-    function signedFactor():Node {
-        return switch (parser.currentToken.type) {
-            case TokenType.Minus:
-                parser.nextToken();
-
-                final right = factor();
-
-                new OperatorNode(parser.currentToken.position, NodeType.Negation, null, right);
-            case TokenType.Bang:
-                parser.nextToken();
-
-                final right = factor();
-
-                new OperatorNode(parser.currentToken.position, NodeType.Inversion, null, right);
-            default: factor();
-        }
     }
 
     function factor():Node {
