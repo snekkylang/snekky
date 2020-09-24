@@ -1,10 +1,12 @@
 package object;
 
+import std.BuiltInTable.MemberFunction;
+
 enum Object {
     Float(value:Float);
     String(value:String);
     UserFunction(position:Int);
-    BuiltInFunction(index:Int);
+    BuiltInFunction(memberFunction:MemberFunction);
     Array(values:Array<Object>);
     Hash(values:Map<String, Object>);
     Null;

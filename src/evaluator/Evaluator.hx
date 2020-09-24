@@ -7,7 +7,7 @@ import haxe.io.BytesInput;
 import compiler.debug.LocalVariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
-import evaluator.builtin.BuiltInTable;
+import std.BuiltInTable;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
@@ -22,8 +22,8 @@ class Evaluator {
     final instructions:BytesInput;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
-    final builtInTable:BuiltInTable;
     final env = new Environment();
+    final builtInTable:BuiltInTable;
     public final error:RuntimeError;
 
     public function new(byteCode:Bytes) {
@@ -32,8 +32,8 @@ class Evaluator {
         localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode);
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
-
         builtInTable = new BuiltInTable(this);
+
         error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, instructions);
     }
 
@@ -60,7 +60,7 @@ class Evaluator {
                 final hashLength = instructions.readInt32();
                 final hashValues:Map<String, Object> = new Map();
 
-                for (i in 0...hashLength) {
+                for (_ in 0...hashLength) {
                     final value = stack.pop();
                     final key = stack.pop();
 
@@ -157,7 +157,7 @@ class Evaluator {
             case OpCode.LoadBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
-                stack.add(Object.BuiltInFunction(builtInIndex));
+                stack.add(builtInTable.resolveIndex(builtInIndex));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
                 final conditionValue = stack.pop();
@@ -181,8 +181,8 @@ class Evaluator {
                 switch (object) {
                     case Object.UserFunction(position):
                         instructions.position = position;
-                    case Object.BuiltInFunction(index):
-                        builtInTable.execute(index);
+                    case Object.BuiltInFunction(memberFunction):
+                        builtInTable.callFunction(memberFunction);
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:
