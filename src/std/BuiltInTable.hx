@@ -19,7 +19,9 @@ class BuiltInTable {
             new SysNamespace(evaluator),
             new ArrayNamespace(evaluator),
             new MathNamespace(evaluator),
+            #if (playground != 1)
             new FileNamespace(evaluator),
+            #end
             new StringNamespace(evaluator)
         ];
     }
@@ -29,7 +31,9 @@ class BuiltInTable {
             SysNamespace.name,
             ArrayNamespace.name,
             MathNamespace.name,
+            #if (playground != 1)
             FileNamespace.name,
+            #end
             StringNamespace.name
         ].indexOf(name);
     }

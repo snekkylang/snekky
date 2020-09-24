@@ -13,11 +13,19 @@ class Snekky {
     public static function main() {
         final args = Sys.args();
 
+        #if (playground != 1)
         filename = args[0];
+        #else
+        filename = "input.snek";
+        #end
         final noDebug = args.contains("--no-debug");
 
         final byteCode = if (Path.extension(filename) == "snek") {
+            #if (playground != 1)
             code = File.getContent('./$filename');
+            #else
+            code = args[0];
+            #end
 
             final lexer = new Lexer(code);
 
