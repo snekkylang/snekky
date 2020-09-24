@@ -17,5 +17,17 @@ class SysNamespace extends Namespace {
 
             return Object.Null;
         });
+
+        addFunctionMember("print", 1, function(parameters) {
+            Sys.print(parameters[0].toString());
+
+            return Object.Null;
+        });
+
+        addFunctionMember("read_line", 0, function(parameters) {
+            final input = Sys.stdin().readLine();
+
+            return Object.String(input);
+        });
     }
 }
