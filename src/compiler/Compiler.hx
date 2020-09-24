@@ -1,6 +1,6 @@
 package compiler;
 
-import evaluator.builtin.BuiltInTable;
+import std.BuiltInTable;
 import haxe.io.Bytes;
 import compiler.constant.ConstantPool;
 import haxe.io.BytesOutput;
@@ -161,7 +161,7 @@ class Compiler {
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
                 if (symbol == null) {
-                    final builtInIndex = BuiltInTable.getSymbolIndex(cIdent.value);
+                    final builtInIndex = BuiltInTable.resolveName(cIdent.value);
                     if (builtInIndex != -1) {
                         emit(OpCode.LoadBuiltIn, node.position, [builtInIndex]);
                     } else {
