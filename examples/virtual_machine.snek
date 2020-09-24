@@ -49,7 +49,7 @@ let eval = func(code) {
     let stack = Stack();
     mut i = 0;
 
-    while i < array_length(code) {
+    while i < Array.length(code) {
         let instruction = code[i];
 
         if (instruction.name == "push") {
@@ -69,7 +69,7 @@ let eval = func(code) {
         i = i + 1;
     }
 
-    print(stack.values[0]);
+    Sys.println(stack.values[0]);
 };
 
 
