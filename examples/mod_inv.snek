@@ -10,4 +10,4 @@ let mod_inv = func(a, b) {
     }
 };
 
-print(mod_inv(42, 2017));
+Sys.println(mod_inv(42, 2017));
