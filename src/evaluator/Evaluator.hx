@@ -37,6 +37,24 @@ class Evaluator {
         error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, instructions);
     }
 
+    public function callFunction(func:Object, parameters:Array<Object>) {
+        for (p in parameters) {
+            stack.add(p);
+        }
+
+        switch (func) {
+            case Object.UserFunction(position):
+                final oPosition = instructions.position;
+                callStack.add(new ReturnAddress(instructions.length, func));
+                instructions.position = position;
+                eval();
+                instructions.position = oPosition;
+            default:
+        }
+
+        return stack.pop();
+    }
+
     public function eval() {
         while (instructions.position < instructions.length) {
             evalInstruction();
