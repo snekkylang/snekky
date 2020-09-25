@@ -12,4 +12,11 @@ let false_func = func() {
 };
 
 // true_func will not be called because first operand is false
-Sys.println(false && true_func());
+Sys.println("`false && true_func()`: " >< (false && true_func()));
+
+Sys.println("`true && true_func()`: " >< (true && true_func()));
+
+// false_func will not be called because first operand is true
+Sys.println("`true && false_func()`: " >< (true || false_func()));
+
+Sys.println("`false && false_func()`: " >< (false || false_func()));
