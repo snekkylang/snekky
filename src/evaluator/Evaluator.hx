@@ -38,6 +38,8 @@ class Evaluator {
     }
 
     public function callFunction(func:Object, parameters:Array<Object>) {
+        parameters.reverse();
+
         for (p in parameters) {
             stack.add(p);
         }
