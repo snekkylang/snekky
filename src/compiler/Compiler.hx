@@ -102,6 +102,30 @@ class Compiler {
             case NodeType.Expression:
                 final cExpression = cast(node, ExpressionNode);
                 compile(cExpression.value);
+            case NodeType.LogicOr:
+                final cOperator = cast(node, OperatorNode);
+
+                compile(cOperator.left);
+                emit(OpCode.Not, node.position, []);
+                final jumpNotPeekInstructionPos = instructions.length;
+                emit(OpCode.JumpNotPeek, node.position, [0]);
+                emit(OpCode.Pop, node.position, []);
+                compile(cOperator.right);
+                final jumpInstructionPos = instructions.length;
+                emit(OpCode.Jump, node.position, [0]);
+                overwriteInstruction(jumpNotPeekInstructionPos, [instructions.length]);
+                emit(OpCode.Not, node.position, []);
+                overwriteInstruction(jumpInstructionPos, [instructions.length]);
+
+            case NodeType.LogicAnd:
+                final cOperator = cast(node, OperatorNode);
+
+                compile(cOperator.left);
+                final jumpNotPeekInstructionPos = instructions.length;
+                emit(OpCode.JumpNotPeek, node.position, [0]);
+                emit(OpCode.Pop, node.position, []);
+                compile(cOperator.right);
+                overwriteInstruction(jumpNotPeekInstructionPos, [instructions.length]); 
             case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
                 NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc:
 
