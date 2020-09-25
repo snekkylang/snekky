@@ -27,5 +27,17 @@ class StringNamespace extends Namespace {
 
             return Object.Null;
         });
+
+        addFunctionMember("split", 2, function(parameters) {
+            switch [parameters[0], parameters[1]] {
+                case [Object.String(string), Object.String(separator)]: 
+                    return Object.Array(string.split(separator).map(function(s) {
+                        return Object.String(s);
+                    }));
+                default: error('expected String, got ${parameters[0].getName()}');
+            }
+
+            return Object.Null;
+        });
     }
 }
