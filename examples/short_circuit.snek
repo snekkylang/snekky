@@ -1,0 +1,15 @@
+// Snekky supports short circuit evaluation of && and ||
+let true_func = func() {
+    Sys.println("true_func called");
+
+    true
+};
+
+let false_func = func() {
+    Sys.println("false_func called");
+
+    false
+};
+
+// true_func will not be called because first operand is false
+Sys.println(false && true_func());
