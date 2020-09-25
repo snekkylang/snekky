@@ -116,7 +116,6 @@ class Compiler {
                 overwriteInstruction(jumpNotPeekInstructionPos, [instructions.length]);
                 emit(OpCode.Not, node.position, []);
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
-
             case NodeType.LogicAnd:
                 final cOperator = cast(node, OperatorNode);
 
