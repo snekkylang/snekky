@@ -189,6 +189,17 @@ class Evaluator {
                         }
                     default: 
                 }
+            case OpCode.JumpNotPeek:
+                final jumpIndex = instructions.readInt32();
+                final conditionValue = stack.first();
+
+                switch (conditionValue) {
+                    case Object.Float(value):
+                        if (value == 0) {
+                            instructions.position = jumpIndex;
+                        }
+                    default: 
+                }
             case OpCode.Jump:
                 final jumpIndex = instructions.readInt32();
 
