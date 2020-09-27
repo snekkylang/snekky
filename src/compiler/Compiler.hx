@@ -124,9 +124,9 @@ class Compiler {
                 emit(OpCode.JumpNotPeek, node.position, [0]);
                 emit(OpCode.Pop, node.position, []);
                 compile(cOperator.right);
-                overwriteInstruction(jumpNotPeekInstructionPos, [instructions.length]); 
+                overwriteInstruction(jumpNotPeekInstructionPos, [instructions.length]);
             case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
-                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc:
+                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc | NodeType.NotEqual:
 
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.left);
@@ -142,6 +142,9 @@ class Compiler {
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
                     case NodeType.Modulo: emit(OpCode.Modulo, node.position, []);
                     case NodeType.StringConc: emit(OpCode.ConcatString, node.position, []);
+                    case NodeType.NotEqual:
+                        emit(OpCode.Equals, node.position, []);
+                        emit(OpCode.Not, node.position, []);
                     default:
                 }
             case NodeType.Negation | NodeType.Inversion:

@@ -20,6 +20,7 @@ enum NodeType {
     GreaterThan;
     StringConc;
     Equal;
+    NotEqual;
     Negation;
     Inversion;
 

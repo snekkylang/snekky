@@ -56,6 +56,7 @@ class ExpressionParser {
             case TokenType.SmallerThan: NodeType.SmallerThan;
             case TokenType.GreaterThan: NodeType.GreaterThan;
             case TokenType.Equal: NodeType.Equal;
+            case TokenType.NotEqual: NodeType.NotEqual;
             default: return left;
         }
 
