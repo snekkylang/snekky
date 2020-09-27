@@ -6,7 +6,7 @@ class OpCode {
     
     public static inline final Jump = 0x02;
     public static inline final JumpNot = 0x03;
-    public static inline final JumpNotPeek = 0x04;
+    public static inline final JumpPeek = 0x04;
 
     public static inline final Add = 0x05;
     public static inline final Subtract = 0x06;

@@ -189,13 +189,13 @@ class Evaluator {
                         }
                     default: 
                 }
-            case OpCode.JumpNotPeek:
+            case OpCode.JumpPeek:
                 final jumpIndex = instructions.readInt32();
                 final conditionValue = stack.first();
 
                 switch (conditionValue) {
                     case Object.Float(value):
-                        if (value == 0) {
+                        if (value == 1) {
                             instructions.position = jumpIndex;
                         }
                     default: 

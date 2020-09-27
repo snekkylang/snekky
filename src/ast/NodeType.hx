@@ -17,7 +17,9 @@ enum NodeType {
     LogicOr;
     LogicAnd;
     SmallerThan;
+    SmallerThanOrEqual;
     GreaterThan;
+    GreaterThanOrEqual;
     StringConc;
     Equal;
     NotEqual;
