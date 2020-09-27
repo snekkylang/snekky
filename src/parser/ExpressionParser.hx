@@ -55,6 +55,8 @@ class ExpressionParser {
         final type = switch (parser.currentToken.type) {
             case TokenType.SmallerThan: NodeType.SmallerThan;
             case TokenType.GreaterThan: NodeType.GreaterThan;
+            case TokenType.SmallerThanOrEqual: NodeType.SmallerThanOrEqual;
+            case TokenType.GreaterThanOrEqual: NodeType.GreaterThanOrEqual;
             case TokenType.Equal: NodeType.Equal;
             case TokenType.NotEqual: NodeType.NotEqual;
             default: return left;
