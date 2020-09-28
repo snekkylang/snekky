@@ -10,7 +10,7 @@ class MathNamespace extends Namespace {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addObjectMember("PI", Object.Float(Math.PI));
+        addObjectMember("PI", Object.Float(3));
 
         addFunctionMember("abs", 1, function(parameters) {
             switch (parameters[0]) {
