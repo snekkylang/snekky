@@ -208,11 +208,11 @@ class Evaluator {
                 final object = stack.pop();
 
                 callStack.add(new ReturnAddress(instructions.position, object));
-                env.depth++;
 
                 switch (object) {
                     case Object.UserFunction(position):
                         instructions.position = position;
+                        env.depth++;
                     case Object.BuiltInFunction(memberFunction):
                         builtInTable.callFunction(memberFunction);
                     default: error.error("object is not a function");
