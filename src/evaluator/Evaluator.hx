@@ -208,6 +208,7 @@ class Evaluator {
                 final object = stack.pop();
 
                 callStack.add(new ReturnAddress(instructions.position, object));
+                env.depth++;
 
                 switch (object) {
                     case Object.UserFunction(position):
@@ -218,6 +219,7 @@ class Evaluator {
                 }
             case OpCode.Return:
                 instructions.position = callStack.pop().byteIndex;
+                env.depth--;
                 if (stack.isEmpty()) {
                     stack.add(Object.Null);
                 }
