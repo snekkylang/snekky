@@ -1,5 +1,6 @@
 package object;
 
+import haxe.iterators.MapKeyValueIterator;
 import haxe.ds.StringMap;
 
 class ObjectHelper {
@@ -17,11 +18,20 @@ class ObjectHelper {
                 }
                 Std.string(stringArray);
             case Object.Hash(values):
-                final stringMap:StringMap<String> = new StringMap();
-                for (key => value in values) {
-                    stringMap.set(key, toString(value));
+                final buffer = new StringBuf();
+                buffer.add("{");
+                final iterator = new MapKeyValueIterator(values);
+                for (k => v in iterator) {
+                    buffer.add(k);
+                    buffer.add(": ");
+                    buffer.add(toString(v));
+                    if (iterator.hasNext()) {
+                        buffer.add(", ");
+                    }
                 }
-                Std.string(stringMap);
+                
+                buffer.add("}");
+                buffer.toString();
             case Object.Null: "null";
         }
     }
