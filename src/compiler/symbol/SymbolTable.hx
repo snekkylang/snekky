@@ -5,7 +5,7 @@ import compiler.symbol.SymbolScope;
 class SymbolTable {
 
     var symbolIndex = 0;
-    public var currentScope:SymbolScope = new SymbolScope(null);
+    public var currentScope(default, null) = new SymbolScope(null);
 
     public function new() { }
 

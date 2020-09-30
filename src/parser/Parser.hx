@@ -13,8 +13,8 @@ class Parser {
 
     final lexer:Lexer;
     final expressionParser:ExpressionParser;
-    public var ast = new BlockNode(1);
-    public var currentToken:Token;
+    public final ast = new BlockNode(1);
+    public var currentToken(default, null):Token;
     
     public function new(lexer:Lexer) {
         this.lexer = lexer;
