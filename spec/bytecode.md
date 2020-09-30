@@ -15,26 +15,27 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Pop          | 01              |          | value (any) ->                                       | Pops top element from stack and discards it.                    |
 | Jump         | 02              | position | [no change]                                          | Jumps to `position` in bytecode.                                |
 | JumpNot      | 03              | position | value (i32) ->                                       | Jumps to `position` in bytecode if top element on stack is `0`. |
-| Add          | 04              |          | value1 (f64), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
-| Subtract     | 05              |          | value1 (f64), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
-| Multiply     | 06              |          | value1 (f64), value2 (f64) -> result (f64)           | Multiplies `value2` with `value1`.                              |
-| Divide       | 07              |          | value1 (f64), value2 (f64) -> result (f64)           | Divides `value2` by `value1`.                                   |
-| Modulo       | 08              |          | value1 (f64), value2 (f64) -> result (f64)           | Performs modulo operation on `value2` with `value1`.            |
-| Equals       | 09              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Compares `value2` with `value1`.                                |
-| SmallerThan  | 0A              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is smaller than `value1`.               |
-| GreaterThan  | 0B              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is greater than `value1`.               |
-| Negate       | 0C              |          | value (f64) -> result (f64)                          | Negats `value`.                                                 |
-| Invert       | 0D              |          | value (f64/1 or 0) -> result (f64/1 or 0)            | Inverts `value` (0 -> 1, 1 -> 0).                               |
-| ConcatString | 0E              |          | value1 (any), value2 (any) -> result (str)           | Concats `value2` and `value1` to new string.                    |
-| SetLocal     | 0F              | index    | value (i32) ->                                       | Sets local `index` to `value`.                                  |
-| GetLocal     | 10              | index    | -> value (any)                                       | Pushes value of local at `index` onto the stack.                |
-| GetBuiltIn   | 11              | index    | -> value (any)                                       | Pushes builtin at `index` onto the stack.                       |
-| Call         | 12              |          | func (function) -> result (any)                      | Pushes `[arg1, arg2, ...]` onto the stack and jumps to `index`. |
-| Return       | 13              |          | [no change]                                          | Pops callstack and jumps to popped position.                    |
-| Array        | 14              | length   | [value1, value2, ...] (any) ->                       | Constructs array object with `length` elements.                 |
-| Hash         | 15              | length   | [value1, value2, ...] (any) ->                       | Constructs hash object with `length` elements.                  |
-| GetIndex     | 16              | index    | index (f64/str), target (array/hash) -> value (any)  | Pushes value of `target` at `index` onto the stack.             |
-| SetIndex     | 17              | index    | value (any), index (f64/str) target (array/hash) ->  | Sets value of `index` to `value`.                               |
+| JumpPeek     | 04              | position | [no change]                                          | Jumps to `position` in bytecode if top element on stack is `1`. |
+| Add          | 05              |          | value1 (f64), value2 (f64) -> result (f64)           | Adds `value1` to `value2`.                                      |
+| Subtract     | 06              |          | value1 (f64), value2 (f64) -> result (f64)           | Subtracts `value2` from `value1`.                               |
+| Multiply     | 07              |          | value1 (f64), value2 (f64) -> result (f64)           | Multiplies `value2` with `value1`.                              |
+| Divide       | 08              |          | value1 (f64), value2 (f64) -> result (f64)           | Divides `value2` by `value1`.                                   |
+| Modulo       | 09              |          | value1 (f64), value2 (f64) -> result (f64)           | Performs modulo operation on `value2` with `value1`.            |
+| Equals       | 0a              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Compares `value2` with `value1`.                                |
+| LessThan     | 0b              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is less than `value1`.                  |
+| GreaterThan  | 0c              |          | value1 (f64), value2 (f64) -> result (f64/1 or 0)    | Checks whether `value2` is greater than `value1`.               |
+| Negate       | 0d              |          | value (f64) -> result (f64)                          | Negats `value`.                                                 |
+| Not          | 0e              |          | value (f64/1 or 0) -> result (f64/1 or 0)            | Inverts `value` (0 -> 1, 1 -> 0).                               |
+| ConcatString | 0f              |          | value1 (any), value2 (any) -> result (str)           | Concats `value2` and `value1` to new string.                    |
+| Load         | 10              | index    | value (i32) ->                                       | Sets locale `index` to `value`.                                 |
+| Store        | 11              | index    | -> value (any)                                       | Pushes value of locale at `index` onto the stack.               |
+| LoadBuiltIn  | 12              | index    | -> value (any)                                       | Pushes builtin at `index` onto the stack.                       |
+| Call         | 13              |          | func (function) -> result (any)                      | Pops `func` from the stack and jumps to it's `position`.        |
+| Return       | 14              |          | [no change]                                          | Pops callstack and jumps to popped position.                    |
+| Array        | 15              | length   | [value1, value2, ...] (any) ->                       | Constructs array object with `length` elements.                 |
+| Hash         | 16              | length   | [value1, value2, ...] (any) ->                       | Constructs hash object with `length` elements.                  |
+| LoadIndex    | 17              | index    | index (f64/str), target (array/hash) -> value (any)  | Pushes value of `target` at `index` onto the stack.             |
+| StoreIndex   | 18              | index    | value (any), index (f64/str), target (array/hash) -> | Sets value of `index` to `value`.                               |
 
 ## Notes
 Notes must be followed to implement certain behaviors correctly.
