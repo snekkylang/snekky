@@ -1,12 +1,13 @@
 package std.lib;
 
+import haxe.ds.StringMap;
 import evaluator.Evaluator;
 import object.Object;
 
 class Namespace {
 
     public static final name:String = null;
-    final members:Map<String, Object> = new Map();
+    final members:StringMap<Object> = new StringMap();
     final evaluator:Evaluator;
 
     public function new(evaluator:Evaluator) {
