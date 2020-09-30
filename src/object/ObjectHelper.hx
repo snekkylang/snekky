@@ -1,7 +1,6 @@
 package object;
 
 import haxe.iterators.MapKeyValueIterator;
-import haxe.ds.StringMap;
 
 class ObjectHelper {
 
