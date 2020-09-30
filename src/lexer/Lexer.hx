@@ -110,9 +110,9 @@ class Lexer {
             case ",": new Token(TokenType.Comma, position, ",");
             case "+": new Token(TokenType.Plus, position, "+");
             case "-": new Token(TokenType.Minus, position, "-");
-            case "/": new Token(TokenType.Divide, position, "/");
-            case "*": new Token(TokenType.Multiply, position, "*");
-            case "%": new Token(TokenType.Modulo, position, "%");
+            case "/": new Token(TokenType.Slash, position, "/");
+            case "*": new Token(TokenType.Asterisk, position, "*");
+            case "%": new Token(TokenType.Percent, position, "%");
             case ":": new Token(TokenType.Colon, position, ":");
             case "\"": 
                 final string = readString();
@@ -130,19 +130,19 @@ class Lexer {
             case "!":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.NotEqual, position, "!=");
+                    new Token(TokenType.NotEquals, position, "!=");
                 } else new Token(TokenType.Bang, position, "!");
             case "=":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.Equal, position, "==");
+                    new Token(TokenType.Equals, position, "==");
                 } else new Token(TokenType.Assign, position, "=");
 
             case "<":
                 if (peekChar() == "=") {
                     readChar();
-                    new Token(TokenType.SmallerThanOrEqual, position, "<=");
-                } else new Token(TokenType.SmallerThan, position, "<");
+                    new Token(TokenType.LessThanOrEqual, position, "<=");
+                } else new Token(TokenType.LessThan, position, "<");
             case ">":
                 switch (peekChar()) {
                     case "=":
@@ -150,7 +150,7 @@ class Lexer {
                         new Token(TokenType.GreaterThanOrEqual, position, ">=");
                     case "<":
                         readChar();
-                        new Token(TokenType.StringConcat, position, "><");
+                        new Token(TokenType.ConcatString, position, "><");
                     default: new Token(TokenType.GreaterThan,position, ">");
                 }
             case "\u{0}": new Token(TokenType.Eof, position, currentChar);
