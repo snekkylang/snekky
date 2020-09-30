@@ -19,22 +19,26 @@ class LineNumberTable {
     }
 
     public function toByteCode():Bytes {
-        final output = new BytesOutput();
+        final tableBytes = new BytesOutput();
 
-        output.writeInt32(Lambda.count(table));
         for (byteIndex => position in table) {
-            output.writeInt32(byteIndex);
-            output.writeInt32(position.line);
-            output.writeInt32(position.linePos);
+            tableBytes.writeInt32(byteIndex);
+            tableBytes.writeInt32(position.line);
+            tableBytes.writeInt32(position.linePos);
         }
+
+        final output = new BytesOutput();
+        output.writeInt32(tableBytes.length);
+        output.write(tableBytes.getBytes());
 
         return output.getBytes();
     }
 
     public function fromByteCode(byteCode:BytesInput):LineNumberTable {
         final tableSize = byteCode.readInt32();
+        final startPosition = byteCode.position;
 
-        for (_ in 0...tableSize) {
+        while(byteCode.position < startPosition + tableSize) {
             final byteIndex = byteCode.readInt32();
             final line = byteCode.readInt32();
             final linePos = byteCode.readInt32();

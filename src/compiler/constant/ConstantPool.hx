@@ -20,26 +20,29 @@ class ConstantPool {
     }
 
     public function toByteCode():Bytes {
-        final output = new BytesOutput();
+        final constantsBytes = new BytesOutput();
 
-        output.writeInt32(constants.length);
         for (const in constants) {
             switch (const) {
                 case Object.Float(value):
-                    output.writeByte(ConstantType.Float);
-                    output.writeDouble(value);
+                    constantsBytes.writeByte(ConstantType.Float);
+                    constantsBytes.writeDouble(value);
                 case Object.String(value):
-                    output.writeByte(ConstantType.String);
-                    output.writeInt32(Bytes.ofString(value).length);
-                    output.writeString(value);
+                    constantsBytes.writeByte(ConstantType.String);
+                    constantsBytes.writeInt32(Bytes.ofString(value).length);
+                    constantsBytes.writeString(value);
                 case Object.UserFunction(position):
-                    output.writeByte(ConstantType.UserFunction);
-                    output.writeInt32(position);
+                    constantsBytes.writeByte(ConstantType.UserFunction);
+                    constantsBytes.writeInt32(position);
                 case Object.Null:
-                    output.writeByte(ConstantType.Null);
+                    constantsBytes.writeByte(ConstantType.Null);
                 default:
             }
         }
+
+        final output = new BytesOutput();
+        output.writeInt32(constantsBytes.length);
+        output.write(constantsBytes.getBytes());
 
         return output.getBytes();
     }
@@ -47,8 +50,9 @@ class ConstantPool {
     public static function fromByteCode(byteCode:BytesInput):Array<Object> {
         final pool:Array<Object> = [];
         final poolSize = byteCode.readInt32();
+        final startPosition = byteCode.position;
 
-        for (_ in 0...poolSize) {
+        while (byteCode.position < startPosition + poolSize) {
             final type = byteCode.readByte();
 
             switch (type) {
