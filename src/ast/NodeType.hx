@@ -9,22 +9,22 @@ enum NodeType {
     Ident;
     FunctionCall;
 
-    Plus;
-    Minus;
+    Add;
+    Subtract;
     Multiply;
     Divide;
     Modulo;
     LogicOr;
     LogicAnd;
-    SmallerThan;
-    SmallerThanOrEqual;
+    LessThan;
+    LessThanOrEqual;
     GreaterThan;
     GreaterThanOrEqual;
-    StringConc;
-    Equal;
-    NotEqual;
-    Negation;
-    Inversion;
+    ConcatString;
+    Equals;
+    NotEquals;
+    Negate;
+    Not;
 
     Float;
     String;

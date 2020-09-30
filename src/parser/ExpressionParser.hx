@@ -53,12 +53,12 @@ class ExpressionParser {
         final left = numeric();
 
         final type = switch (parser.currentToken.type) {
-            case TokenType.SmallerThan: NodeType.SmallerThan;
+            case TokenType.SmallerThan: NodeType.LessThan;
             case TokenType.GreaterThan: NodeType.GreaterThan;
-            case TokenType.SmallerThanOrEqual: NodeType.SmallerThanOrEqual;
+            case TokenType.SmallerThanOrEqual: NodeType.LessThanOrEqual;
             case TokenType.GreaterThanOrEqual: NodeType.GreaterThanOrEqual;
-            case TokenType.Equal: NodeType.Equal;
-            case TokenType.NotEqual: NodeType.NotEqual;
+            case TokenType.Equal: NodeType.Equals;
+            case TokenType.NotEqual: NodeType.NotEquals;
             default: return left;
         }
 
@@ -73,9 +73,9 @@ class ExpressionParser {
 
         while (true) {
             final type = switch(parser.currentToken.type) {
-                case TokenType.Plus: NodeType.Plus;
-                case TokenType.Minus: NodeType.Minus;
-                case TokenType.StringConcat: NodeType.StringConc;
+                case TokenType.Plus: NodeType.Add;
+                case TokenType.Minus: NodeType.Subtract;
+                case TokenType.StringConcat: NodeType.ConcatString;
                 default: break;
             }
 
@@ -116,13 +116,13 @@ class ExpressionParser {
 
                 final right = access();
 
-                new OperatorNode(parser.currentToken.position, NodeType.Negation, null, right);
+                new OperatorNode(parser.currentToken.position, NodeType.Negate, null, right);
             case TokenType.Bang:
                 parser.nextToken();
 
                 final right = access();
 
-                new OperatorNode(parser.currentToken.position, NodeType.Inversion, null, right);
+                new OperatorNode(parser.currentToken.position, NodeType.Not, null, right);
             default: access();
         }
     }

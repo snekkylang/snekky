@@ -125,12 +125,12 @@ class Compiler {
                 overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
                 emit(OpCode.Not, node.position, []);
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
-            case NodeType.SmallerThanOrEqual | NodeType.GreaterThanOrEqual:
+            case NodeType.LessThanOrEqual | NodeType.GreaterThanOrEqual:
                 final cOperator = cast(node, OperatorNode);
 
                 compile(cOperator.left);
                 compile(cOperator.right);
-                if (node.type == NodeType.SmallerThanOrEqual) {
+                if (node.type == NodeType.LessThanOrEqual) {
                     emit(OpCode.LessThan, node.position, []);
                 } else {
                     emit(OpCode.GreaterThan, node.position, []);
@@ -142,32 +142,32 @@ class Compiler {
                 compile(cOperator.right);
                 emit(OpCode.Equals, node.position, []);
                 overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
-            case NodeType.Plus | NodeType.Multiply | NodeType.Equal | NodeType.SmallerThan | 
-                NodeType.GreaterThan | NodeType.Minus | NodeType.Divide | NodeType.Modulo | NodeType.StringConc | NodeType.NotEqual:
+            case NodeType.Add | NodeType.Multiply | NodeType.Equals | NodeType.LessThan | 
+                NodeType.GreaterThan | NodeType.Subtract | NodeType.Divide | NodeType.Modulo | NodeType.ConcatString | NodeType.NotEquals:
 
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.left);
                 compile(cOperator.right);
 
                 switch (cOperator.type) {
-                    case NodeType.Plus: emit(OpCode.Add, node.position, []);
+                    case NodeType.Add: emit(OpCode.Add, node.position, []);
                     case NodeType.Multiply: emit(OpCode.Multiply, node.position, []);
-                    case NodeType.Equal: emit(OpCode.Equals, node.position, []);
-                    case NodeType.SmallerThan: emit(OpCode.LessThan, node.position, []);
+                    case NodeType.Equals: emit(OpCode.Equals, node.position, []);
+                    case NodeType.LessThan: emit(OpCode.LessThan, node.position, []);
                     case NodeType.GreaterThan: emit(OpCode.GreaterThan, node.position, []);
-                    case NodeType.Minus: emit(OpCode.Subtract, node.position, []);
+                    case NodeType.Subtract: emit(OpCode.Subtract, node.position, []);
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
                     case NodeType.Modulo: emit(OpCode.Modulo, node.position, []);
-                    case NodeType.StringConc: emit(OpCode.ConcatString, node.position, []);
-                    case NodeType.NotEqual:
+                    case NodeType.ConcatString: emit(OpCode.ConcatString, node.position, []);
+                    case NodeType.NotEquals:
                         emit(OpCode.Equals, node.position, []);
                         emit(OpCode.Not, node.position, []);
                     default:
                 }
-            case NodeType.Negation | NodeType.Inversion:
+            case NodeType.Negate | NodeType.Not:
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.right);
-                if (cOperator.type == NodeType.Negation) {
+                if (cOperator.type == NodeType.Negate) {
                     emit(OpCode.Negate, node.position, []);
                 } else {
                     emit(OpCode.Not, node.position, []);
