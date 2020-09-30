@@ -53,12 +53,12 @@ class ExpressionParser {
         final left = numeric();
 
         final type = switch (parser.currentToken.type) {
-            case TokenType.SmallerThan: NodeType.LessThan;
+            case TokenType.LessThan: NodeType.LessThan;
             case TokenType.GreaterThan: NodeType.GreaterThan;
-            case TokenType.SmallerThanOrEqual: NodeType.LessThanOrEqual;
+            case TokenType.LessThanOrEqual: NodeType.LessThanOrEqual;
             case TokenType.GreaterThanOrEqual: NodeType.GreaterThanOrEqual;
-            case TokenType.Equal: NodeType.Equals;
-            case TokenType.NotEqual: NodeType.NotEquals;
+            case TokenType.Equals: NodeType.Equals;
+            case TokenType.NotEquals: NodeType.NotEquals;
             default: return left;
         }
 
@@ -75,7 +75,7 @@ class ExpressionParser {
             final type = switch(parser.currentToken.type) {
                 case TokenType.Plus: NodeType.Add;
                 case TokenType.Minus: NodeType.Subtract;
-                case TokenType.StringConcat: NodeType.ConcatString;
+                case TokenType.ConcatString: NodeType.ConcatString;
                 default: break;
             }
 
@@ -94,9 +94,9 @@ class ExpressionParser {
 
         while (true) {
             final type = switch(parser.currentToken.type) {
-                case TokenType.Multiply: NodeType.Multiply;
-                case TokenType.Divide: NodeType.Divide;
-                case TokenType.Modulo: NodeType.Modulo;
+                case TokenType.Asterisk: NodeType.Multiply;
+                case TokenType.Slash: NodeType.Divide;
+                case TokenType.Percent: NodeType.Modulo;
                 default: break;
             }
 
