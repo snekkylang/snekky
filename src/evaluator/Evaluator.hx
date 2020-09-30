@@ -1,5 +1,6 @@
 package evaluator;
 
+import haxe.ds.StringMap;
 import object.Object;
 import compiler.constant.ConstantPool;
 import haxe.io.Bytes;
@@ -78,7 +79,7 @@ class Evaluator {
                 stack.add(Object.Array(arrayValues));
             case OpCode.Hash:
                 final hashLength = instructions.readInt32();
-                final hashValues:Map<String, Object> = new Map();
+                final hashValues:StringMap<Object> = new StringMap();
 
                 for (_ in 0...hashLength) {
                     final value = stack.pop();

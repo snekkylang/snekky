@@ -1,9 +1,11 @@
 package compiler.symbol;
 
+import haxe.ds.StringMap;
+
 class SymbolScope {
 
     public final parent:SymbolScope = null;
-    final symbols:Map<String, Symbol> = new Map();
+    final symbols:StringMap<Symbol> = new StringMap();
 
     public function new(parent:SymbolScope) {
         this.parent = parent;

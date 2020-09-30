@@ -1,5 +1,6 @@
 package object;
 
+import haxe.ds.StringMap;
 import std.BuiltInTable.MemberFunction;
 
 enum Object {
@@ -8,6 +9,6 @@ enum Object {
     UserFunction(position:Int);
     BuiltInFunction(memberFunction:MemberFunction);
     Array(values:Array<Object>);
-    Hash(values:Map<String, Object>);
+    Hash(values:StringMap<Object>);
     Null;
 }

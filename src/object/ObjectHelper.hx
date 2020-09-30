@@ -1,5 +1,7 @@
 package object;
 
+import haxe.ds.StringMap;
+
 class ObjectHelper {
 
     public static function toString(obj:Object) {
@@ -15,7 +17,7 @@ class ObjectHelper {
                 }
                 Std.string(stringArray);
             case Object.Hash(values):
-                final stringMap:Map<String, String> = new Map();
+                final stringMap:StringMap<String> = new StringMap();
                 for (key => value in values) {
                     stringMap.set(key, toString(value));
                 }
