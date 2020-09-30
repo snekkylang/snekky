@@ -5,7 +5,7 @@ class ErrorHelper {
     public static function repeatString(length:Int, s:String):String {
         final buffer = new StringBuf();
 
-        for (i in 0...length) {
+        for (_ in 0...length) {
             buffer.add(s);
         }
 

@@ -54,7 +54,7 @@ LineNumberTable {
 ```
 | Field name         | Data type | Description                                         |
 |--------------------|-----------|-----------------------------------------------------|
-| table_size         | i32       | The length of the table.                            |
+| table_size         | i32       | The length of the table in bytes.                   |
 | byte_index         | i32       | Position of an instruction in bytcode (its index).  |
 | source_line        | i32       | Line in source code.                                |
 | source_line_offset | i32       | Offset within the line in source code.              |
@@ -73,7 +73,7 @@ LocalVariableTable {
 ```
 | Field name           | Data type | Description                                                  |
 |----------------------|-----------|--------------------------------------------------------------|
-| table_size           | i32       | The length of the table.                                     |
+| table_size           | i32       | The length of the table in bytes.                            |
 | byte_index           | i32       | Position where the variable was set in bytecode (its index). |
 | variable_name_length | i32       | Length of the variable name (in bytes)                       |
 | variable_name        | str       | Name of the variable in source code.                         |
@@ -82,15 +82,15 @@ LocalVariableTable {
 The ConstantPool contains all constants present in the source code. A constant's value cannot change at runtime.
 ```
 ConstantPool {
-    i32 constants_size
+    i32 pool_size
     [
         <Constant>
     ]
 }
 ```
-| Field name     | Data type | Description              |
-|----------------|-----------|--------------------------|
-| constants_size | i32       | The amount of constants. |
+| Field name     | Data type | Description                               |
+|----------------|-----------|-------------------------------------------|
+| pool_size      | i32       | The length of the constant pool in bytes. |
 
 The structure of `Constant` depends on the data type of the value it contains. The following types exist:
 ```
@@ -137,7 +137,7 @@ StringConstant {
 ```
 | Field name    | Data type | Description                              |
 |---------------|-----------|------------------------------------------|
-| string_length | i32       | Length of the encoded string (in bytes). |
+| string_length | i32       | Length of the encoded string in bytes.   |
 | string        | str       | Value of the constant.                   |
 
 #### Function
@@ -163,9 +163,9 @@ Instructions {
     ]
 }
 ```
-| Field name        | Data type | Description                      |
-|-------------------|-----------|----------------------------------|
-| instructions_size | i32       | The amount of instruction bytes. |
+| Field name        | Data type | Description                          |
+|-------------------|-----------|--------------------------------------|
+| instructions_size | i32       | The length of instructions in bytes. |
 
 #### Instruction
 An instruction tells the VM to perform exactly one specific operation. A program usually consists of a large number of instructions.
