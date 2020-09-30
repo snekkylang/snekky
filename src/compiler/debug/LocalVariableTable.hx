@@ -19,23 +19,26 @@ class LocalVariableTable {
     }
 
     public function toByteCode():Bytes {
-        final output = new BytesOutput();
-
-        output.writeInt32(Lambda.count(table));
+        final tableBytes = new BytesOutput();
 
         for (byteIndex => localName in table) {
-            output.writeInt32(byteIndex);
-            output.writeInt32(Bytes.ofString(localName).length);
-            output.writeString(localName);
+            tableBytes.writeInt32(byteIndex);
+            tableBytes.writeInt32(Bytes.ofString(localName).length);
+            tableBytes.writeString(localName);
         }
+
+        final output = new BytesOutput();
+        output.writeInt32(tableBytes.length);
+        output.write(tableBytes.getBytes());
 
         return output.getBytes();
     }
 
     public function fromByteCode(byteCode:BytesInput):LocalVariableTable {
         final tableSize = byteCode.readInt32();
+        final startPosition = byteCode.position;
 
-        for (_ in 0...tableSize) {
+        while(byteCode.position < startPosition + tableSize) {
             final byteIndex = byteCode.readInt32();
             final localNameLength = byteCode.readInt32();
             final localName = byteCode.readString(localNameLength);
