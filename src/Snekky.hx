@@ -39,6 +39,7 @@ class Snekky {
 
             if (args.contains("--dump")) {
                 File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
+                Sys.exit(0);
             }
 
             byteCode;
