@@ -8,8 +8,8 @@ class CompileError {
         Console.logPrefix = "";
     }
 
-    final filename:String;
-    final code:String;
+    public var filename:String;
+    public var code:String;
 
     public function new(filename:String, code:String) {
         this.filename = filename;

@@ -4,37 +4,42 @@ import haxe.io.BytesInput;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
+private typedef FilenameEntry = {start:Int, end:Int, filename:String};
+
 class FilenameTable {
 
-    final table:Map<Int, {end:Int, filename:String}> = new Map();
+    final table:Array<FilenameEntry> = [];
 
     public function new() {}
 
     public function define(start:Int, end:Int, filename:String) {
-        if (!table.exists(start)) {
-            table.set(start, {end: end, filename: filename});
-        }
+        table.push({start: start, end: end, filename: filename});
     }
 
     public function resolve(byteIndex:Int):String {
-        final entry = table.get(byteIndex);
+        var prev:FilenameEntry = null;
 
-        if (entry != null) {
-            return if (entry.end >= byteIndex) {
-                entry.filename;
-            } else {
-                resolve(byteIndex - 1);
+        for (entry in table) {
+            if (entry.start <= byteIndex && entry.end >= byteIndex) {
+                if (prev == null) {
+                    prev = entry;
+                    continue;
+                }
+
+                if (entry.start >= prev.start && entry.end <= prev.end) {
+                    prev = entry;
+                }
             }
         }
 
-        return resolve(byteIndex - 1);
+        return prev.filename;
     }
 
     public function toByteCode():Bytes {
         final tableBytes = new BytesOutput();
 
-        for (start => entry in table) {
-            tableBytes.writeInt32(start);
+        for (entry in table) {
+            tableBytes.writeInt32(entry.start);
             tableBytes.writeInt32(entry.end);
             tableBytes.writeInt32(Bytes.ofString(entry.filename).length);
             tableBytes.writeString(entry.filename);
@@ -57,7 +62,7 @@ class FilenameTable {
             final filenameLength = byteCode.readInt32();
             final filename = byteCode.readString(filenameLength);
 
-            table.set(start, {end: end, filename: filename});
+            table.push({start: start, end: end, filename: filename});
         }
 
         return this;

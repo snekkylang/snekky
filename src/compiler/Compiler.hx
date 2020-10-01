@@ -25,8 +25,7 @@ class Compiler {
     final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
     final filenameTable = new FilenameTable();
-    var error:CompileError;
-    var code:String;
+    var error:CompileError = new CompileError("", "");
 
     final noDebug:Bool;
 
@@ -56,13 +55,20 @@ class Compiler {
             case NodeType.File:
                 final cFile = cast(node, FileNode);
 
-                code = cFile.code;
-                error = new CompileError(cFile.filename, cFile.code);
+                final pFilename = error.filename;
+                final pCode = error.code;
+
+                error.filename = cFile.filename;
+                error.code = cFile.code;
+
                 final startIndex = instructions.length;
 
                 for (blockNode in cFile.body) {
                     compile(blockNode);
                 }
+
+                error.filename = pFilename;
+                error.code = pCode;
 
                 filenameTable.define(startIndex, instructions.length, cFile.filename);
             case NodeType.Block:
@@ -339,7 +345,7 @@ class Compiler {
 
     function emit(op:Int, position:Int, operands:Array<Int>) {
         if (!noDebug) {
-            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(code, position));
+            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(error.code, position));
         }
         final instruction = Code.make(op, operands);
         
