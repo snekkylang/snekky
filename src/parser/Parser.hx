@@ -391,13 +391,13 @@ class Parser {
     function parseToken(block:BlockNode) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
-            #if (playground != 1)
             case TokenType.Return: block.addNode(parseReturn());
-            #end
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.Break: block.addNode(parseBreak());
+            #if (playground != 1)
             case TokenType.Import: block.addNode(parseImport());
+            #end
             case TokenType.LBrace: 
                 block.addNode(parseBlock()); 
                 nextToken();
