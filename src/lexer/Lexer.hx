@@ -1,11 +1,16 @@
 package lexer;
 
+import haxe.io.Path;
+
 class Lexer {
+
+    public final filename:String;
     public final code:String;
     var currentChar = ' ';
     var position = 0;
 
-    public function new(code:String) {
+    public function new(filename:String, code:String) {
+        this.filename = Path.normalize(filename);
         this.code = code;
     }
 

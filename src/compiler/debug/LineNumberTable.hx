@@ -38,7 +38,7 @@ class LineNumberTable {
         final tableSize = byteCode.readInt32();
         final startPosition = byteCode.position;
 
-        while(byteCode.position < startPosition + tableSize) {
+        while (byteCode.position < startPosition + tableSize) {
             final byteIndex = byteCode.readInt32();
             final line = byteCode.readInt32();
             final linePos = byteCode.readInt32();

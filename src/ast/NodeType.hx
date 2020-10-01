@@ -1,6 +1,7 @@
 package ast;
 
 enum NodeType {
+    File;
     Block;
     Expression;
     Statement;

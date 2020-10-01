@@ -1,5 +1,6 @@
 package compiler;
 
+import compiler.debug.FilenameTable;
 import std.BuiltInTable;
 import haxe.io.Bytes;
 import compiler.constant.ConstantPool;
@@ -23,6 +24,9 @@ class Compiler {
     final lineNumberTable = new LineNumberTable();
     final localVariableTable = new LocalVariableTable();
     final symbolTable = new SymbolTable();
+    final filenameTable = new FilenameTable();
+    var error:CompileError;
+    var code:String;
 
     final noDebug:Bool;
 
@@ -35,6 +39,7 @@ class Compiler {
 
     public function getByteCode():Bytes {
         final output = new BytesOutput();
+        output.write(filenameTable.toByteCode());
         output.write(lineNumberTable.toByteCode());
         output.write(localVariableTable.toByteCode());
         output.write(constantPool.toByteCode());
@@ -48,6 +53,18 @@ class Compiler {
 
     public function compile(node:Node) {
         switch(node.type) {
+            case NodeType.File:
+                final cFile = cast(node, FileNode);
+
+                code = cFile.code;
+                error = new CompileError(cFile.filename, cFile.code);
+                final startIndex = instructions.length;
+
+                for (blockNode in cFile.body) {
+                    compile(blockNode);
+                }
+
+                filenameTable.define(startIndex, instructions.length, cFile.filename);
             case NodeType.Block:
                 final cBlock = cast(node, BlockNode);
 
@@ -176,7 +193,7 @@ class Compiler {
                 final cVariable = cast(node, VariableNode);
 
                 if (symbolTable.currentScope.exists(cVariable.name)) {
-                    CompileError.redeclareVariable(cVariable.position, cVariable.name);
+                    error.redeclareVariable(cVariable.position, cVariable.name);
                 }
 
                 if (!noDebug) {
@@ -190,9 +207,9 @@ class Compiler {
 
                 final symbol = symbolTable.resolve(cVariableAssign.name);
                 if (symbol == null) {
-                    CompileError.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
+                    error.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
                 } else if (!symbol.mutable) {
-                    CompileError.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
+                    error.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
                 }
                 
                 if (!noDebug) {
@@ -208,7 +225,7 @@ class Compiler {
                     if (builtInIndex != -1) {
                         emit(OpCode.LoadBuiltIn, node.position, [builtInIndex]);
                     } else {
-                        CompileError.symbolUndefined(cIdent.position, cIdent.value);
+                        error.symbolUndefined(cIdent.position, cIdent.value);
                     }
                 } else {
                     emit(OpCode.Load, node.position, [symbol.index]);     
@@ -322,7 +339,7 @@ class Compiler {
 
     function emit(op:Int, position:Int, operands:Array<Int>) {
         if (!noDebug) {
-            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(position));
+            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(code, position));
         }
         final instruction = Code.make(op, operands);
         

@@ -6,28 +6,25 @@ import lexer.Lexer;
 import sys.io.File;
 
 class Snekky {
-
-    public static var filename:String;
-    public static var code:String;
     
     public static function main() {
         final args = Sys.args();
 
         #if (playground != 1)
-        filename = args[0];
+        final filename = args[0];
         #else
-        filename = "input.snek";
+        final filename = "input.snek";
         #end
         final noDebug = args.contains("--no-debug");
 
         final byteCode = if (Path.extension(filename) == "snek") {
             #if (playground != 1)
-            code = File.getContent('./$filename');
+            final code = File.getContent('./$filename');
             #else
-            code = args[0];
+            final code = args[0];
             #end
 
-            final lexer = new Lexer(code);
+            final lexer = new Lexer(filename, code);
 
             final parser = new Parser(lexer);
             parser.generateAst();

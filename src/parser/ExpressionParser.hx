@@ -150,7 +150,7 @@ class ExpressionParser {
                 final disjunction = disjunction();
 
                 if (parser.currentToken.type != TokenType.RParen) {
-                    CompileError.unexpectedToken(parser.currentToken, "`)`");
+                    parser.error.unexpectedToken(parser.currentToken, "`)`");
                 }
 
                 parser.nextToken();
@@ -206,7 +206,7 @@ class ExpressionParser {
                 nullN;
 
             default: 
-                CompileError.unexpectedToken(parser.currentToken, "expression");
+                parser.error.unexpectedToken(parser.currentToken, "expression");
                 new Node(-1, NodeType.Ident);
         }
     }
