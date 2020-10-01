@@ -1,5 +1,6 @@
 package evaluator;
 
+import haxe.zip.Uncompress;
 import compiler.debug.FilenameTable;
 import haxe.ds.StringMap;
 import object.Object;
@@ -29,8 +30,13 @@ class Evaluator {
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
 
-    public function new(byteCode:Bytes) {
-        final byteCode = new BytesInput(byteCode);
+    public function new(fileData:Bytes) {
+        final fileData = new BytesInput(fileData);
+        final byteCode = if (fileData.readByte() == 1) {
+            new BytesInput(Uncompress.run(fileData.readAll()));
+        } else {
+            new BytesInput(fileData.readAll());
+        }
         filenameTable = new FilenameTable().fromByteCode(byteCode);
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         localVariableTable = new LocalVariableTable().fromByteCode(byteCode);

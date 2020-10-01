@@ -16,6 +16,7 @@ class Snekky {
         final filename = "input.snek";
         #end
         final noDebug = args.contains("--no-debug");
+        final noCompress = args.contains("--no-compress");
 
         final byteCode = if (Path.extension(filename) == "snek") {
             #if (playground != 1)
@@ -32,7 +33,7 @@ class Snekky {
             final compiler = new Compiler(noDebug);
             compiler.compile(parser.ast);
 
-            final byteCode = compiler.getByteCode();
+            final byteCode = compiler.getByteCode(!noCompress);
 
             if (args.contains("--dump")) {
                 File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
