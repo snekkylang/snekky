@@ -51,6 +51,7 @@ class Evaluator {
         switch (func) {
             case Object.UserFunction(position):
                 final oPosition = instructions.position;
+                env.depth++;
                 callStack.add(new ReturnAddress(instructions.length, func));
                 instructions.position = position;
                 eval();
