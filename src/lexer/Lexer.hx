@@ -41,23 +41,20 @@ class Lexer {
     }
 
     function readString():String {
-        return if (peekChar() == "\"") {
-            readChar();
-            "";
-        } else {
-            readChar();
+        readChar();
 
-            final startPosition = position;
+        final string = new StringBuf();
 
-            while (peekChar() != "\"" && peekChar() != "\u{0}") {
+        while (currentChar != "\"" && currentChar != "\u{0}") {
+            if (currentChar == "\\") {
                 readChar();
             }
 
-            final string = code.substring(startPosition - 1, position);
+            string.add(currentChar);
             readChar();
-
-            string;
         }
+
+        return string.toString();
     }
 
     function readNumber():String {
