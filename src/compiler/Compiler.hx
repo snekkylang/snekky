@@ -1,5 +1,6 @@
 package compiler;
 
+import haxe.zip.Compress;
 import compiler.debug.FilenameTable;
 import std.BuiltInTable;
 import haxe.io.Bytes;
@@ -36,16 +37,24 @@ class Compiler {
         this.noDebug = noDebug;
     }
 
-    public function getByteCode():Bytes {
-        final output = new BytesOutput();
-        output.write(filenameTable.toByteCode());
-        output.write(lineNumberTable.toByteCode());
-        output.write(localVariableTable.toByteCode());
-        output.write(constantPool.toByteCode());
+    public function getByteCode(compress:Bool):Bytes {
+        final program = new BytesOutput();
+        program.write(filenameTable.toByteCode());
+        program.write(lineNumberTable.toByteCode());
+        program.write(localVariableTable.toByteCode());
+        program.write(constantPool.toByteCode());
 
         final instructionsByteCode = instructions.getBytes();
-        output.writeInt32(instructionsByteCode.length);
-        output.write(instructionsByteCode);
+        program.writeInt32(instructionsByteCode.length);
+        program.write(instructionsByteCode);
+
+        final output = new BytesOutput();
+        output.writeByte(compress ? 1 : 0);
+        if (compress) {
+            output.write(Compress.run(program.getBytes(), 9));
+        } else {
+            output.write(program.getBytes());
+        }
 
         return output.getBytes();
     }
