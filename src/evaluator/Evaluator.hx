@@ -1,5 +1,6 @@
 package evaluator;
 
+import compiler.debug.FilenameTable;
 import haxe.ds.StringMap;
 import object.Object;
 import compiler.constant.ConstantPool;
@@ -21,6 +22,7 @@ class Evaluator {
     public final callStack:GenericStack<ReturnAddress> = new GenericStack();
     final constantPool:Array<Object>;
     final instructions:BytesInput;
+    final filenameTable:FilenameTable;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
     final env = new Environment();
@@ -29,13 +31,14 @@ class Evaluator {
 
     public function new(byteCode:Bytes) {
         final byteCode = new BytesInput(byteCode);
+        filenameTable = new FilenameTable().fromByteCode(byteCode);
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode);
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
         builtInTable = new BuiltInTable(this);
 
-        error = new RuntimeError(callStack, this.lineNumberTable, this.localVariableTable, instructions);
+        error = new RuntimeError(callStack, lineNumberTable, localVariableTable, filenameTable, instructions);
     }
 
     public function callFunction(func:Object, parameters:Array<Object>) {

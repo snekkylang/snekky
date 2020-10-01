@@ -1,5 +1,6 @@
 package error;
 
+import compiler.debug.FilenameTable;
 import haxe.io.BytesInput;
 import object.Object;
 import evaluator.ReturnAddress;
@@ -12,12 +13,14 @@ class RuntimeError {
     final callStack:GenericStack<ReturnAddress>;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
+    final filenameTable:FilenameTable;
     final byteCode:BytesInput;
 
-    public function new(callStack:GenericStack<ReturnAddress>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable, byteCode:BytesInput) {
+    public function new(callStack:GenericStack<ReturnAddress>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
         this.callStack = callStack;
         this.lineNumberTable = lineNumberTable;
         this.localVariableTable = localVariableTable;
+        this.filenameTable = filenameTable;
         this.byteCode = byteCode;
     }
 
@@ -27,6 +30,7 @@ class RuntimeError {
 
     function printStackTrace() {
         var position = lineNumberTable.resolve(byteCode.position);
+        final filename = filenameTable.resolve(byteCode.position);
 
         while (!callStack.isEmpty()) {
             final returnAddress = callStack.pop();
@@ -35,12 +39,12 @@ class RuntimeError {
                 default: -1;
             }
             final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
-            Console.log('   at ${functionName == null ? "[native]" : functionName } (???:${position.line}:${position.linePos + 1})');
+            Console.log('   at ${functionName == null ? "[native]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
             position = lineNumberTable.resolve(returnAddress.byteIndex);
         }
 
-        Console.log('   at [global] (???:${position.line}:${position.linePos + 1})');
+        Console.log('   at [global] ($filename:${position.line}:${position.linePos + 1})');
     }
 
     public function error(message:String) {

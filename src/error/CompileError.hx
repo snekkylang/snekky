@@ -8,7 +8,15 @@ class CompileError {
         Console.logPrefix = "";
     }
 
-    static function getMinIndentation(code:Array<String>):Int {
+    final filename:String;
+    final code:String;
+
+    public function new(filename:String, code:String) {
+        this.filename = filename;
+        this.code = code;
+    }
+
+    function getMinIndentation(code:Array<String>):Int {
         var min = 2147483647;
 
         for (line in code) {
@@ -34,8 +42,8 @@ class CompileError {
         return min;
     }
 
-    static function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int, message:String = null) {
-        final codePreviewFull = Snekky.code.split("\n");
+    function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int, message:String = null) {
+        final codePreviewFull = code.split("\n");
         final previewStart = ErrorHelper.clamp(1, errorLine - 2, errorLine - 2);
         final previewEnd = ErrorHelper.clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
 
@@ -80,12 +88,12 @@ class CompileError {
         } 
     }
 
-    static function printHead(line:Int, linePos:Int, message:String) {
-        Console.log('<b>${Snekky.filename}:$line:${linePos + 1}</> <#DE4A3F>error:</> $message.');
+    function printHead(line:Int, linePos:Int, message:String) {
+        Console.log('<b>${filename}:$line:${linePos + 1}</> <#DE4A3F>error:</> $message.');
     }
 
-    public static function unexpectedToken(token:Token, expected:String) {
-        final position = ErrorHelper.resolvePosition(token.position);
+    public function unexpectedToken(token:Token, expected:String) {
+        final position = ErrorHelper.resolvePosition(code, token.position);
         printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
@@ -93,58 +101,50 @@ class CompileError {
         Sys.exit(0);
     }
 
-    public static function missingSemicolon(token:Token) {
-        final position = ErrorHelper.resolvePosition(token.position);
+    public function missingSemicolon(token:Token) {
+        final position = ErrorHelper.resolvePosition(code, token.position);
         printHead(position.line, position.linePos, "missing semicolon");
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
     }
 
-    public static function unexpectedEof(token:Token) {
-        final position = ErrorHelper.resolvePosition(token.position);
+    public function unexpectedEof(token:Token) {
+        final position = ErrorHelper.resolvePosition(code, token.position);
         printHead(position.line, position.linePos, 'unexpcted end of file');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
     }
     
-    public static function illegalToken(token:Token) {
-        final position = ErrorHelper.resolvePosition(token.position);
+    public function illegalToken(token:Token) {
+        final position = ErrorHelper.resolvePosition(code, token.position);
         printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
         Sys.exit(0);
     }
 
-    public static function symbolUndefined(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(cPosition);
+    public function symbolUndefined(cPosition:Int, symbol:String) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
         printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
         printCode(position.line, position.linePos, -1, "not found in this scope");
 
         Sys.exit(0);
     }
 
-    public static function symbolImmutable(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(cPosition);
+    public function symbolImmutable(cPosition:Int, symbol:String) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
         printHead(position.line, position.linePos, 'cannot re-assign to immutable variable `$symbol`');
         printCode(position.line, position.linePos, -1, "cannot be re-assgined");
 
         Sys.exit(0);
     }
 
-    public static function redeclareVariable(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(cPosition);
+    public function redeclareVariable(cPosition:Int, symbol:String) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
         printHead(position.line, position.linePos, 'cannot re-declare immutable variable `$symbol`');
         printCode(position.line, position.linePos, -1, "has already been declared in this scope");
-
-        Sys.exit(0);
-    }
-
-    public static function valueEmpty(cPosition:Int) {
-        final position = ErrorHelper.resolvePosition(cPosition);
-        printHead(position.line, position.linePos, "expression value could be undefined");
-        printCode(position.line, position.linePos, -1, "might not evaluate");
 
         Sys.exit(0);
     }

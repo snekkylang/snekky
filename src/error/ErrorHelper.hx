@@ -22,12 +22,12 @@ class ErrorHelper {
         }
     }
 
-    public static function resolvePosition(position:Int):{line:Int, linePos:Int} {
+    public static function resolvePosition(code:String, position:Int):{line:Int, linePos:Int} {
         var line = 1;
         var linePos = 0;
 
         for (i in 0...position) {
-            if (~/\r\n|\n/.match(Snekky.code.charAt(i))) {
+            if (~/\r\n|\n/.match(code.charAt(i))) {
                 line++;
                 linePos = 0;
             } else {

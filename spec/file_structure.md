@@ -6,7 +6,8 @@ This document describes the structure of a Snekky bytecode file.
 
 - [Syntax Definition](#syntax-definition)
 - [Bytecode Structure](#bytecode-structure)
-    - [LinerNumberTable](#linenumbertable)
+    - [FilenameTable](#filenametable)
+    - [LineNumberTable](#linenumbertable)
     - [LocalVariableTable](#localvariabletable)
     - [ConstantPool](#constantpool)
         - [Float](#float)
@@ -33,12 +34,34 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Litte endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
 ```
 Bytecode File {
+    <FilenameTable>
     <LineNumberTable>
     <LocalVariableTable>
     <ConstantPool>
     <Instructions>
 }
 ```
+
+### FilenameTable
+The FilenameTable maps a start and an end position in the bytecode to the name of the source file it was generated from.
+```
+FilenameTable {
+    i32 table_size
+    [
+        i32 start_byte_index
+        i32 end_byte_index
+        i32 filename_length
+        str filename
+    ]
+}
+```
+| Field name           | Data type | Description                                                    |
+|----------------------|-----------|----------------------------------------------------------------|
+| table_size           | i32       | The length of the table in bytes.                              |
+| start_byte_index     | i32       | Start position of the bytecode generated from the source file. |
+| end_byte_index       | i32       | End position of the bytecode generated from the source file.   |
+| filename_length      | i32       | Length of the source filename (in bytes).                      |
+| filename             | str       | Name of the source file.                                       |
 
 ### LineNumberTable
 The LineNumberTable maps the position of an instruction in bytecode (the index) to the position in source code of the structure responsible for it. The LineNumberTable is structured as follows:
@@ -75,7 +98,7 @@ LocalVariableTable {
 |----------------------|-----------|--------------------------------------------------------------|
 | table_size           | i32       | The length of the table in bytes.                            |
 | byte_index           | i32       | Position where the variable was set in bytecode (its index). |
-| variable_name_length | i32       | Length of the variable name (in bytes)                       |
+| variable_name_length | i32       | Length of the variable name (in bytes).                      |
 | variable_name        | str       | Name of the variable in source code.                         |
 
 ### ConstantPool

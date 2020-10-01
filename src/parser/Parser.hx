@@ -13,11 +13,14 @@ class Parser {
 
     final lexer:Lexer;
     final expressionParser:ExpressionParser;
-    public final ast = new BlockNode(1);
+    public final error:CompileError;
+    public final ast:FileNode;
     public var currentToken(default, null):Token;
     
     public function new(lexer:Lexer) {
         this.lexer = lexer;
+        ast = new FileNode(1, lexer.filename, lexer.code);
+        error = new CompileError(lexer.filename, lexer.code);
 
         expressionParser = new ExpressionParser(this, lexer);
         currentToken = lexer.readToken();
@@ -51,7 +54,7 @@ class Parser {
 
         while (currentToken.type != TokenType.RBrace) {
             if (currentToken.type == TokenType.Eof) {
-                CompileError.unexpectedEof(currentToken);
+                error.unexpectedEof(currentToken);
             }
 
             parseToken(block);
@@ -73,10 +76,10 @@ class Parser {
             if (currentToken.type == TokenType.Ident) {
                 parameters.push(new IdentNode(currentToken.position, currentToken.literal));
                 if (lexer.peekToken().type != TokenType.Comma && lexer.peekToken().type != TokenType.RParen) {
-                    CompileError.unexpectedToken(currentToken, "`,` or `)`");
+                    error.unexpectedToken(currentToken, "`,` or `)`");
                 }
             } else if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
-                CompileError.unexpectedToken(currentToken, "identifier or `)`");
+                error.unexpectedToken(currentToken, "identifier or `)`");
             } else {
                 assertToken(TokenType.Comma, "identifier");
             }
@@ -105,7 +108,7 @@ class Parser {
         while (currentToken.type != TokenType.RParen) {
             callParameters.push(expressionParser.parseExpression());
             if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen) {
-                CompileError.unexpectedToken(currentToken, "identifier or `)`");
+                error.unexpectedToken(currentToken, "identifier or `)`");
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             } else {
@@ -140,7 +143,7 @@ class Parser {
     
                 eIndex;
             default: 
-                CompileError.unexpectedToken(currentToken, "`[` or `.`");
+                error.unexpectedToken(currentToken, "`[` or `.`");
                 null;
         }
         
@@ -166,7 +169,7 @@ class Parser {
         while (currentToken.type != TokenType.RBracket) {
             values.push(expressionParser.parseExpression());
             if (currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RBracket) {
-                CompileError.unexpectedToken(currentToken, "expression or `]`");
+                error.unexpectedToken(currentToken, "expression or `]`");
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             } else {
@@ -202,7 +205,7 @@ class Parser {
 
                     eKey;
                 } else {
-                    CompileError.unexpectedToken(currentToken, "identifier or string");
+                    error.unexpectedToken(currentToken, "identifier or string");
                     null;
                 }
             }
@@ -212,7 +215,7 @@ class Parser {
             
             final value = expressionParser.parseExpression();
             if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.RBrace) {
-                CompileError.unexpectedToken(currentToken, "`,` or `}`");
+                error.unexpectedToken(currentToken, "`,` or `}`");
             } else if (currentToken.type == TokenType.Comma) {
                 nextToken();
             }
@@ -355,15 +358,33 @@ class Parser {
         return statement;
     }
 
+    function parseImport():FileNode {
+        nextToken();
+
+        assertToken(TokenType.String, "string containing path to source file");
+        final filename = '${currentToken.literal}.snek';
+        nextToken();
+        assertSemicolon();
+        nextToken();
+        final code = File.getContent(filename);
+
+        final lexer = new Lexer(filename, code);
+
+        final parser = new Parser(lexer);
+        parser.generateAst();
+
+        return parser.ast;
+    }
+
     function assertToken(type:TokenType, expected:String) {
         if (currentToken.type != type) {
-            CompileError.unexpectedToken(currentToken, expected);
+            error.unexpectedToken(currentToken, expected);
         }
     }
 
     function assertSemicolon() {
         if (currentToken.type != TokenType.Semicolon) {
-            CompileError.missingSemicolon(currentToken);
+            error.missingSemicolon(currentToken);
         }
     }
 
@@ -374,6 +395,7 @@ class Parser {
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.Break: block.addNode(parseBreak());
+            case TokenType.Import: block.addNode(parseImport());
             case TokenType.LBrace: 
                 block.addNode(parseBlock()); 
                 nextToken();
@@ -383,7 +405,7 @@ class Parser {
                 } else {
                     block.addNode(parseStatement());
                 }
-            case TokenType.Illegal: CompileError.illegalToken(currentToken);
+            case TokenType.Illegal: error.illegalToken(currentToken);
             default: block.addNode(parseStatement());
         }
     }
