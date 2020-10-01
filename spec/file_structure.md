@@ -1,5 +1,5 @@
 # File Structure
-###### Last updated 2020-09-08
+###### Last updated 2020-01-10
 This document describes the structure of a Snekky bytecode file.
 
 **Table of Contents**
@@ -34,6 +34,7 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Litte endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
 ```
 Bytecode File {
+    byt compressed
     <FilenameTable>
     <LineNumberTable>
     <LocalVariableTable>
@@ -41,6 +42,9 @@ Bytecode File {
     <Instructions>
 }
 ```
+| Field name           | Data type | Description                                                    |
+|----------------------|-----------|----------------------------------------------------------------|
+| compressed           | byt       | Indicates whether the file has ben compressed (1=yes, 0=no).   |
 
 ### FilenameTable
 The FilenameTable maps a start and an end position in the bytecode to the name of the source file it was generated from.
