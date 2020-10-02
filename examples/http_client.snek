@@ -1,0 +1,12 @@
+let client = Http.Client("http://www.brainjar.com/java/host/test.html");
+client.addHeader("Custom", "Axolotl");
+
+client.onData = func(data) {
+    Sys.println(data);
+};
+
+client.onStatus = func(status) {
+    Sys.println(status);
+};
+
+client.request(false);
