@@ -1,22 +1,22 @@
 // Snekky supports short circuit evaluation of && and ||
-let true_func = func() {
+let trueFunc = func() {
     Sys.println("true_func called");
 
     true
 };
 
-let false_func = func() {
+let falseFunc = func() {
     Sys.println("false_func called");
 
     false
 };
 
 // true_func will not be called because first operand is false
-Sys.println("`false && true_func()`: " >< (false && true_func()));
+Sys.println("`false && trueFunc()`: " >< (false && trueFunc()));
 
-Sys.println("`true && true_func()`: " >< (true && true_func()));
+Sys.println("`true && trueFunc()`: " >< (true && trueFunc()));
 
 // false_func will not be called because first operand is true
-Sys.println("`true || false_func()`: " >< (true || false_func()));
+Sys.println("`true || falseFunc()`: " >< (true || falseFunc()));
 
-Sys.println("`false || false_func()`: " >< (false || false_func()));
+Sys.println("`false || falseFunc()`: " >< (false || falseFunc()));

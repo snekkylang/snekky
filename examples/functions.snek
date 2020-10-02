@@ -6,11 +6,11 @@ let add = func(a, b) {
 Sys.println(add(1, 2));
 
 // Implicit returns are supported
-let add_impl = func(a, b) {
+let addImpl = func(a, b) {
     a + b
 };
 
-Sys.println(add_impl(1, 2));
+Sys.println(addImpl(1, 2));
 
 // Functions are expressions
 func(name) {
@@ -26,14 +26,14 @@ let func_arr = [
 Sys.println(func_arr[0]());
 
 // Closures are supported
-let my_closure = func() {
+let myClosure = func() {
     let name = "Senk Ju";
 
-    let print_name = func() {
+    let printName = func() {
         Sys.println("Hello, my name is " >< name);
     };
 
-    print_name();
+    printName();
 };
 
-my_closure();
+myClosure();
