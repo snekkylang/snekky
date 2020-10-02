@@ -16,7 +16,7 @@ class Snekky {
         final filename = "input.snek";
         #end
         final noDebug = args.contains("--no-debug");
-        final noCompress = args.contains("--no-compress");
+        final noCompress = !args.contains("--dump") || args.contains("--no-compress");
 
         final byteCode = if (Path.extension(filename) == "snek") {
             #if (playground != 1)
