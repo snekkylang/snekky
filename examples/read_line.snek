@@ -1,3 +1,3 @@
 Sys.print("Enter a name: ");
-let input = Sys.read_line();
+let input = Sys.readLine();
 Sys.println(input >< " is cool");

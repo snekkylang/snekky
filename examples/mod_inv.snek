@@ -1,4 +1,4 @@
-let mod_inv = func(a, b) {
+let modInv = func(a, b) {
     mut i = 0;
 
     while i < b {
@@ -10,4 +10,4 @@ let mod_inv = func(a, b) {
     }
 };
 
-Sys.println(mod_inv(42, 2017));
+Sys.println(modInv(42, 2017));

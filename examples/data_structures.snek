@@ -1,29 +1,29 @@
 // Simple array
-let simple_array = [1, "Axolotl", 2.3];
-Sys.println(simple_array[1]);
-simple_array[1] = "Gods";
-simple_array.push(42);
-Sys.println(simple_array.length());
+let simpleArray = [1, "Axolotl", 2.3];
+Sys.println(simpleArray[1]);
+simpleArray[1] = "Gods";
+simpleArray.push(42);
+Sys.println(simpleArray.length());
 
 // Arrays may contain any expression
-let complex_array = [
+let complexArray = [
     func() {
         2 + 3
     },
     42,
     3.4,
-    [ "Another array" ],
+    ["Another array"],
     {
-        my_key: 5
+        myKey: 5
     }
 ];
 
 // Hashes contain key-value-pairs
-let my_hash = {
-    my_func: func(a) {
+let myHash = {
+    myFunc: func(a) {
         a + 7
     },
     number: 23
 };
 
-Sys.println(my_hash.my_func(my_hash.number));
+Sys.println(myHash.myFunc(myHash.number));
