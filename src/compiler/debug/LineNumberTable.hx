@@ -4,9 +4,11 @@ import haxe.io.BytesInput;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
+private typedef Position = {line:Int, linePos:Int}; 
+
 class LineNumberTable {
 
-    final table:Map<Int, {line:Int, linePos:Int}> = new Map();
+    final table:Map<Int, Position> = new Map();
 
     public function new() {}
 
@@ -14,8 +16,18 @@ class LineNumberTable {
         table.set(byteIndex, sourcePosition);
     }
 
-    public function resolve(byteIndex:Int) {
-        return table.get(byteIndex);
+    public function resolve(byteIndex:Int):Position {
+        if (byteIndex < 0) {
+            return null;
+        }
+
+        final position = table.get(byteIndex);
+
+        return if (position != null) {
+            position;
+        } else {
+            resolve(byteIndex - 1);
+        }
     }
 
     public function toByteCode():Bytes {

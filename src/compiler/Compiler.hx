@@ -254,7 +254,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constantPool.addConstant(Object.UserFunction(instructions.length));
+                constantPool.addConstant(Object.UserFunction(instructions.length, cFunction.parameters.length));
 
                 symbolTable.newScope();
                 for (parameter in cFunction.parameters) {
@@ -278,7 +278,7 @@ class Compiler {
 
                 compile(cCall.target);
 
-                emit(OpCode.Call, node.position, []);
+                emit(OpCode.Call, node.position, [cCall.parameters.length]);
             case NodeType.Return:
                 final cReturn = cast(node, ReturnNode);
 
