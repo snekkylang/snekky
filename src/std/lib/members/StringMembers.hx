@@ -10,7 +10,7 @@ class StringMembers extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("to_string", 1, function(parameters) {
+        addFunctionMember("toString", 1, function(parameters) {
             return Object.String(parameters[0].toString());
         });
 
@@ -23,7 +23,7 @@ class StringMembers extends MemberObject {
             return Object.Null;
         });
 
-        addFunctionMember("char_at", 2, function(parameters) {
+        addFunctionMember("charAt", 2, function(parameters) {
             switch [parameters[0], parameters[1]] {
                 case [Object.String(string), Object.Float(index)]: return Object.String(string.charAt(Std.int(index)));
                 default: error('expected String, got ${parameters[0].getName()}');
