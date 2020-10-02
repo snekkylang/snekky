@@ -79,7 +79,9 @@ class Compiler {
                 error.filename = pFilename;
                 error.code = pCode;
 
-                filenameTable.define(startIndex, instructions.length, cFile.filename);
+                if (!noDebug) {
+                    filenameTable.define(startIndex, instructions.length, cFile.filename);
+                }
             case NodeType.Block:
                 final cBlock = cast(node, BlockNode);
 

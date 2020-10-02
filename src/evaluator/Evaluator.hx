@@ -112,9 +112,15 @@ class Evaluator {
                         array[Std.int(arrayIndex)];
                     case [Object.Hash(hash), Object.String(hashIndex)]:
                         hash.get(hashIndex);
-                    default: 
-                        error.error("index operator cannot be used on this datatype");      
-                        Object.Float(-1);
+                    case [_, Object.String(memberName)]:
+                        final members = builtInTable.resolveObject(target);
+                        switch (members) {
+                            case Object.Hash(values):
+                                stack.add(target);
+                                values.get(memberName);
+                            default: null;
+                        }  
+                    default: null;
                 }
 
                 if (value == null) {

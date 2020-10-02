@@ -3,7 +3,7 @@ package std.lib.namespaces;
 import object.Object;
 import evaluator.Evaluator;
 
-class MathNamespace extends Namespace {
+class MathNamespace extends MemberObject {
 
     public static final name = "Math";
 

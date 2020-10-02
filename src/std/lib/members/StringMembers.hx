@@ -1,14 +1,18 @@
-package std.lib.namespaces;
+package std.lib.members;
 
 import object.Object;
 import evaluator.Evaluator;
 
-class StringNamespace extends Namespace {
+using object.ObjectHelper;
 
-    public static final name = "String";
+class StringMembers extends MemberObject {
 
     public function new(evaluator:Evaluator) {
         super(evaluator);
+
+        addFunctionMember("to_string", 1, function(parameters) {
+            return Object.String(parameters[0].toString());
+        });
 
         addFunctionMember("length", 1, function(parameters) {
             switch (parameters[0]) {

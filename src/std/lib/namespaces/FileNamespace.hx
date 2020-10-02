@@ -4,7 +4,7 @@ import sys.io.File;
 import object.Object;
 import evaluator.Evaluator;
 
-class FileNamespace extends Namespace {
+class FileNamespace extends MemberObject {
 
     public static final name = "File";
 
