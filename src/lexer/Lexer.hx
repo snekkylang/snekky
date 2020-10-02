@@ -8,6 +8,7 @@ class Lexer {
     public final code:String;
     var currentChar = ' ';
     var position = 0;
+    var inString = false;
 
     public function new(filename:String, code:String) {
         this.filename = Path.normalize(filename);
@@ -41,6 +42,7 @@ class Lexer {
     }
 
     function readString():String {
+        inString = true;
         readChar();
 
         final string = new StringBuf();
@@ -54,6 +56,7 @@ class Lexer {
             readChar();
         }
 
+        inString = false;
         return string.toString();
     }
 
@@ -74,7 +77,7 @@ class Lexer {
     }
 
     function eatComment() {
-        if (currentChar == "/" && peekChar() == "/") {
+        if (!inString && currentChar == "/" && peekChar() == "/") {
             while (!Helper.isLinebreak(currentChar) && currentChar != "\u{0}") {
                 readChar();
             }

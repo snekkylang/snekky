@@ -29,6 +29,7 @@ class BuiltInTable {
             new MathNamespace(evaluator),
             #if (playground != 1)
             new FileNamespace(evaluator),
+            new HttpNamespace(evaluator)
             #end
         ];
 
@@ -49,6 +50,7 @@ class BuiltInTable {
             MathNamespace.name,
             #if (playground != 1)
             FileNamespace.name,
+            HttpNamespace.name
             #end
         ].indexOf(name);
     }
