@@ -164,7 +164,7 @@ class Evaluator {
                     case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.UserFunction(leftPos, _), Object.UserFunction(rightPos, _)]: leftPos == rightPos ? 1 : 0;
-                    case [OpCode.Equals, Object.BuiltInFunction(leftIndex), Object.BuiltInFunction(rightIndex)]: leftIndex == rightIndex ? 1 : 0;
+                    case [OpCode.Equals, Object.BuiltInFunction(leftFunc, _), Object.BuiltInFunction(rightFunc, _)]: leftFunc.equals(rightFunc) ? 1 : 0;
                     case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Null, Object.Null]: 1;
@@ -237,8 +237,11 @@ class Evaluator {
                         }
                         instructions.position = position;
                         env.depth++;
-                    case Object.BuiltInFunction(memberFunction):
-                        builtInTable.callFunction(memberFunction);
+                    case Object.BuiltInFunction(_, funcParametersCount):
+                        if (callParametersCount != funcParametersCount) {
+                            error.error("wrong number of arguments to function");
+                        }
+                        builtInTable.callFunction(object);
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:
