@@ -237,10 +237,7 @@ class Evaluator {
                         }
                         instructions.position = position;
                         env.depth++;
-                    case Object.BuiltInFunction(_, funcParametersCount):
-                        if (callParametersCount != funcParametersCount) {
-                            error.error("wrong number of arguments to function");
-                        }
+                    case Object.BuiltInFunction(_, _):
                         builtInTable.callFunction(object);
                     default: error.error("object is not a function");
                 }
