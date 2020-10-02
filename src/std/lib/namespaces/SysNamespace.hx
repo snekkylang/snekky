@@ -5,7 +5,7 @@ import evaluator.Evaluator;
 
 using object.ObjectHelper;
 
-class SysNamespace extends Namespace {
+class SysNamespace extends MemberObject {
 
     public static final name = "Sys";
 

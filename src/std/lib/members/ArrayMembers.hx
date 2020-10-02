@@ -1,14 +1,18 @@
-package std.lib.namespaces;
+package std.lib.members;
 
 import object.Object;
 import evaluator.Evaluator;
 
-class ArrayNamespace extends Namespace {
+using object.ObjectHelper;
 
-    public static final name = "Array";
+class ArrayMembers extends MemberObject {
 
     public function new(evaluator:Evaluator) {
         super(evaluator);
+
+        addFunctionMember("to_string", 1, function(parameters) {
+            return Object.String(parameters[0].toString());
+        });
 
         addFunctionMember("push", 2, function(parameters) {
             switch (parameters[0]) {
@@ -48,7 +52,7 @@ class ArrayNamespace extends Namespace {
                 default: error('expected Array, got ${parameters[1].getName()}');
             }
 
-            return Object.Null;
+            return parameters[0];
         });
     }
 }

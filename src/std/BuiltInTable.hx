@@ -1,6 +1,14 @@
 package std;
 
-import std.lib.Namespace;
+import std.lib.members.NullMembers;
+import std.lib.members.HashMembers;
+import std.lib.members.BuiltInFunctionMembers;
+import std.lib.members.UserFunctionMembers;
+import std.lib.members.FloatMembers;
+import haxe.ds.EnumValueMap;
+import std.lib.members.StringMembers;
+import std.lib.members.ArrayMembers;
+import std.lib.MemberObject;
 import std.lib.namespaces.*;
 import evaluator.Evaluator;
 import object.Object;
@@ -9,7 +17,8 @@ typedef MemberFunction = {parametersCount:Int, memberFunction:Array<Object>->Obj
 
 class BuiltInTable {
 
-    final namespaces:Array<Namespace>;
+    final namespaces:Array<MemberObject>;
+    final members:Array<MemberObject>;
     final evaluator:Evaluator;
 
     public function new(evaluator:Evaluator) {
@@ -17,29 +26,39 @@ class BuiltInTable {
 
         namespaces = [
             new SysNamespace(evaluator),
-            new ArrayNamespace(evaluator),
             new MathNamespace(evaluator),
             #if (playground != 1)
             new FileNamespace(evaluator),
             #end
-            new StringNamespace(evaluator)
+        ];
+
+        members = [
+            new FloatMembers(evaluator),
+            new StringMembers(evaluator),
+            new UserFunctionMembers(evaluator),
+            new BuiltInFunctionMembers(evaluator),
+            new ArrayMembers(evaluator),
+            new HashMembers(evaluator),
+            new NullMembers(evaluator)
         ];
     }
 
     public static function resolveName(name:String):Int {
         return [
             SysNamespace.name,
-            ArrayNamespace.name,
             MathNamespace.name,
             #if (playground != 1)
             FileNamespace.name,
             #end
-            StringNamespace.name
         ].indexOf(name);
     }
 
     public function resolveIndex(index:Int):Object {
         return namespaces[index].getObject();
+    }
+
+    public function resolveObject(obj:Object):Object {
+        return members[obj.getIndex()].getObject();
     }
 
     public function callFunction(memberFunction:MemberFunction) {

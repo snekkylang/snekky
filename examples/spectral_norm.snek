@@ -5,11 +5,11 @@ let A = func(i, j) {
 let Au = func(u, v) {
     mut i = 0;
 
-    while i < Array.length(u) {
+    while i < u.length() {
         mut t = 0.0;
         mut j = 0;
 
-        while j < Array.length(u) {
+        while j < u.length() {
             t = t + A(i, j) * u[j];
 
             j = j + 1;
@@ -23,11 +23,11 @@ let Au = func(u, v) {
 let Atu = func(u, v) {
     mut i = 0;
 
-    while i < Array.length(u) {
+    while i < u.length() {
         mut t = 0.0;
         mut j = 0;
 
-        while j < Array.length(u) {
+        while j < u.length() {
             t = t + A(j, i) * u[j];
 
             j = j + 1;
@@ -53,9 +53,9 @@ let spectralnorm = func(n) {
     mut vBv = 0.0;
 
     while i < n {
-        Array.push(u, 1);
-        Array.push(v, 0);
-        Array.push(w, 0);
+        u.push(1);
+        v.push(0);
+        w.push(0);
 
         i = i + 1;
     }

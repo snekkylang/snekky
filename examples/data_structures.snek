@@ -2,8 +2,8 @@
 let simple_array = [1, "Axolotl", 2.3];
 Sys.println(simple_array[1]);
 simple_array[1] = "Gods";
-Array.push(simple_array, 42);
-Sys.println(Array.length(simple_array));
+simple_array.push(42);
+Sys.println(simple_array.length());
 
 // Arrays may contain any expression
 let complex_array = [
@@ -12,11 +12,9 @@ let complex_array = [
     },
     42,
     3.4,
-    [
-        "Another array"
-    ],
+    [ "Another array" ],
     {
-        "my_key": 5
+        my_key: 5
     }
 ];
 
