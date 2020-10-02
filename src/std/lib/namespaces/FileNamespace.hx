@@ -11,7 +11,7 @@ class FileNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("read_utf8", 1, function(parameters) {
+        addFunctionMember("read", 1, function(parameters) {
             try {
                 switch (parameters[0]) {
                     case Object.String(path):
@@ -26,7 +26,7 @@ class FileNamespace extends MemberObject {
             return Object.Null;
         });
 
-        addFunctionMember("write_utf8", 2, function(parameters) {
+        addFunctionMember("write", 2, function(parameters) {
             try {
                 switch [parameters[0], parameters[1]] {
                     case [Object.String(path), Object.String(value)]:

@@ -24,7 +24,7 @@ class SysNamespace extends MemberObject {
             return Object.Null;
         });
 
-        addFunctionMember("read_line", 0, function(parameters) {
+        addFunctionMember("readLine", 0, function(parameters) {
             final input = Sys.stdin().readLine();
 
             return Object.String(input);
