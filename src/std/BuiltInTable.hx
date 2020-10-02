@@ -61,21 +61,21 @@ class BuiltInTable {
         return members[obj.getIndex()].getObject();
     }
 
-    public function callFunction(memberFunction:MemberFunction) {
+    public function callFunction(builtInFunction:Object) {
         final parameters:Array<Object> = [];
 
-        for (_ in 0...memberFunction.parametersCount) {
-            final parameter = evaluator.stack.pop();
-
-            if (parameter == null) {
-                evaluator.error.error('wrong number of arguments to function');
-            }
-
-            parameters.push(parameter);
+        switch (builtInFunction) {
+            case Object.BuiltInFunction(memberFunction, parametersCount):
+                for (_ in 0...parametersCount) {
+                    final parameter = evaluator.stack.pop();
+        
+                    parameters.push(parameter);
+                }
+        
+                final returnValue = memberFunction(parameters);
+                evaluator.stack.add(returnValue);
+                evaluator.callStack.pop();
+            default:
         }
-
-        final returnValue = memberFunction.memberFunction(parameters);
-        evaluator.stack.add(returnValue);
-        evaluator.callStack.pop();
     }
 }

@@ -19,7 +19,7 @@ class MemberObject {
     }
 
     function addFunctionMember(memberName:String, parametersCount:Int, memberFunction:Array<Object>->Object) {
-        members.set(memberName, Object.BuiltInFunction({parametersCount: parametersCount, memberFunction: memberFunction}));
+        members.set(memberName, Object.BuiltInFunction(memberFunction, parametersCount));
     } 
 
     function addObjectMember(name:String, object:Object) {
