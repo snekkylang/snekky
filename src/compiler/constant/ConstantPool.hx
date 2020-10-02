@@ -31,9 +31,10 @@ class ConstantPool {
                     constantsBytes.writeByte(ConstantType.String);
                     constantsBytes.writeInt32(Bytes.ofString(value).length);
                     constantsBytes.writeString(value);
-                case Object.UserFunction(position):
+                case Object.UserFunction(position, parametersCount):
                     constantsBytes.writeByte(ConstantType.UserFunction);
                     constantsBytes.writeInt32(position);
+                    constantsBytes.writeInt16(parametersCount);
                 case Object.Null:
                     constantsBytes.writeByte(ConstantType.Null);
                 default:
@@ -65,7 +66,8 @@ class ConstantPool {
                     pool.push(Object.String(value));
                 case ConstantType.UserFunction:
                     final position = byteCode.readInt32();
-                    pool.push(Object.UserFunction(position));
+                    final parametersCount = byteCode.readInt16();
+                    pool.push(Object.UserFunction(position, parametersCount));
                 case ConstantType.Null:
                     pool.push(Object.Null);
                 default:

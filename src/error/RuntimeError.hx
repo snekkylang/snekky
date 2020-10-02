@@ -35,11 +35,11 @@ class RuntimeError {
         while (!callStack.isEmpty()) {
             final returnAddress = callStack.pop();
             final functionPosition:Int = switch (returnAddress.calledFunction) {
-                case Object.UserFunction(position): position;
+                case Object.UserFunction(position, _): position;
                 default: -1;
             }
             final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
-            Console.log('   at ${functionName == null ? "[native]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
+            Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
             position = lineNumberTable.resolve(returnAddress.byteIndex);
         }

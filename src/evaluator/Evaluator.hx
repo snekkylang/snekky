@@ -55,7 +55,10 @@ class Evaluator {
         }
 
         switch (func) {
-            case Object.UserFunction(position):
+            case Object.UserFunction(position, parametersCount):
+                if (parameters.length != parametersCount) {
+                    error.error("wrong number of arguments to function");
+                }
                 final oPosition = instructions.position;
                 env.depth++;
                 callStack.add(new ReturnAddress(instructions.length, func));
@@ -160,7 +163,7 @@ class Evaluator {
                     case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal > rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]: leftVal == rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.UserFunction(leftPos), Object.UserFunction(rightPos)]: leftPos == rightPos ? 1 : 0;
+                    case [OpCode.Equals, Object.UserFunction(leftPos, _), Object.UserFunction(rightPos, _)]: leftPos == rightPos ? 1 : 0;
                     case [OpCode.Equals, Object.BuiltInFunction(leftIndex), Object.BuiltInFunction(rightIndex)]: leftIndex == rightIndex ? 1 : 0;
                     case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
@@ -222,12 +225,16 @@ class Evaluator {
 
                 instructions.position = jumpIndex;
             case OpCode.Call:
+                final callParametersCount = instructions.readInt32();
                 final object = stack.pop();
 
                 callStack.add(new ReturnAddress(instructions.position, object));
 
                 switch (object) {
-                    case Object.UserFunction(position):
+                    case Object.UserFunction(position, funcParametersCount):
+                        if (callParametersCount != funcParametersCount) {
+                            error.error("wrong number of arguments to function");
+                        }
                         instructions.position = position;
                         env.depth++;
                     case Object.BuiltInFunction(memberFunction):
