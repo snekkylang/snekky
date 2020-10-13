@@ -1,5 +1,6 @@
 package evaluator;
 
+import cpp.Object;
 import haxe.zip.Uncompress;
 import compiler.debug.FilenameTable;
 import haxe.ds.StringMap;
@@ -20,13 +21,13 @@ using object.ObjectHelper;
 class Evaluator {
 
     public final stack:GenericStack<Object> = new GenericStack();
-    public final callStack:GenericStack<ReturnAddress> = new GenericStack();
+    public var frames:GenericStack<Frame> = new GenericStack();
+    public var currentFrame:Frame;
     final constantPool:Array<Object>;
     final instructions:BytesInput;
     final filenameTable:FilenameTable;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
-    final env = new Environment();
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
 
@@ -44,27 +45,33 @@ class Evaluator {
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
         builtInTable = new BuiltInTable(this);
 
-        error = new RuntimeError(callStack, lineNumberTable, localVariableTable, filenameTable, instructions);
+        error = new RuntimeError(frames, lineNumberTable, localVariableTable, filenameTable, instructions);
+        frames.add(new Frame(null, 0, Object.Null));
+        currentFrame = frames.first();
     }
 
-    public function callFunction(func:Object, parameters:Array<Object>) {
+    public function callFunction(closure:Object, parameters:Array<Object>) {
         parameters.reverse();
 
         for (p in parameters) {
             stack.add(p);
         }
 
-        switch (func) {
-            case Object.UserFunction(position, parametersCount):
-                if (parameters.length != parametersCount) {
-                    error.error("wrong number of arguments to function");
+        switch (closure) {
+            case Object.Closure(func, frame):
+                switch (func) {
+                    case Object.UserFunction(position, parametersCount):
+                        if (parameters.length != parametersCount) {
+                            error.error("wrong number of arguments to function");
+                        }
+                        final oPosition = instructions.position;
+                        frames.add(new Frame(frame, instructions.length, func));
+                        currentFrame = frames.first();
+                        instructions.position = position;
+                        eval();
+                        instructions.position = oPosition;
+                    default:
                 }
-                final oPosition = instructions.position;
-                env.depth++;
-                callStack.add(new ReturnAddress(instructions.length, func));
-                instructions.position = position;
-                eval();
-                instructions.position = oPosition;
             default:
         }
 
@@ -177,21 +184,26 @@ class Evaluator {
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
-                stack.add(constantPool[constantIndex]);
+                final constant = switch (constantPool[constantIndex]) {
+                    case Object.UserFunction(_, _): Object.Closure(constantPool[constantIndex], currentFrame);
+                    default: constantPool[constantIndex];
+                }
+
+                stack.add(constant);
             case OpCode.Store:
                 final localIndex = instructions.readInt32();
 
                 final value = stack.pop();
 
                 if (value == null) {
-                    env.setVariable(localIndex, Object.Null);
+                    currentFrame.setVariable(localIndex, Object.Null);
                 } else {
-                    env.setVariable(localIndex, value);
+                    currentFrame.setVariable(localIndex, value);
                 }
             case OpCode.Load:
                 final localIndex = instructions.readInt32();
 
-                final value = env.getVariable(localIndex);
+                final value = currentFrame.getVariable(localIndex);
 
                 stack.add(value);
             case OpCode.LoadBuiltIn:
@@ -228,22 +240,25 @@ class Evaluator {
                 final callParametersCount = instructions.readInt32();
                 final object = stack.pop();
 
-                callStack.add(new ReturnAddress(instructions.position, object));
-
                 switch (object) {
-                    case Object.UserFunction(position, funcParametersCount):
-                        if (callParametersCount != funcParametersCount) {
-                            error.error("wrong number of arguments to function");
+                    case Object.Closure(func, frame):
+                        frames.add(new Frame(frame, instructions.position, object));
+                        currentFrame = frames.first();
+                        switch (func) {
+                            case Object.UserFunction(position, funcParametersCount):
+                                if (callParametersCount != funcParametersCount) {
+                                    error.error("wrong number of arguments to function");
+                                }
+                                instructions.position = position;
+                            case Object.BuiltInFunction(_, _):
+                                builtInTable.callFunction(func);
+                            default: error.error("object is not a function");
                         }
-                        instructions.position = position;
-                        env.depth++;
-                    case Object.BuiltInFunction(_, _):
-                        builtInTable.callFunction(object);
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:
-                instructions.position = callStack.pop().byteIndex;
-                env.depth--;
+                instructions.position = frames.pop().returnAddress;
+                currentFrame = frames.first();
                 if (stack.isEmpty()) {
                     stack.add(Object.Null);
                 }

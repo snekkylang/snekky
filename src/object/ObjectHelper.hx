@@ -9,6 +9,7 @@ class ObjectHelper {
             case Object.Float(value): Std.string(value);
             case Object.String(value): value;
             case Object.UserFunction(position, _): '#func($position, UserDefined)';
+            case Object.Closure(func, _): '#closure(${toString(func)})';
             case Object.BuiltInFunction(_): '#func(BuiltIn)';
             case Object.Array(values):
                 final stringArray:Array<String> = [];

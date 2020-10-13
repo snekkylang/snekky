@@ -3,21 +3,21 @@ package error;
 import compiler.debug.FilenameTable;
 import haxe.io.BytesInput;
 import object.Object;
-import evaluator.ReturnAddress;
+import evaluator.Frame;
 import compiler.debug.LocalVariableTable;
 import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;
 
 class RuntimeError {
 
-    final callStack:GenericStack<ReturnAddress>;
+    final frames:GenericStack<Frame>;
     final lineNumberTable:LineNumberTable;
     final localVariableTable:LocalVariableTable;
     final filenameTable:FilenameTable;
     final byteCode:BytesInput;
 
-    public function new(callStack:GenericStack<ReturnAddress>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
-        this.callStack = callStack;
+    public function new(frames:GenericStack<Frame>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
+        this.frames = frames;
         this.lineNumberTable = lineNumberTable;
         this.localVariableTable = localVariableTable;
         this.filenameTable = filenameTable;
@@ -30,21 +30,20 @@ class RuntimeError {
 
     function printStackTrace() {
         var position = lineNumberTable.resolve(byteCode.position);
-        final filename = filenameTable.resolve(byteCode.position);
+        var filename = filenameTable.resolve(byteCode.position);
 
-        while (!callStack.isEmpty()) {
-            final returnAddress = callStack.pop();
-            final functionPosition:Int = switch (returnAddress.calledFunction) {
+        while (!frames.isEmpty()) {
+            final frame = frames.pop();
+            final functionPosition:Int = switch (frame.calledFunction) {
                 case Object.UserFunction(position, _): position;
                 default: -1;
             }
             final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
             Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
-            position = lineNumberTable.resolve(returnAddress.byteIndex);
+            position = lineNumberTable.resolve(frame.returnAddress);
+            filename = filenameTable.resolve(frame.returnAddress);
         }
-
-        Console.log('   at [global] ($filename:${position.line}:${position.linePos + 1})');
     }
 
     public function error(message:String) {
