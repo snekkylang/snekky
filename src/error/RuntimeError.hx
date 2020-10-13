@@ -35,7 +35,11 @@ class RuntimeError {
         while (!frames.isEmpty()) {
             final frame = frames.pop();
             final functionPosition:Int = switch (frame.calledFunction) {
-                case Object.UserFunction(position, _): position;
+                case Object.Closure(func, _):
+                    switch (func) {
+                        case Object.UserFunction(position, _): position;
+                        default: -1;
+                    }
                 default: -1;
             }
             final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
