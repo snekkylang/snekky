@@ -4,30 +4,19 @@ import object.Object;
 
 class Environment {
 
-    final variables:Array<Array<Object>> = [];
-    public var depth = 0;
+    final variables:Array<Object> = [];
 
     public function new() {}
 
-    public function setVariable(index:Int, value:Object) {
-        if (variables[index] == null) {
-            variables[index] = [];
-        }
-            
-        variables[index][depth] = value;
+    public function setVariable(index:Int, value:Object) {            
+        variables[index] = value;
     }
 
     public function getVariable(index:Int):Object {
-        var i = depth;
+        return variables[index];
+    }
 
-        while (i >= 0) {
-            if (variables[index][i] != null) {
-                return variables[index][i];
-            }
-
-            i--;
-        }
-
-        return null;
+    public function hasVariable(index:Int):Bool {
+        return variables[index] != null;
     }
 }

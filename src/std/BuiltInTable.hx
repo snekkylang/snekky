@@ -37,6 +37,7 @@ class BuiltInTable {
             new FloatMembers(evaluator),
             new StringMembers(evaluator),
             new UserFunctionMembers(evaluator),
+            new UserFunctionMembers(evaluator),
             new BuiltInFunctionMembers(evaluator),
             new ArrayMembers(evaluator),
             new HashMembers(evaluator),
@@ -80,7 +81,8 @@ class BuiltInTable {
         
                 final returnValue = memberFunction(parameters);
                 evaluator.stack.add(returnValue);
-                evaluator.callStack.pop();
+                evaluator.frames.pop();
+                evaluator.currentFrame = evaluator.frames.first();
             default:
         }
     }

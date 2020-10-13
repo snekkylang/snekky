@@ -1,6 +1,5 @@
 package std.lib.members;
 
-import object.Object;
 import evaluator.Evaluator;
 
 using object.ObjectHelper;
