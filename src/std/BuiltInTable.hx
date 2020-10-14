@@ -5,7 +5,6 @@ import std.lib.members.HashMembers;
 import std.lib.members.BuiltInFunctionMembers;
 import std.lib.members.UserFunctionMembers;
 import std.lib.members.FloatMembers;
-import haxe.ds.EnumValueMap;
 import std.lib.members.StringMembers;
 import std.lib.members.ArrayMembers;
 import std.lib.MemberObject;
@@ -27,6 +26,7 @@ class BuiltInTable {
         namespaces = [
             new SysNamespace(evaluator),
             new MathNamespace(evaluator),
+            new StringNamespace(evaluator),
             #if (playground != 1)
             new FileNamespace(evaluator),
             new HttpNamespace(evaluator)
@@ -49,6 +49,7 @@ class BuiltInTable {
         return [
             SysNamespace.name,
             MathNamespace.name,
+            StringNamespace.name,
             #if (playground != 1)
             FileNamespace.name,
             HttpNamespace.name
