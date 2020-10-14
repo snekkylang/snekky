@@ -1,0 +1,82 @@
+let Evaluator = func(ast) {
+
+    mut executeBlock = null;
+    mut currentBlock = null;
+
+    let getVariableScope = func(name, block) {
+        return if block.getVariable(name) != null {
+            block
+        } else if block.parent != null {
+            getVariableScope(name, block.parent)
+        } else {
+            null
+        };
+    };
+
+    let evalExpression = func(expr) {
+        return if expr.type == NodeType.Add {
+            evalExpression(expr.left) + evalExpression(expr.right)
+        } else if expr.type == NodeType.Subtract {
+            evalExpression(expr.left) - evalExpression(expr.right)
+        } else if expr.type == NodeType.LessThan {
+            evalExpression(expr.left) < evalExpression(expr.right)
+        } else if expr.type == NodeType.GreaterThan {
+            evalExpression(expr.left) > evalExpression(expr.right)
+        } else if expr.type == NodeType.Equals {
+            evalExpression(expr.left) == evalExpression(expr.right)
+        } else if expr.type == NodeType.Ident {
+            getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+        } else {
+            expr.value
+        };
+    };
+
+    let executeInstruction = func(ins) {
+        if ins.type == NodeType.Variable {
+            let variableScope = getVariableScope(ins.name, currentBlock);
+            if variableScope != null {
+                variableScope.setVariable(ins.name, evalExpression(ins.value.value));
+            } else {
+                currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
+            }
+        } else if ins.type == NodeType.Puts {
+            Sys.println(evalExpression(ins.value.value));
+        } else if ins.type == NodeType.If {
+            let condition = evalExpression(ins.condition.value);
+            if condition {
+                executeBlock(ins.consequence);
+            } else if (ins.alternative != null) {
+                executeBlock(ins.alternative);
+            }
+        } else if ins.type == NodeType.While {
+            mut condition = evalExpression(ins.condition.value);
+            while condition {
+                executeBlock(ins.body);
+
+                condition = evalExpression(ins.condition.value);
+            }  
+        }
+    };
+
+    executeBlock = func(block) {
+        let lastBlock = currentBlock;
+        currentBlock = block;
+
+        mut i = 0;
+        while i < block.nodes.length() {
+            executeInstruction(block.nodes[i]);
+
+            i = i + 1;
+        }
+
+        currentBlock = lastBlock;
+    };
+
+    let execute = func() {
+        executeBlock(ast);
+    };
+
+    return {
+        execute: execute
+    };
+};

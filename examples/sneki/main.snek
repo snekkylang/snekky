@@ -1,0 +1,12 @@
+// Extremely rudimentary programming language written in Snekky
+
+import "lexer/lexer";
+import "parser/parser";
+import "evaluator/evaluator";
+
+let code = File.read("./input.sneki");
+let lexer = Lexer(code);
+let parser = Parser(lexer);
+parser.generateAst();
+let evaluator = Evaluator(parser.ast);
+evaluator.execute();

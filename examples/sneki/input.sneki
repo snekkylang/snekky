@@ -1,0 +1,11 @@
+i = 0;
+
+while i < 10 {
+    puts i;
+
+    if i == 5 {
+        puts "is 5";
+    }
+
+    i = i + 1;
+} 
