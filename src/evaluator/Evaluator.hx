@@ -128,16 +128,12 @@ class Evaluator {
                             case Object.Hash(values):
                                 stack.add(target);
                                 values.get(memberName);
-                            default: null;
+                            default: Object.Null;
                         }  
-                    default: null;
+                    default: Object.Null;
                 }
 
-                if (value == null) {
-                    error.error("index out of bounds");
-                }
-
-                stack.add(value);
+                stack.add(value == null ? Object.Null : value);
             case OpCode.StoreIndex:
                 final value = stack.pop();
                 final index = stack.pop();
