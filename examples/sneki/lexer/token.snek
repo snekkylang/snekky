@@ -1,0 +1,30 @@
+let TokenType = {
+    Number: 0,
+    Ident: 1,
+    String: 2,
+    Semicolon: 3,
+    LParen: 4,
+    RParen: 5,
+    LBrace: 6,
+    RBrace: 7,
+    Plus: 8,
+    Minus: 9,
+    Assign: 10,
+    Equals: 11,
+    If: 12,
+    Else: 13,
+    While: 14,
+    Illegal: 15,
+    Comma: 16,
+    LessThan: 17,
+    GreaterThan: 18,
+    Puts: 19
+};
+
+
+let Token = func(type, literal) {
+    return {
+        type: type,
+        literal: literal
+    };
+};

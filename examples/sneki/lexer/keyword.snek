@@ -1,0 +1,15 @@
+let Keyword = {};
+Keyword.keywords = {
+    "if": TokenType.If,
+    "while": TokenType.While,
+    "puts": TokenType.Puts,
+    "else": TokenType.Else
+};
+
+Keyword.isKeyword = func(s) {
+    return Keyword.keywords[s] != null;  
+};
+
+Keyword.resolve = func(s) {
+    return Keyword.keywords[s];
+};

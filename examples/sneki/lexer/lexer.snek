@@ -1,0 +1,139 @@
+import "lexer/lexer_utils";
+import "lexer/token";
+import "lexer/keyword";
+
+let Lexer = func(code) {
+
+    mut currentChar = "";
+    mut position = 0;
+
+    let readChar = func() {
+        currentChar = if position >= code.length() {
+            null
+        } else {
+            code.charAt(position)
+        };
+
+        position = position + 1;
+    };
+
+    let peekChar = func() {
+        return if position >= code.length() {
+            null
+        } else {
+            code.charAt(position)
+        };   
+    };
+
+    let readIdent = func() {
+        mut ident = currentChar;
+
+        while LexerUtils.isAscii(peekChar()) {
+            readChar();
+            ident = ident >< currentChar;
+        }
+
+        return ident;
+    };
+
+    let readString = func() {
+        readChar();
+
+        mut string = "";
+
+        while currentChar != "\"" && currentChar != null {
+            string = string >< currentChar;
+
+            readChar();
+        }
+
+        return string;
+    };
+
+    let readNumber = func() {
+        mut number = currentChar;
+
+        while LexerUtils.isNumber(peekChar()) {
+            readChar();
+            number = number >< currentChar;
+        }
+
+        return number;
+    };
+
+    let eatWhitespace = func() {
+        while LexerUtils.isWhitespace(currentChar) {
+            readChar();
+        }
+    };
+
+    let readToken = func() {
+        readChar();
+        eatWhitespace();
+
+        return if currentChar == ";" {
+            Token(TokenType.Semicolon, ";")
+        } else if currentChar == "(" {
+            Token(TokenType.LParen, "(")
+        } else if currentChar == ")" {
+            Token(TokenType.RParen, ")")
+        } else if currentChar == "{" {
+            Token(TokenType.LBrace, "{")
+        } else if currentChar == "}" {
+            Token(TokenType.RBrace, "}")
+        } else if currentChar == "+" {
+            Token(TokenType.Plus, "+")
+        } else if currentChar == "-" {
+            Token(TokenType.Minus, "-")
+        } else if currentChar == "," {
+            Token(TokenType.Comma, ",")
+        } else if currentChar == "<" {
+            Token(TokenType.LessThan, "<")
+        } else if currentChar == ">" {
+            Token(TokenType.GreaterThan, ">")
+        } else if currentChar == "=" {
+            if peekChar() == "=" {
+                readChar();
+                Token(TokenType.Equals, "==")
+            } else {
+                Token(TokenType.Assign, "=")
+            }
+        } else if LexerUtils.isNumber(currentChar) {
+            let number = readNumber();
+            Token(TokenType.Number, number)
+        } else if LexerUtils.isAscii(currentChar) {
+            let ident = readIdent();
+            
+            if Keyword.isKeyword(ident) {
+                Token(Keyword.resolve(ident), ident)
+            } else {
+                Token(TokenType.Ident, ident)
+            }
+        } else if currentChar == "\"" {
+            let string = readString();
+            Token(TokenType.String, string)
+        } else {
+            Token(TokenType.Illegal, currentChar)
+        };
+    };
+
+    let peekToken = func() {
+        let lastPosition = position;
+        let token = readToken();
+        position = lastPosition;
+
+        return token;
+    };
+
+    let tokenize = func() {
+        while currentChar != null {
+            Sys.println(readToken());
+        }
+    };
+
+    return {
+        tokenize: tokenize,
+        readToken: readToken,
+        peekToken: peekToken
+    };
+};

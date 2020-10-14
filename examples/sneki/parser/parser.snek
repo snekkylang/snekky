@@ -1,0 +1,114 @@
+import "ast/node";
+import "parser/expression_parser";
+
+let Parser = func(lexer) {
+
+    mut currentToken = lexer.readToken();
+    mut ast = BlockNode(null);
+    mut expressionParser = null; // Currently necessary
+    mut parseToken = null;
+
+    let nextToken = func() {
+        currentToken = lexer.readToken();
+    };
+
+    let parseVariable = func() {
+        let name = currentToken.literal;
+        nextToken();
+        nextToken();
+        let value = expressionParser.parseExpression();
+        nextToken();
+
+        return VariableNode(name, value);
+    };
+
+    let parsePuts = func() {
+        nextToken();
+        let value = expressionParser.parseExpression();
+        nextToken();
+
+        return PutsNode(value);
+    };
+
+    let parseIf = func(block) {
+        nextToken();
+        let condition = expressionParser.parseExpression();
+        nextToken();
+        let consequence = BlockNode(block);
+        while currentToken.type != TokenType.RBrace {
+            parseToken(consequence);   
+        }
+        
+        let alternative = if lexer.peekToken().type == TokenType.Else {
+            nextToken();
+            let alt = BlockNode(block);
+            while currentToken.type != TokenType.RBrace {
+                parseToken(alt);   
+            }
+
+            alt
+        } else {
+            null
+        };
+
+        nextToken();
+
+        return IfNode(condition, consequence, alternative);
+    };
+
+    let parseWhile = func(block) {
+        nextToken();
+        let condition = expressionParser.parseExpression();
+        nextToken();
+        let body = BlockNode(block);
+        while currentToken.type != TokenType.RBrace {
+            parseToken(body);   
+        }
+        nextToken();
+
+        return WhileNode(condition, body);
+    };
+
+    parseToken = func(block) {
+        let node = if currentToken.type == TokenType.Ident {
+            if lexer.peekToken().type == TokenType.Assign {
+                parseVariable()
+            } else {
+                let expr = expressionParser.parseExpression();
+                nextToken();
+                expr
+            }
+        } else if currentToken.type == TokenType.Puts {
+            parsePuts()
+        } else if currentToken.type == TokenType.If {
+            parseIf(block)
+        } else if currentToken.type == TokenType.While {
+            parseWhile(block)
+        } else {
+            let expr = expressionParser.parseExpression();
+            nextToken();
+            expr
+        };
+
+        block.addNode(node);
+    };
+
+    let generateAst = func() {
+        while currentToken.literal != null {
+            parseToken(ast);
+        }
+    };
+
+    let parser = {
+        currentToken: func() {
+            return currentToken;
+        },
+        nextToken: nextToken,
+        generateAst: generateAst,
+        ast: ast
+    };
+
+    expressionParser = ExpressionParser(lexer, parser);
+
+    return parser;
+};

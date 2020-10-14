@@ -1,0 +1,109 @@
+let NodeType = {
+    Block: 0,
+    LessThan: 1,
+    GreaterThan: 2,
+    Equals: 3,
+    Variable: 4,
+    Expression: 5,
+    Add: 6,
+    Subtract: 7,
+    Ident: 8,
+    String: 9,
+    Number: 10,
+    Puts: 11,
+    If: 12
+};
+
+let BlockNode = func(parent) {
+    let nodes = [];
+    let variables = {};
+
+    let addNode = func(node) {
+        nodes.push(node);
+    };
+
+    let getVariable = func(name) {
+        return variables[name];
+    };
+
+    let setVariable = func(name, value) {
+        variables[name] = value;
+    };
+
+    return {
+        type: NodeType.Block,
+        addNode: addNode,
+        parent: parent,
+        nodes: nodes,
+        getVariable: getVariable,
+        setVariable: setVariable,
+    };
+};
+
+let VariableNode = func(name, value) {
+    return {
+        type: NodeType.Variable,
+        name: name,
+        value: value
+    };
+};
+
+let ExpressionNode = func(value) {
+    return {
+        type: NodeType.Expression,
+        value: value
+    };
+};
+
+let OperatorNode = func(type, left, right) {
+    return {
+        type: type,
+        left: left,
+        right: right
+    };
+};
+
+let IdentNode = func(value) {
+    return {
+        type: NodeType.Ident,
+        value: value
+    };
+};
+
+let StringNode = func(value) {
+    return {
+        type: NodeType.String,
+        value: value
+    };
+};
+
+let NumberNode = func(value) {
+    return {
+        type: NodeType.Number,
+        value: value
+    };
+};
+
+let PutsNode = func(value) {
+    return {
+        type: NodeType.Puts,
+        value: value
+    };
+};
+
+let IfNode = func(condition, consequence, alternative) {
+    return {
+        type: NodeType.If,
+        condition: condition,
+        consequence: consequence,
+        alternative: alternative
+    };
+};
+
+let WhileNode = func(condition, body) {
+    return {
+        type: NodeType.While,
+        condition: condition,
+        body: body
+    };
+};

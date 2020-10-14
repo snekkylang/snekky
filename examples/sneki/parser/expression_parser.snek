@@ -1,0 +1,80 @@
+let ExpressionParser = func(lexer, parser) {
+    mut factor = null;
+    mut numeric = null;
+    mut comparison = null;
+
+    factor = func() {
+        let currentToken = parser.currentToken();
+
+        return if currentToken.type == TokenType.LParen {
+            parser.nextToken();
+            let comp = comparison();
+            parser.nextToken();
+
+            comp
+        } else if currentToken.type == TokenType.Ident {
+            let ident = IdentNode(currentToken.literal);
+            parser.nextToken();
+
+            ident
+        } else if currentToken.type == TokenType.String {
+            let string = StringNode(currentToken.literal);
+            parser.nextToken();
+
+            string
+        } else {
+            let number = NumberNode(String.parseNumber(currentToken.literal));
+            parser.nextToken();
+
+            number
+        };
+    };
+
+    numeric = func() {
+        mut left = factor();
+
+        while true {
+            let currentToken = parser.currentToken().type;
+            let type = if currentToken == TokenType.Plus {
+                NodeType.Add
+            } else if currentToken == TokenType.Minus {
+                NodeType.Subtract
+            } else {
+                return left;
+            };
+
+            parser.nextToken();
+            let right = factor();
+            left = OperatorNode(type, left, right);
+        }
+
+        return left;
+    };
+
+    comparison = func() {
+        let left = numeric();
+
+        let currentToken = parser.currentToken().type;
+        let type = if currentToken == TokenType.LessThan {
+            NodeType.LessThan
+        } else if currentToken == TokenType.GreaterThan {
+            NodeType.GreaterThan
+        } else  if currentToken == TokenType.Equals {
+            NodeType.Equals
+        } else {
+            return left;
+        };
+
+        parser.nextToken();
+        let right = numeric();
+        return OperatorNode(type, left, right);
+    };
+
+    let parseExpression = func() {
+        return ExpressionNode(comparison());
+    };
+
+    return {
+        parseExpression: parseExpression
+    };
+};
