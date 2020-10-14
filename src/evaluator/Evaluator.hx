@@ -171,6 +171,7 @@ class Evaluator {
                     case [OpCode.Equals, Object.Array(leftVal), Object.Array(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Hash(leftVal), Object.Hash(rightVal)]: leftVal.equals(rightVal) ? 1 : 0;
                     case [OpCode.Equals, Object.Null, Object.Null]: 1;
+                    case [OpCode.Equals, _, _]: 0;
                     default:
                         error.error("cannot perform operation");
                         -1;
