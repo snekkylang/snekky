@@ -36,7 +36,7 @@ class ArrayMembers extends MemberObject {
 
         addFunctionMember("length", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.Array(values): return Object.Float(values.length);
+                case Object.Array(values): return Object.Number(values.length);
                 default: error('expected Array, got ${parameters[1].getName()}');
             }
 

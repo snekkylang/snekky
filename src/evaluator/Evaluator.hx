@@ -118,7 +118,7 @@ class Evaluator {
                 final target = stack.pop();
 
                 final value = switch [target, index] {
-                    case [Object.Array(array), Object.Float(arrayIndex)]:
+                    case [Object.Array(array), Object.Number(arrayIndex)]:
                         array[Std.int(arrayIndex)];
                     case [Object.Hash(hash), Object.String(hashIndex)]:
                         hash.get(hashIndex);
@@ -140,7 +140,7 @@ class Evaluator {
                 final target = stack.pop();
 
                 switch [target, index] {
-                    case [Object.Array(array), Object.Float(arrayIndex)]:
+                    case [Object.Array(array), Object.Number(arrayIndex)]:
                         array[Std.int(arrayIndex)] = value;
                     case [Object.Hash(hash), Object.String(hashIndex)]:
                         hash.set(hashIndex, value);
@@ -157,14 +157,14 @@ class Evaluator {
                 final left = stack.pop();
 
                 final result = switch [opCode, left, right] {
-                    case [OpCode.Add, Object.Float(leftVal), Object.Float(rightVal)]: leftVal + rightVal;
-                    case [OpCode.Subtract, Object.Float(leftVal), Object.Float(rightVal)]: leftVal - rightVal;
-                    case [OpCode.Multiply, Object.Float(leftVal), Object.Float(rightVal)]: leftVal * rightVal;
-                    case [OpCode.Divide, Object.Float(leftVal), Object.Float(rightVal)]: leftVal / rightVal;
-                    case [OpCode.Modulo, Object.Float(leftVal), Object.Float(rightVal)]: leftVal % rightVal;
-                    case [OpCode.LessThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal < rightVal ? 1 : 0;
-                    case [OpCode.GreaterThan, Object.Float(leftVal), Object.Float(rightVal)]: leftVal > rightVal ? 1 : 0;
-                    case [OpCode.Equals, Object.Float(leftVal), Object.Float(rightVal)]: leftVal == rightVal ? 1 : 0;
+                    case [OpCode.Add, Object.Number(leftVal), Object.Number(rightVal)]: leftVal + rightVal;
+                    case [OpCode.Subtract, Object.Number(leftVal), Object.Number(rightVal)]: leftVal - rightVal;
+                    case [OpCode.Multiply, Object.Number(leftVal), Object.Number(rightVal)]: leftVal * rightVal;
+                    case [OpCode.Divide, Object.Number(leftVal), Object.Number(rightVal)]: leftVal / rightVal;
+                    case [OpCode.Modulo, Object.Number(leftVal), Object.Number(rightVal)]: leftVal % rightVal;
+                    case [OpCode.LessThan, Object.Number(leftVal), Object.Number(rightVal)]: leftVal < rightVal ? 1 : 0;
+                    case [OpCode.GreaterThan, Object.Number(leftVal), Object.Number(rightVal)]: leftVal > rightVal ? 1 : 0;
+                    case [OpCode.Equals, Object.Number(leftVal), Object.Number(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.String(leftVal), Object.String(rightVal)]: leftVal == rightVal ? 1 : 0;
                     case [OpCode.Equals, Object.UserFunction(leftPos, _), Object.UserFunction(rightPos, _)]: leftPos == rightPos ? 1 : 0;
                     case [OpCode.Equals, Object.BuiltInFunction(leftFunc, _), Object.BuiltInFunction(rightFunc, _)]: leftFunc.equals(rightFunc) ? 1 : 0;
@@ -177,7 +177,7 @@ class Evaluator {
                         -1;
                 }
 
-                stack.add(Object.Float(result));
+                stack.add(Object.Number(result));
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
@@ -212,7 +212,7 @@ class Evaluator {
                 final conditionValue = stack.pop();
 
                 switch (conditionValue) {
-                    case Object.Float(value):
+                    case Object.Number(value):
                         if (value == 0) {
                             instructions.position = jumpIndex;
                         }
@@ -223,7 +223,7 @@ class Evaluator {
                 final conditionValue = stack.first();
 
                 switch (conditionValue) {
-                    case Object.Float(value):
+                    case Object.Number(value):
                         if (value == 1) {
                             instructions.position = jumpIndex;
                         }
@@ -263,16 +263,16 @@ class Evaluator {
                 final negValue = stack.pop();
 
                 switch (negValue) {
-                    case Object.Float(value):
-                        stack.add(Object.Float(-value));
+                    case Object.Number(value):
+                        stack.add(Object.Number(-value));
                     default: error.error("only floats can be negated");
                 }
             case OpCode.Not:
                 final invValue = stack.pop();
 
                 switch (invValue) {
-                    case Object.Float(value):
-                        stack.add(Object.Float(value == 1 ? 0 : 1));
+                    case Object.Number(value):
+                        stack.add(Object.Number(value == 1 ? 0 : 1));
                     default: error.error("only floats can be inverted");
                 }
             case OpCode.Pop:

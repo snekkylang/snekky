@@ -10,11 +10,11 @@ class MathNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addObjectMember("PI", Object.Float(Math.PI));
+        addObjectMember("PI", Object.Number(Math.PI));
 
         addFunctionMember("abs", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.Float(value): return Object.Float(Math.abs(value));
+                case Object.Number(value): return Object.Number(Math.abs(value));
                 default: error('expected Float, got ${parameters[1].getName()}');
             }
             
@@ -23,7 +23,7 @@ class MathNamespace extends MemberObject {
 
         addFunctionMember("floor", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.Float(value): return Object.Float(Math.floor(value));
+                case Object.Number(value): return Object.Number(Math.floor(value));
                 default: error('expected Float, got ${parameters[1].getName()}');
             }
             
@@ -32,7 +32,7 @@ class MathNamespace extends MemberObject {
 
         addFunctionMember("sqrt", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.Float(value): return Object.Float(Math.sqrt(value));
+                case Object.Number(value): return Object.Number(Math.sqrt(value));
                 default: error('expected Float, got ${parameters[1].getName()}');
             }
             

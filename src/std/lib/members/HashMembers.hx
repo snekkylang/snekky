@@ -15,7 +15,7 @@ class HashMembers extends MemberObject {
 
         addFunctionMember("length", 1, function(parameters) {
             return switch (parameters[0]) {
-                case Object.Hash(values): Object.Float(Lambda.count(values));
+                case Object.Hash(values): Object.Number(Lambda.count(values));
                 default: Object.Null;
             }
         });

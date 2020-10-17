@@ -326,9 +326,9 @@ class Compiler {
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 switch (node.type) {
                     case NodeType.Float:
-                        constantPool.addConstant(Object.Float(cast(node, FloatNode).value));
+                        constantPool.addConstant(Object.Number(cast(node, FloatNode).value));
                     case NodeType.Boolean:
-                        constantPool.addConstant(Object.Float(cast(node, BooleanNode).value ? 1 : 0));
+                        constantPool.addConstant(Object.Number(cast(node, BooleanNode).value ? 1 : 0));
                     case NodeType.String:
                         constantPool.addConstant(Object.String(cast(node, StringNode).value));
                     case NodeType.Null:
