@@ -27,6 +27,7 @@ class BuiltInTable {
             new SysNamespace(evaluator),
             new MathNamespace(evaluator),
             new StringNamespace(evaluator),
+            new ObjectNamespace(evaluator),
             #if (playground != 1)
             new FileNamespace(evaluator),
             new HttpNamespace(evaluator)
@@ -50,6 +51,7 @@ class BuiltInTable {
             SysNamespace.name,
             MathNamespace.name,
             StringNamespace.name,
+            ObjectNamespace.name,
             #if (playground != 1)
             FileNamespace.name,
             HttpNamespace.name
