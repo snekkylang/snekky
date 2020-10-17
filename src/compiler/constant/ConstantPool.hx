@@ -24,7 +24,7 @@ class ConstantPool {
 
         for (const in constants) {
             switch (const) {
-                case Object.Float(value):
+                case Object.Number(value):
                     constantsBytes.writeByte(ConstantType.Float);
                     constantsBytes.writeDouble(value);
                 case Object.String(value):
@@ -59,7 +59,7 @@ class ConstantPool {
             switch (type) {
                 case ConstantType.Float:
                     final value = byteCode.readDouble();
-                    pool.push(Object.Float(value));
+                    pool.push(Object.Number(value));
                 case ConstantType.String:
                     final length = byteCode.readInt32();
                     final value = byteCode.readString(length);

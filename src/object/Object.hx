@@ -4,7 +4,7 @@ import evaluator.Frame;
 import haxe.ds.StringMap;
 
 enum Object {
-    Float(value:Float);
+    Number(value:Float);
     String(value:String);
     UserFunction(position:Int, parametersCount:Int);
     Closure(userFunction:Object, frame:Frame);

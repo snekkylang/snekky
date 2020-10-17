@@ -16,7 +16,7 @@ private class HttpClient extends MemberObject {
         };
 
         client.onStatus = function(status) {
-            evaluator.callFunction(members.get("onStatus"), [Object.Float(status)]);  
+            evaluator.callFunction(members.get("onStatus"), [Object.Number(status)]);  
         };
         
         addFunctionMember("onData", 1, function(parameters) {
@@ -29,7 +29,7 @@ private class HttpClient extends MemberObject {
 
         addFunctionMember("request", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.Float(post): client.request(post == 1);
+                case Object.Number(post): client.request(post == 1);
                 default:
             }
 

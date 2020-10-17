@@ -16,7 +16,7 @@ class StringMembers extends MemberObject {
 
         addFunctionMember("length", 1, function(parameters) {
             switch (parameters[0]) {
-                case Object.String(value): return Object.Float(value.length);
+                case Object.String(value): return Object.Number(value.length);
                 default: error('expected String, got ${parameters[0].getName()}');
             }
 
@@ -25,7 +25,7 @@ class StringMembers extends MemberObject {
 
         addFunctionMember("charAt", 2, function(parameters) {
             switch [parameters[0], parameters[1]] {
-                case [Object.String(string), Object.Float(index)]: return Object.String(string.charAt(Std.int(index)));
+                case [Object.String(string), Object.Number(index)]: return Object.String(string.charAt(Std.int(index)));
                 default: error('expected String, got ${parameters[0].getName()}');
             }
 

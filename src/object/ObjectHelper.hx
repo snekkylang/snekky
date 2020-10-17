@@ -6,7 +6,7 @@ class ObjectHelper {
 
     public static function toString(obj:Object) {
         return switch (obj) {
-            case Object.Float(value): Std.string(value);
+            case Object.Number(value): Std.string(value);
             case Object.String(value): value;
             case Object.UserFunction(position, _): '#func($position, UserDefined)';
             case Object.Closure(func, _): '#closure(${toString(func)})';
