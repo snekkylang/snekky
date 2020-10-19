@@ -35,10 +35,7 @@ class RuntimeError {
 
         while (!frames.isEmpty()) {
             final frame = frames.pop();
-            if (frame.calledFunction == null) {
-                break;
-            }
-            final functionPosition:Int = if (frame.calledFunction.type == ObjectType.UserFunction) {
+            final functionPosition:Int = if (frame.calledFunction != null && frame.calledFunction.type == ObjectType.UserFunction) {
                 final cUserFunction = cast(frame.calledFunction, UserFunctionObj);
                 cUserFunction.position;
             } else {
