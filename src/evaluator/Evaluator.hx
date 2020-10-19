@@ -156,6 +156,10 @@ class Evaluator {
                         final cIndex = cast(index, StringObj);
 
                         cTarget.value.set(cIndex.value, value);
+                    case [_, ObjectType.String]:
+                        final cIndex = cast(index, StringObj);
+    
+                        target.getMembers().value.set(cIndex.value, value);
                     default: 
                         error.error("index operator cannot be used on this datatype");      
                 }
