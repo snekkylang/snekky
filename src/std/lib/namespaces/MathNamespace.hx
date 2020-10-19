@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import object.NullObj;
+import object.NumberObj;
 import object.Object;
 import evaluator.Evaluator;
 
@@ -10,33 +12,27 @@ class MathNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addObjectMember("PI", Object.Number(Math.PI));
+        addObjectMember("PI", new NumberObj(Math.PI, evaluator));
 
-        addFunctionMember("abs", 1, function(parameters) {
-            switch (parameters[0]) {
-                case Object.Number(value): return Object.Number(Math.abs(value));
-                default: error('expected Float, got ${parameters[1].getName()}');
-            }
-            
-            return Object.Null;
+        addFunctionMember("abs", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final value = cast(p[0], NumberObj).value;
+
+            return new NumberObj(Math.abs(value), evaluator);
         });
 
-        addFunctionMember("floor", 1, function(parameters) {
-            switch (parameters[0]) {
-                case Object.Number(value): return Object.Number(Math.floor(value));
-                default: error('expected Float, got ${parameters[1].getName()}');
-            }
-            
-            return Object.Null;
+        addFunctionMember("floor", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final value = cast(p[0], NumberObj).value;
+
+            return new NumberObj(Math.floor(value), evaluator);
         });
 
-        addFunctionMember("sqrt", 1, function(parameters) {
-            switch (parameters[0]) {
-                case Object.Number(value): return Object.Number(Math.sqrt(value));
-                default: error('expected Float, got ${parameters[1].getName()}');
-            }
-            
-            return Object.Null;
+        addFunctionMember("sqrt", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final value = cast(p[0], NumberObj).value;
+
+            return new NumberObj(Math.sqrt(value), evaluator);
         });
     }
 }

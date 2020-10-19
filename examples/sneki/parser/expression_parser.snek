@@ -23,7 +23,7 @@ let ExpressionParser = func(lexer, parser) {
 
             string
         } else {
-            let number = NumberNode(String.parseNumber(currentToken.literal));
+            let number = NumberNode(Number.parse(currentToken.literal));
             parser.nextToken();
 
             number

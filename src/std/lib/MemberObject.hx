@@ -1,5 +1,8 @@
 package std.lib;
 
+import object.HashObj;
+import object.BuiltInFunctionObj;
+import object.Closure.ClosureObj;
 import haxe.ds.StringMap;
 import evaluator.Evaluator;
 import object.Object;
@@ -14,13 +17,18 @@ class MemberObject {
         this.evaluator = evaluator;
     }
 
-    public function getObject():Object {
-        return Object.Hash(members);
+    public function getMembers():HashObj {
+        return new HashObj(members, evaluator);
     }
 
     function addFunctionMember(memberName:String, parametersCount:Int, memberFunction:Array<Object>->Object) {
-        members.set(memberName, Object.Closure(Object.BuiltInFunction(memberFunction, parametersCount), evaluator.currentFrame));
-    } 
+        members.set(memberName, new ClosureObj(new BuiltInFunctionObj(memberFunction, parametersCount, evaluator), evaluator.currentFrame, evaluator));
+    }
+
+    function callFunctionFunction(name:String, parameters:Array<Object>) {
+        final func = cast(members.get(name), ClosureObj);
+        evaluator.callFunction(func, parameters);
+    }
 
     function addObjectMember(name:String, object:Object) {
         members.set(name, object);
@@ -28,5 +36,11 @@ class MemberObject {
 
     function error(message:String) {
         evaluator.error.error(message);
+    }
+
+    function assertParameterType(p:Object, expected:ObjectType) {
+        if (p.type != expected) {
+            error('expected $expected, got ${p.type}');
+        }
     }
 }

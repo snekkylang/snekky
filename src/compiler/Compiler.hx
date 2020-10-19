@@ -1,5 +1,9 @@
 package compiler;
 
+import object.NullObj;
+import object.StringObj;
+import object.NumberObj;
+import object.UserFunctionObj;
 import haxe.zip.Compress;
 import compiler.debug.FilenameTable;
 import std.BuiltInTable;
@@ -16,7 +20,6 @@ import code.Code;
 import code.OpCode;
 import ast.nodes.*;
 import ast.nodes.datatypes.*;
-import object.Object;
 
 class Compiler {
 
@@ -254,7 +257,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
-                constantPool.addConstant(Object.UserFunction(instructions.length, cFunction.parameters.length));
+                constantPool.addConstant(new UserFunctionObj(instructions.length, cFunction.parameters.length, null));
 
                 symbolTable.newScope();
                 for (parameter in cFunction.parameters) {
@@ -326,13 +329,13 @@ class Compiler {
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 switch (node.type) {
                     case NodeType.Float:
-                        constantPool.addConstant(Object.Number(cast(node, FloatNode).value));
+                        constantPool.addConstant(new NumberObj(cast(node, FloatNode).value, null));
                     case NodeType.Boolean:
-                        constantPool.addConstant(Object.Number(cast(node, BooleanNode).value ? 1 : 0));
+                        constantPool.addConstant(new NumberObj(cast(node, BooleanNode).value ? 1 : 0, null));
                     case NodeType.String:
-                        constantPool.addConstant(Object.String(cast(node, StringNode).value));
+                        constantPool.addConstant(new StringObj(cast(node, StringNode).value, null));
                     case NodeType.Null:
-                        constantPool.addConstant(Object.Null);
+                        constantPool.addConstant(new NullObj(null));
                     default:
                 }
 

@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import object.NullObj;
+import object.StringObj;
 import sys.io.File;
 import object.Object;
 import evaluator.Evaluator;
@@ -11,33 +13,33 @@ class FileNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("read", 1, function(parameters) {
+        addFunctionMember("read", 1, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final path = cast(p[0], StringObj).value;
+
             try {
-                switch (parameters[0]) {
-                    case Object.String(path):
-                        final content = File.getContent(path);
-                        return Object.String(content);
-                    default: error('expected String, got ${parameters[0].getName()}');
-                }
+                final content = File.getContent(path);
+                return new StringObj(content, evaluator);
             } catch (e) {
                 error("failed to open file");
             }
 
-            return Object.Null;
+            return new NullObj(evaluator);
         });
 
-        addFunctionMember("write", 2, function(parameters) {
+        addFunctionMember("write", 2, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            assertParameterType(p[1], ObjectType.String);
+            final path = cast(p[0], StringObj).value;
+            final content = cast(p[1], StringObj).value;
+            
             try {
-                switch [parameters[0], parameters[1]] {
-                    case [Object.String(path), Object.String(value)]:
-                        File.saveContent(path, value);
-                    default: 'expected String, got ${parameters[0].getName()}';
-                }
+                File.saveContent(path, content);
             } catch (e) {
                 error("failed to open file");
             }
 
-            return Object.Null;
+            return new NullObj(evaluator);
         });
     }
 }

@@ -1,15 +1,30 @@
 package object;
 
-import evaluator.Frame;
-import haxe.ds.StringMap;
+import evaluator.Evaluator;
+import std.lib.MemberObject;
 
-enum Object {
-    Number(value:Float);
-    String(value:String);
-    UserFunction(position:Int, parametersCount:Int);
-    Closure(userFunction:Object, frame:Frame);
-    BuiltInFunction(memberFunction:Array<Object>->Object, parametersCount:Int);
-    Array(values:Array<Object>);
-    Hash(values:StringMap<Object>);
+enum ObjectType {
+    Number;
+    String;
+    Array;
+    Hash;
+    BuiltInFunction;
+    UserFunction;
+    Closure;
     Null;
+}
+
+class Object extends MemberObject {
+
+    public final type:ObjectType;
+
+    public function new(type:ObjectType, evaluator:Evaluator) {
+        super(evaluator);
+
+        this.type = type;
+    }
+
+    public function toString():String {
+        return "#object";
+    }
 }

@@ -1,5 +1,6 @@
 package error;
 
+import object.UserFunctionObj;
 import compiler.debug.FilenameTable;
 import haxe.io.BytesInput;
 import object.Object;
@@ -34,13 +35,14 @@ class RuntimeError {
 
         while (!frames.isEmpty()) {
             final frame = frames.pop();
-            final functionPosition:Int = switch (frame.calledFunction) {
-                case Object.Closure(func, _):
-                    switch (func) {
-                        case Object.UserFunction(position, _): position;
-                        default: -1;
-                    }
-                default: -1;
+            if (frame.calledFunction == null) {
+                break;
+            }
+            final functionPosition:Int = if (frame.calledFunction.type == ObjectType.UserFunction) {
+                final cUserFunction = cast(frame.calledFunction, UserFunctionObj);
+                cUserFunction.position;
+            } else {
+                -1;
             }
             final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
             Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
