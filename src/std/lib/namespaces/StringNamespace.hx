@@ -1,20 +1,22 @@
 package std.lib.namespaces;
 
+import object.NullObj;
+import object.NumberObj;
+import object.StringObj;
 import object.Object;
 import evaluator.Evaluator;
 
 class StringNamespace extends MemberObject {
 
-    public static final name = "String";
+    public static final name = "Number";
 
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("parseNumber", 1, function(parameters) {
-            return switch (parameters[0]) {
-                case Object.String(value): Object.Number(Std.parseFloat(value));
-                default: Object.Null;
-            }
+        addFunctionMember("parse", 1, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final value = cast(p[0], StringObj).value;
+            return new NumberObj(Std.parseFloat(value), evaluator);
         });
     }
 }

@@ -1,9 +1,8 @@
 package std.lib.namespaces;
 
-import object.Object;
+import object.StringObj;
+import object.NullObj;
 import evaluator.Evaluator;
-
-using object.ObjectHelper;
 
 class SysNamespace extends MemberObject {
 
@@ -12,22 +11,22 @@ class SysNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("println", 1, function(parameters) {
-            Sys.println(parameters[0].toString());
+        addFunctionMember("println", 1, function(p) {
+            Sys.println(p[0].toString());
 
-            return Object.Null;
+            return new NullObj(evaluator);
         });
 
-        addFunctionMember("print", 1, function(parameters) {
-            Sys.print(parameters[0].toString());
+        addFunctionMember("print", 1, function(p) {
+            Sys.print(p[0].toString());
 
-            return Object.Null;
+            return new NullObj(evaluator);
         });
 
-        addFunctionMember("readLine", 0, function(parameters) {
+        addFunctionMember("readLine", 0, function(p) {
             final input = Sys.stdin().readLine();
 
-            return Object.String(input);
+            return new StringObj(input, evaluator);
         });
     }
 }

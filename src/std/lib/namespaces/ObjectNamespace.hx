@@ -1,5 +1,6 @@
 package std.lib.namespaces;
 
+import object.StringObj;
 import evaluator.Evaluator;
 
 class ObjectNamespace extends MemberObject {
@@ -10,7 +11,7 @@ class ObjectNamespace extends MemberObject {
         super(evaluator);
 
         addFunctionMember("typeof", 1, function(parameters) {
-            return Object.String(parameters[0].getName());
+            return new StringObj(Std.string(parameters[0].type), evaluator);
         });
     }
 }

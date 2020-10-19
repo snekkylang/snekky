@@ -1,5 +1,6 @@
 package evaluator;
 
+import object.Function;
 import object.Object;
 
 class Frame {
@@ -7,9 +8,9 @@ class Frame {
     public final env:Environment;
     public final parent:Frame;
     public final returnAddress:Int;
-    public final calledFunction:Object;
+    public final calledFunction:Function;
 
-    public function new(parent:Frame, returnAddress:Int, calledFunction:Object) {
+    public function new(parent:Frame, returnAddress:Int, calledFunction:Function) {
         this.parent = parent;
         this.returnAddress = returnAddress;
         this.calledFunction = calledFunction;
