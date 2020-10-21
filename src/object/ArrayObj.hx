@@ -1,10 +1,29 @@
 package object;
 
+import std.lib.MemberObject;
 import object.Closure.ClosureObj;
 import evaluator.Evaluator;
 import object.Object.ObjectType;
 
 using equals.Equal;
+
+private class ArrayIterator extends MemberObject {
+
+    public function new(evaluator:Evaluator, value:Array<Object>) {
+        super(evaluator);
+
+        var index = -1;
+
+        addFunctionMember("next", 0, function(p) {
+            index++;
+            return value[index];
+        });
+
+        addFunctionMember("hasNext", 0, function(p) {
+            return new NumberObj(index < value.length - 1 ? 1 : 0, evaluator);
+        });
+    }
+}
 
 class ArrayObj extends Object {
 
@@ -18,6 +37,10 @@ class ArrayObj extends Object {
         if (evaluator == null) {
             return;
         }
+
+        addFunctionMember("iterator", 0, function(p) {
+            return new ArrayIterator(evaluator, value).getMembers();
+        });
 
         addFunctionMember("length", 0, function(p) {
             return new NumberObj(this.value.length, evaluator);

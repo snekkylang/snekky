@@ -51,4 +51,6 @@ enum TokenType {
     Import;
     Break;
     Null;
+    For;
+    In;
 }

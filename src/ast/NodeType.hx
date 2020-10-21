@@ -39,6 +39,7 @@ enum NodeType {
     Break;
     If;
     While;
+    For;
 
     Index;
     IndexAssign;

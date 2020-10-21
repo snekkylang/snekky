@@ -220,7 +220,9 @@ class Compiler {
                     localVariableTable.define(instructions.length, cVariable.name);
                 }
                 final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
-                compile(cVariable.value);
+                if (cVariable.value != null) {
+                    compile(cVariable.value);
+                }
                 emit(OpCode.Store, cVariable.position, [symbol.index]);
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
@@ -310,6 +312,41 @@ class Compiler {
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
+            case NodeType.For:
+                final cFor = cast(node, ForNode);
+
+                compile(cFor.iterator);
+                constantPool.addConstant(new StringObj("iterator", null));
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.LoadIndex, node.position, []);
+                emit(OpCode.Call, node.position, [0]);
+                final iterator = symbolTable.defineInternal();
+                emit(OpCode.Store, node.position, [iterator]);
+
+                final jumpPos = instructions.length;
+                emit(OpCode.Load, node.position, [iterator]);
+                constantPool.addConstant(new StringObj("hasNext", null));
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.LoadIndex, node.position, []);
+                emit(OpCode.Call, node.position, [0]);
+                final jumpNotPos = instructions.length;
+                emit(OpCode.JumpNot, node.position, [0]);
+                emit(OpCode.Load, node.position, [iterator]);
+                constantPool.addConstant(new StringObj("next", null));
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.LoadIndex, node.position, []);
+                emit(OpCode.Call, node.position, [0]);
+                symbolTable.newScope();
+                compile(cFor.variable);
+                compile(cFor.block);
+                symbolTable.setParent();
+                emit(OpCode.Jump, node.position, [jumpPos]);
+
+                for (pos in breakPositions) {
+                    overwriteInstruction(pos, [instructions.length]);
+                }
+
+                overwriteInstruction(jumpNotPos, [instructions.length]);
             case NodeType.While:
                 final cWhile = cast(node, WhileNode);
 
