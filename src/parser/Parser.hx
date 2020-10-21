@@ -327,6 +327,36 @@ class Parser {
         return new WhileNode(nodePos, condition, block);
     }
 
+    function parseFor():ForNode {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        if (currentToken.type != TokenType.Let && currentToken.type != TokenType.Mut) {
+            error.unexpectedToken(currentToken, "`let` or `mut`");
+        }
+
+        final mutable = currentToken.type == TokenType.Mut;
+        nextToken();
+
+        assertToken(TokenType.Ident, "identifier");
+        final variableName = currentToken.literal;
+
+        nextToken();
+        assertToken(TokenType.In, "`in`");
+        nextToken();
+
+        final iterator = expressionParser.parseExpression(); 
+
+        assertToken(TokenType.LBrace, "`{`");
+
+        final block = parseBlock();
+
+        nextToken();
+
+        return new ForNode(nodePos, new VariableNode(nodePos, variableName, null, mutable), iterator, block);
+    }
+
     function parseVariableAssign():VariableAssignNode {
         final nodePos = currentToken.position;
         final name = currentToken.literal;
@@ -394,6 +424,7 @@ class Parser {
             case TokenType.Return: block.addNode(parseReturn());
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
+            case TokenType.For: block.addNode(parseFor());
             case TokenType.Break: block.addNode(parseBreak());
             #if (playground != 1)
             case TokenType.Import: block.addNode(parseImport());

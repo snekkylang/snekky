@@ -24,6 +24,10 @@ class SymbolTable {
         return symbol;
     }
 
+    public function defineInternal():Int {
+        return symbolIndex++;
+    }
+
     public function resolve(name:String):Symbol {
         var cScope = currentScope;
 
