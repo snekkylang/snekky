@@ -316,7 +316,7 @@ class Compiler {
                 final cFor = cast(node, ForNode);
 
                 compile(cFor.iterator);
-                constantPool.addConstant(new StringObj("iterator", null));
+                constantPool.addConstant(new StringObj("Iterator", null));
                 emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [0]);

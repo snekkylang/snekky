@@ -1,0 +1,34 @@
+let IntIterator = func() {
+
+    let Iterator = func() {
+        
+        mut i = 0;
+
+        let next = func() {
+            i = i + 1;
+            return i;
+        };
+
+        let hasNext = func() {
+            return true;
+        };
+
+        return {
+            next: next,
+            hasNext: hasNext
+        };
+    };
+
+    return {
+        Iterator: Iterator
+    };
+};
+
+let iterator = IntIterator();
+for let n in iterator {
+    if n > 5 {
+        break;
+    }
+
+    Sys.println(n);
+}
