@@ -278,12 +278,13 @@ class Evaluator {
                         frames.add(new Frame(cClosure.context, instructions.position, cClosure.func));
                         currentFrame = frames.first();
 
+                        if (cClosure.func.parametersCount != callParametersCount) {
+                            error.error('wrong number of arguments to function. expected ${cClosure.func.parametersCount}, got $callParametersCount');   
+                        }
+
                         switch (cClosure.func.type) {
                             case ObjectType.UserFunction:
                                 final cUserFunction = cast(cClosure.func, UserFunctionObj);
-                                if (callParametersCount != cUserFunction.parametersCount) {
-                                    error.error("wrong number of arguments to function");
-                                }
                                 instructions.position = cUserFunction.position;
                             case ObjectType.BuiltInFunction:
                                 final cBuiltInFunction = cast(cClosure.func, BuiltInFunctionObj);
