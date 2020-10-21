@@ -38,7 +38,7 @@ class ArrayObj extends Object {
             return;
         }
 
-        addFunctionMember("iterator", 0, function(p) {
+        addFunctionMember("Iterator", 0, function(p) {
             return new ArrayIterator(evaluator, value).getMembers();
         });
 

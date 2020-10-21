@@ -1,0 +1,14 @@
+// Simple while loop
+mut i = 1;
+while i <= 5 {
+    Sys.println(i);
+
+    i = i + 1;
+}
+
+Sys.println("");
+
+// For loop
+for let v in [1, 2, 3, 4, 5] {
+    Sys.println(v);
+}
