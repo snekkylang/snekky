@@ -74,7 +74,7 @@ class CompileError {
                     codeLineHighlighted.add("<#DE4A3F>");
                     codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation, literalLength));
                     codeLineHighlighted.add("</>");
-                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation + literalLength, codeLineHighlighted.length));
+                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation + literalLength));
     
                     Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
     
