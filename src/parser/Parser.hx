@@ -228,28 +228,34 @@ class Parser {
         return new HashNode(nodePos, values);
     }
 
-    function parseVariableName():Array<String> {
+    function parseVariableName():Node {
+        final nodePos = currentToken.position;
+
         return switch(currentToken.type) {
-            case TokenType.Ident: [currentToken.literal];
-            case TokenType.LessThan:
+            case TokenType.Ident: new IdentNode(nodePos, currentToken.literal);
+            case TokenType.LBracket | TokenType.LBrace:
                 final names:Array<String> = [];
 
                 nextToken();
-                while (currentToken.type != TokenType.GreaterThan) {
+                while (currentToken.type != TokenType.RBracket && currentToken.type != TokenType.RBrace) {
                     names.push(currentToken.literal);
                     nextToken();
-                    if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.GreaterThan) {
-                        error.unexpectedToken(currentToken, "`,` or `}`");
+                    if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.RBracket && currentToken.type != TokenType.RBrace) {
+                        error.unexpectedToken(currentToken, "`,`");
                     }
                     if (currentToken.type == TokenType.Comma) {
                         nextToken();
                     }
                 }
 
-                names;
+                if (currentToken.type == TokenType.RBracket) {
+                    new DestructureArrayNode(nodePos, names);
+                } else {
+                    new DestructureHashNode(nodePos, names);
+                }
             default:
                 error.unexpectedToken(currentToken, "identifier or `{`");
-                [];
+                null;
         }    
     }
 
@@ -259,7 +265,6 @@ class Parser {
         final mutable = currentToken.type == TokenType.Mut;
 
         nextToken();
-        final destructure = currentToken.type == TokenType.LessThan;
         final name = parseVariableName();
 
         nextToken();
@@ -272,7 +277,7 @@ class Parser {
         assertSemicolon();
         nextToken();
 
-        return new VariableNode(nodePos, name, value, mutable, destructure);
+        return new VariableNode(nodePos, name, value, mutable);
     }
 
     function parseReturn():ReturnNode {
@@ -362,7 +367,6 @@ class Parser {
 
         final mutable = currentToken.type == TokenType.Mut;
         nextToken();
-        final destructure = currentToken.type == TokenType.LessThan;
         final variableName = parseVariableName();
 
         nextToken();
@@ -377,13 +381,13 @@ class Parser {
 
         nextToken();
 
-        return new ForNode(nodePos, new VariableNode(nodePos, variableName, null, mutable, destructure), iterator, block);
+        return new ForNode(nodePos, new VariableNode(nodePos, variableName, null, mutable), iterator, block);
     }
 
     function parseVariableAssign():VariableAssignNode {
         final nodePos = currentToken.position;
         final destructure = currentToken.type == TokenType.LessThan;
-        final name = parseVariableName();
+        final name = new IdentNode(nodePos, currentToken.literal);
 
         nextToken();
         assertToken(TokenType.Assign, "`=`");
@@ -445,7 +449,6 @@ class Parser {
     function parseToken(block:BlockNode) {
         switch (currentToken.type) {
             case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
-            case TokenType.LessThan: block.addNode(parseVariableAssign());
             case TokenType.Return: block.addNode(parseReturn());
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());

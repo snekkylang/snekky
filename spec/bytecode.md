@@ -36,7 +36,8 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Hash         | 16              | length   | [value1, value2, ...] (any) ->                       | Constructs hash object with `length` elements.                                     |
 | LoadIndex    | 17              | index    | index (f64/str), target (array/hash) -> value (any)  | Pushes value of `target` at `index` onto the stack.                                |
 | StoreIndex   | 18              | index    | value (any), index (f64/str), target (array/hash) -> | Sets value of `index` to `value`.                                                  |
-| Destructure  | 19              | d_index  | index (f64/str), target (array/hash) -> target (array/hash), value (any) | Pushes value of `target` at `index` onto the stack. `target` remains on stack. |
+| DesArray     | 19              | d_index  | target (array) -> target (array), value (any)        | Pushes value of `target` at `d_index` onto the stack. `target` remains on stack.   |
+| DesHash      | 1a              |          | index (str), target (hash) -> target(hash), value (any) | Pushes value of `target` at `index` onto the stack. `target` remains on stack.  |
 
 ## Notes
 Notes must be followed to implement certain behaviors correctly.

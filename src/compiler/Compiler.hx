@@ -1,5 +1,6 @@
 package compiler;
 
+import compiler.symbol.Symbol;
 import object.NullObj;
 import object.StringObj;
 import object.NumberObj;
@@ -215,50 +216,62 @@ class Compiler {
                 if (cVariable.value != null) {
                     compile(cVariable.value);
                 }
-                for (i => varName in cVariable.name) {
-                    if (symbolTable.currentScope.exists(varName)) {
-                        error.redeclareVariable(cVariable.position, varName);
+
+                inline function declareVariable(name:String, position:Int, mutable:Bool):Symbol {
+                    if (symbolTable.currentScope.exists(name)) {
+                        error.redeclareVariable(cVariable.position, name);
                     }
                     if (!noDebug) {
-                        localVariableTable.define(instructions.length, varName);
+                        localVariableTable.define(instructions.length, name);
                     }
-                    final symbol = symbolTable.define(varName, cVariable.mutable);
-                    if (cVariable.destructure) {
+                    return symbolTable.define(name, mutable);
+                }
+        
+                if (cVariable.name.type == NodeType.Ident) {
+                    final cVariableName = cast(cVariable.name, IdentNode).value;
+
+                    final symbol = declareVariable(cVariableName, node.position, cVariable.mutable);
+                    emit(OpCode.Store, cVariable.position, [symbol.index]);
+                } else if (cVariable.name.type == NodeType.DestructureArray) {
+                    final cVariableName = cast(cVariable.name, DestructureArrayNode);
+
+                    for (i => varName in cVariableName.names) {
+                        final symbol = declareVariable(varName, node.position, cVariable.mutable);
+
+                        emit(OpCode.DestructureArray, node.position, [i]);                        
+                        emit(OpCode.Store, cVariable.position, [symbol.index]);  
+                    }
+
+                    emit(OpCode.Pop, node.position, []);
+                } else {
+                    final cVariableName = cast(cVariable.name, DestructureHashNode);
+
+                    for (varName in cVariableName.names) {
+                        final symbol = declareVariable(varName, node.position, cVariable.mutable);
+
                         constantPool.addConstant(new StringObj(varName, null));
                         emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
-                        emit(OpCode.Destructure, node.position, [i]);
+                        emit(OpCode.DestructureHash, node.position, []);                        
+                        emit(OpCode.Store, cVariable.position, [symbol.index]);  
                     }
-                    emit(OpCode.Store, cVariable.position, [symbol.index]);
-                }
-                if (cVariable.destructure) {
-                    emit(OpCode.Pop, node.position, []);
+
+                    emit(OpCode.Pop, node.position, []);  
                 }
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
 
+                final symbol = symbolTable.resolve(cVariableAssign.name.value);
+                if (symbol == null) {
+                    error.symbolUndefined(cVariableAssign.position, cVariableAssign.name.value);
+                } else if (!symbol.mutable) {
+                    error.symbolImmutable(cVariableAssign.position, cVariableAssign.name.value);
+                }
+                
+                if (!noDebug) {
+                    localVariableTable.define(instructions.length, cVariableAssign.name.value);
+                }
                 compile(cVariableAssign.value);
-                for (i => varName in cVariableAssign.name) {
-                    final symbol = symbolTable.resolve(varName);
-                    if (symbol == null) {
-                        error.symbolUndefined(cVariableAssign.position, varName);
-                    } else if (!symbol.mutable) {
-                        error.symbolImmutable(cVariableAssign.position, varName);
-                    }
-                    
-                    if (!noDebug) {
-                        localVariableTable.define(instructions.length, varName);
-                    }
-
-                    if (cVariableAssign.destructure) {
-                        constantPool.addConstant(new StringObj(varName, null));
-                        emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
-                        emit(OpCode.Destructure, node.position, [i]);
-                    }
-                    emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
-                }
-                if (cVariableAssign.destructure) {
-                    emit(OpCode.Pop, node.position, []);
-                }
+                emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
