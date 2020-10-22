@@ -117,6 +117,25 @@ class Evaluator {
                 }
 
                 stack.add(new HashObj(hashValues, this));
+            case OpCode.Destructure:
+                final index = stack.pop();
+                final target = stack.first();
+                final destructureIndex = instructions.readInt32();
+
+                final value = switch [target.type, index.type] {
+                    case [ObjectType.Array, ObjectType.String]:
+                        final cTarget = cast(target, ArrayObj);
+
+                        cTarget.value[destructureIndex];
+                    case [ObjectType.Hash, ObjectType.String]:
+                        final cTarget = cast(target, HashObj);
+                        final cIndex = cast(index, StringObj);
+
+                        cTarget.value.get(cIndex.value);
+                    default: new NullObj(this);
+                }
+
+                stack.add(value == null ? new NullObj(this) : value);
             case OpCode.LoadIndex:
                 final index = stack.pop();
                 final target = stack.pop();
@@ -131,7 +150,12 @@ class Evaluator {
                         final cTarget = cast(target, HashObj);
                         final cIndex = cast(index, StringObj);
 
-                        cTarget.value.get(cIndex.value);
+                        var value = cTarget.value.get(cIndex.value);
+                        if (value == null) {
+                            value = cTarget.getMembers().value.get(cIndex.value);
+                        }
+
+                        value;
                     case [_, ObjectType.String]:
                         final cIndex = cast(index, StringObj);
 

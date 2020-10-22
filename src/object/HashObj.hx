@@ -1,11 +1,30 @@
 package object;
 
+import std.lib.MemberObject;
 import evaluator.Evaluator;
 import object.Object.ObjectType;
 import haxe.iterators.MapKeyValueIterator;
 import haxe.ds.StringMap;
 
 using equals.Equal;
+
+private class HashIterator extends MemberObject {
+
+    public function new(evaluator:Evaluator, value:StringMap<Object>) {
+        super(evaluator);
+
+        final iterator = new MapKeyValueIterator(value);
+
+        addFunctionMember("next", 0, function(p) {
+            final next = iterator.next();
+            return new HashObj(["key" => new StringObj(next.key, evaluator), "value" => next.value], evaluator);
+        });
+
+        addFunctionMember("hasNext", 0, function(p) {
+            return new NumberObj(iterator.hasNext() ? 1 : 0, evaluator);
+        });
+    }
+}
 
 class HashObj extends Object {
     
@@ -19,6 +38,10 @@ class HashObj extends Object {
         if (evaluator == null) {
             return;
         }
+
+        addFunctionMember("Iterator", 0, function(p) {
+            return new HashIterator(evaluator, value).getMembers();
+        });
 
         addFunctionMember("toString", 0, function(p) {
             return new StringObj(toString(), evaluator);
