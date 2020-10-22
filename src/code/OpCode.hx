@@ -31,5 +31,6 @@ class OpCode {
     public static inline final Hash = 0x16;
     public static inline final LoadIndex = 0x17;
     public static inline final StoreIndex = 0x18;
-    public static inline final Destructure = 0x19;
+    public static inline final DestructureArray = 0x19;
+    public static inline final DestructureHash = 0x1a;
 }

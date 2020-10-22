@@ -7,6 +7,8 @@ enum NodeType {
     Statement;
     Variable;
     VariableAssign;
+    DestructureArray;
+    DestructureHash;
     Ident;
     FunctionCall;
 

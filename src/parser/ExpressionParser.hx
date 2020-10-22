@@ -3,7 +3,6 @@ package parser;
 import ast.nodes.*;
 import ast.nodes.datatypes.*;
 import ast.NodeType;
-import error.CompileError;
 import lexer.Lexer;
 import lexer.TokenType;
 
