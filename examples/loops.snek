@@ -8,7 +8,18 @@ while i <= 5 {
 
 Sys.println("");
 
-// For loop
+// For loop - Array
 for let v in [1, 2, 3, 4, 5] {
     Sys.println(v);
+}
+
+Sys.println("");
+
+// For loop - Hash
+let myHash = {
+    axolotl: 1 + 2,
+    string: "hello"
+};
+for let <key, value> in myHash {
+    Sys.println(key >< " " >< value);
 }

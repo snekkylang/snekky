@@ -212,33 +212,53 @@ class Compiler {
             case NodeType.Variable:
                 final cVariable = cast(node, VariableNode);
 
-                if (symbolTable.currentScope.exists(cVariable.name)) {
-                    error.redeclareVariable(cVariable.position, cVariable.name);
-                }
-
-                if (!noDebug) {
-                    localVariableTable.define(instructions.length, cVariable.name);
-                }
-                final symbol = symbolTable.define(cVariable.name, cVariable.mutable);
                 if (cVariable.value != null) {
                     compile(cVariable.value);
                 }
-                emit(OpCode.Store, cVariable.position, [symbol.index]);
+                for (i => varName in cVariable.name) {
+                    if (symbolTable.currentScope.exists(varName)) {
+                        error.redeclareVariable(cVariable.position, varName);
+                    }
+                    if (!noDebug) {
+                        localVariableTable.define(instructions.length, varName);
+                    }
+                    final symbol = symbolTable.define(varName, cVariable.mutable);
+                    if (cVariable.destructure) {
+                        constantPool.addConstant(new StringObj(varName, null));
+                        emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                        emit(OpCode.Destructure, node.position, [i]);
+                    }
+                    emit(OpCode.Store, cVariable.position, [symbol.index]);
+                }
+                if (cVariable.destructure) {
+                    emit(OpCode.Pop, node.position, []);
+                }
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
 
-                final symbol = symbolTable.resolve(cVariableAssign.name);
-                if (symbol == null) {
-                    error.symbolUndefined(cVariableAssign.position, cVariableAssign.name);
-                } else if (!symbol.mutable) {
-                    error.symbolImmutable(cVariableAssign.position, cVariableAssign.name);
-                }
-                
-                if (!noDebug) {
-                    localVariableTable.define(instructions.length, cVariableAssign.name);
-                }
                 compile(cVariableAssign.value);
-                emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
+                for (i => varName in cVariableAssign.name) {
+                    final symbol = symbolTable.resolve(varName);
+                    if (symbol == null) {
+                        error.symbolUndefined(cVariableAssign.position, varName);
+                    } else if (!symbol.mutable) {
+                        error.symbolImmutable(cVariableAssign.position, varName);
+                    }
+                    
+                    if (!noDebug) {
+                        localVariableTable.define(instructions.length, varName);
+                    }
+
+                    if (cVariableAssign.destructure) {
+                        constantPool.addConstant(new StringObj(varName, null));
+                        emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                        emit(OpCode.Destructure, node.position, [i]);
+                    }
+                    emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
+                }
+                if (cVariableAssign.destructure) {
+                    emit(OpCode.Pop, node.position, []);
+                }
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
