@@ -37,14 +37,14 @@ Binaries of the latest unreleased version can be found on the [actions tab](http
 let add = func(a, b) {
     let result = a + b;
 
-    print(result);
+    Sys.println(result);
 };
 
 add(1, 2);
 
 mut i = 0;
 while i < 10 {
-    print(
+    Sys.println(
         if (i > 5) {
             "Snek"
         } else {
@@ -56,7 +56,7 @@ while i < 10 {
 }
 
 func(msg) {
-    print("Self-invoking function says " >< msg);
+    Sys.println("Self-invoking function says " >< msg);
 }("Axolotls are cool!");
 ```
 
