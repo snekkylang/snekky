@@ -12,8 +12,10 @@ Please do not take this project too seriously. I'm in no way a professional. To 
 - Compiles to a custom bytecode.
 - Arrays and hashes.
 - Lambdas and closures are supported.
-- `If`s and functions may implicitly return a value.
+- `if`s and functions may implicitly return a value.
 - Final (`let`) and mutable (`mut`) variables.
+- Destructuring of arrays and hashes.
+- `for ... in` loops with iterators.
 - As flexible and dynamic as a snek.
 
 ## Installation
