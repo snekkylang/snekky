@@ -213,10 +213,6 @@ class Compiler {
             case NodeType.Variable:
                 final cVariable = cast(node, VariableNode);
 
-                if (cVariable.value != null) {
-                    compile(cVariable.value);
-                }
-
                 inline function declareVariable(name:String, position:Int, mutable:Bool):Symbol {
                     if (symbolTable.currentScope.exists(name)) {
                         error.redeclareVariable(cVariable.position, name);
@@ -231,12 +227,19 @@ class Compiler {
                     final cVariableName = cast(cVariable.name, IdentNode).value;
 
                     final symbol = declareVariable(cVariableName, node.position, cVariable.mutable);
+                    if (cVariable.value != null) {
+                        compile(cVariable.value);
+                    }
+    
                     emit(OpCode.Store, cVariable.position, [symbol.index]);
                 } else if (cVariable.name.type == NodeType.DestructureArray) {
                     final cVariableName = cast(cVariable.name, DestructureArrayNode);
 
                     for (i => varName in cVariableName.names) {
                         final symbol = declareVariable(varName, node.position, cVariable.mutable);
+                        if (cVariable.value != null) {
+                            compile(cVariable.value);
+                        }        
 
                         emit(OpCode.DestructureArray, node.position, [i]);                        
                         emit(OpCode.Store, cVariable.position, [symbol.index]);  
@@ -248,6 +251,9 @@ class Compiler {
 
                     for (varName in cVariableName.names) {
                         final symbol = declareVariable(varName, node.position, cVariable.mutable);
+                        if (cVariable.value != null) {
+                            compile(cVariable.value);
+                        }        
 
                         constantPool.addConstant(new StringObj(varName, null));
                         emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
