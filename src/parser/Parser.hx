@@ -361,27 +361,28 @@ class Parser {
 
         nextToken();
 
-        if (currentToken.type != TokenType.Let && currentToken.type != TokenType.Mut) {
-            error.unexpectedToken(currentToken, "`let` or `mut`");
+        final variable = if (currentToken.type == TokenType.Let || currentToken.type == TokenType.Mut) {
+            final mutable = currentToken.type == TokenType.Mut;
+            nextToken();
+            final variableName = parseVariableName();
+    
+            nextToken();
+            assertToken(TokenType.In, "`in`");
+            nextToken();
+
+            new VariableNode(nodePos, variableName, null, mutable);
+        } else {
+            null;
         }
 
-        final mutable = currentToken.type == TokenType.Mut;
-        nextToken();
-        final variableName = parseVariableName();
-
-        nextToken();
-        assertToken(TokenType.In, "`in`");
-        nextToken();
-
         final iterator = expressionParser.parseExpression(); 
-
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
 
         nextToken();
 
-        return new ForNode(nodePos, new VariableNode(nodePos, variableName, null, mutable), iterator, block);
+        return new ForNode(nodePos, variable, iterator, block);
     }
 
     function parseVariableAssign():VariableAssignNode {
