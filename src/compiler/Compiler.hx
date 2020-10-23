@@ -278,6 +278,21 @@ class Compiler {
                 }
                 compile(cVariableAssign.value);
                 emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
+            case NodeType.VariableAssignOp:
+                final cVariableAssignOp = cast(node, VariableAssignOpNode);
+
+                final symbol = symbolTable.resolve(cVariableAssignOp.name.value);
+                if (symbol == null) {
+                    error.symbolUndefined(cVariableAssignOp.position, cVariableAssignOp.name.value);
+                } else if (!symbol.mutable) {
+                    error.symbolImmutable(cVariableAssignOp.position, cVariableAssignOp.name.value);
+                }
+                
+                if (!noDebug) {
+                    localVariableTable.define(instructions.length, cVariableAssignOp.name.value);
+                }
+                compile(cVariableAssignOp.op);
+                emit(OpCode.Store, cVariableAssignOp.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);

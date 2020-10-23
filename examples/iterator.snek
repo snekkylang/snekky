@@ -5,7 +5,7 @@ let IntIterator = func() {
         mut i = 0;
 
         let next = func() {
-            i = i + 1;
+            i += 1;
             return i;
         };
 

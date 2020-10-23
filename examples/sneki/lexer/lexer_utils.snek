@@ -6,7 +6,7 @@ Array.includes = func(arr, v) {
             return true;
         }
 
-        i = i + 1;
+        i += 1;
     }
 
     return false;

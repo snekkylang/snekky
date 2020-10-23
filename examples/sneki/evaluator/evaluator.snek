@@ -66,7 +66,7 @@ let Evaluator = func(ast) {
         while i < block.nodes.length() {
             executeInstruction(block.nodes[i]);
 
-            i = i + 1;
+            i += 1;
         }
 
         currentBlock = lastBlock;

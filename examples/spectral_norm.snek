@@ -1,8 +1,8 @@
-let A = func(i, j) {
+let a = func(i, j) {
     return 1.0 / ((i + j) * (i + j + 1) / 2 + i + 1);
 };
 
-let Au = func(u, v) {
+let au = func(u, v) {
     mut i = 0;
 
     while i < u.length() {
@@ -10,7 +10,7 @@ let Au = func(u, v) {
         mut j = 0;
 
         while j < u.length() {
-            t = t + A(i, j) * u[j];
+            t = t + a(i, j) * u[j];
 
             j = j + 1;
         } 
@@ -20,7 +20,7 @@ let Au = func(u, v) {
     }
 };
 
-let Atu = func(u, v) {
+let atu = func(u, v) {
     mut i = 0;
 
     while i < u.length() {
@@ -28,7 +28,7 @@ let Atu = func(u, v) {
         mut j = 0;
 
         while j < u.length() {
-            t = t + A(j, i) * u[j];
+            t = t + a(j, i) * u[j];
 
             j = j + 1;
         } 
@@ -38,9 +38,9 @@ let Atu = func(u, v) {
     }
 };
 
-let AtAu = func(u, v, w) {
-    Au(u,w);
-    Atu(w,v);
+let atau = func(u, v, w) {
+    au(u,w);
+    atu(w,v);
 };
 
 let spectralnorm = func(n) {
@@ -63,8 +63,8 @@ let spectralnorm = func(n) {
     i = 0;
 
     while i < 10 {
-        AtAu(u, v, w);
-        AtAu(v, u, w);
+        atau(u, v, w);
+        atau(v, u, w);
 
         i = i + 1;   
     }
