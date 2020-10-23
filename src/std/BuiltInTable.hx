@@ -51,10 +51,6 @@ class BuiltInTable {
         for (_ in 0...func.parametersCount) {
             final parameter = evaluator.stack.pop();
 
-            if (parameter == null) {
-                evaluator.error.error("wrong number of arguments to function");
-            }
-
             parameters.push(parameter);
         }
 
