@@ -391,7 +391,11 @@ class Compiler {
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [0]);
                 symbolTable.newScope();
-                compile(cFor.variable);
+                if (cFor.variable != null) {
+                    compile(cFor.variable);
+                } else {
+                    emit(OpCode.Pop, node.position, []);
+                }
                 compile(cFor.block);
                 symbolTable.setParent();
                 emit(OpCode.Jump, node.position, [jumpPos]);
