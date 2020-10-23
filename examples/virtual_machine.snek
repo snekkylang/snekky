@@ -66,7 +66,7 @@ let eval = func(code) {
             stack.push(left - right);
         }
 
-        i = i + 1;
+        i += 1;
     }
 
     Sys.println(stack.values[0]);

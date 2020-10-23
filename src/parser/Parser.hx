@@ -1,8 +1,8 @@
 package parser;
 
+import ast.NodeType;
 import error.CompileError;
 import ast.nodes.datatypes.*;
-import sys.io.File;
 import haxe.format.JsonPrinter;
 import lexer.TokenType;
 import lexer.Token;
@@ -33,7 +33,7 @@ class Parser {
     }
 
     public function writeAst() {
-        File.saveContent("ast.json", JsonPrinter.print(ast));
+        sys.io.File.saveContent("ast.json", JsonPrinter.print(ast));
     }
 
     public function nextToken() {
@@ -386,7 +386,6 @@ class Parser {
 
     function parseVariableAssign():VariableAssignNode {
         final nodePos = currentToken.position;
-        final destructure = currentToken.type == TokenType.LessThan;
         final name = new IdentNode(nodePos, currentToken.literal);
 
         nextToken();
@@ -399,7 +398,35 @@ class Parser {
         assertSemicolon();
         nextToken();
 
-        return new VariableAssignNode(nodePos, name, value, destructure);
+        return new VariableAssignNode(nodePos, name, value);
+    }
+
+    public function parseVariableAssignOp():VariableAssignOpNode {
+        final nodePos = currentToken.position;
+        final name = new IdentNode(nodePos, currentToken.literal);
+
+        nextToken();
+        final op = currentToken;
+        nextToken();
+        assertToken(TokenType.Assign, "`=`");
+
+        nextToken();
+
+        final value = expressionParser.parseExpression();
+
+        assertSemicolon();
+        nextToken();
+
+        return new VariableAssignOpNode(nodePos, name, switch (op.type) {
+            case TokenType.Plus: new OperatorNode(nodePos, NodeType.Add, name, value);
+            case TokenType.Minus: new OperatorNode(nodePos, NodeType.Subtract, name, value);
+            case TokenType.Asterisk: new OperatorNode(nodePos, NodeType.Multiply, name, value);
+            case TokenType.Slash: new OperatorNode(nodePos, NodeType.Divide, name, value);
+            case TokenType.Percent: new OperatorNode(nodePos, NodeType.Modulo, name, value);
+            default: 
+                error.unexpectedToken(op, "`=` or operator");
+                null;
+        });
     }
 
     function parseStatement():Node {
@@ -424,7 +451,7 @@ class Parser {
         nextToken();
         assertSemicolon();
         nextToken();
-        final code = File.getContent(filename);
+        final code = sys.io.File.getContent(filename);
 
         final lexer = new Lexer(filename, code);
 
@@ -461,10 +488,11 @@ class Parser {
                 block.addNode(parseBlock()); 
                 nextToken();
             case TokenType.Ident:
-                if (lexer.peekToken().type == TokenType.Assign) {
-                    block.addNode(parseVariableAssign());
-                } else {
-                    block.addNode(parseStatement());
+                switch (lexer.peekToken().type) {
+                    case TokenType.Assign: block.addNode(parseVariableAssign());
+                    case TokenType.Plus | TokenType.Minus | TokenType.Asterisk | TokenType.Slash | TokenType.Percent: 
+                        block.addNode(parseVariableAssignOp());
+                    default: block.addNode(parseStatement());
                 }
             case TokenType.Illegal: error.illegalToken(currentToken);
             default: block.addNode(parseStatement());
