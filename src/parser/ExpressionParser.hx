@@ -49,7 +49,7 @@ class ExpressionParser {
     }
 
     function comparison():Node {
-        final left = numeric();
+        final left = range();
 
         final type = switch (parser.currentToken.type) {
             case TokenType.LessThan: NodeType.LessThan;
@@ -63,8 +63,27 @@ class ExpressionParser {
 
         parser.nextToken();
         final nodePos = parser.currentToken.position;
-        final right = numeric();
+        final right = range();
         return new OperatorNode(nodePos, type, left, right);
+    }
+
+    function range():Node {
+        var start = new ExpressionNode(parser.currentToken.position, numeric());
+
+        while (true) {
+            final inclusive = switch(parser.currentToken.type) {
+                case TokenType.InclusiveRange: true;
+                case TokenType.ExclusiveRange: false;
+                default: break;
+            }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final end = new ExpressionNode(nodePos, numeric());
+            start = new ExpressionNode(nodePos, new RangeNode(nodePos, start, end, inclusive));
+        }
+
+        return start;
     }
 
     function numeric():Node {

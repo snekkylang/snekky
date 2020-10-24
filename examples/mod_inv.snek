@@ -1,12 +1,8 @@
 let modInv = func(a, b) {
-    mut i = 0;
-
-    while i < b {
+    for let i in 0...b {
         if (a * i) % b == 1 {
             return i;
         }
-
-        i += 1;
     }
 };
 

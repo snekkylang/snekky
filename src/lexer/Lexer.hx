@@ -31,6 +31,20 @@ class Lexer {
         return (position >= code.length) ? "\u{0}" : code.charAt(position);
     }
 
+    function peekCharN(n:Int):Array<String> {
+        final lastPosition = position;
+        final lastChar = currentChar;
+        final chars:Array<String> = [];
+        for (_ in 0...n) {
+            readChar();
+            chars.push(currentChar);
+        }
+        position = lastPosition;
+        currentChar = lastChar;
+
+        return chars;
+    }
+
     function readIdent():String {
         final startPosition = position;
 
@@ -63,8 +77,11 @@ class Lexer {
     function readNumber():String {
         final startPosition = position;
 
-        while (Helper.isNumber(peekChar()) || peekChar() == ".") {
+        var peek = peekCharN(2);
+
+        while (Helper.isNumber(peek[0]) || (peek[0] == "." && peek[1] != ".")) {
             readChar();
+            peek = peekCharN(2);
         }
 
         return code.substring(startPosition - 1, position);
@@ -99,12 +116,33 @@ class Lexer {
         return token;
     }
 
+    public function peekTokenN(n:Int) {
+        final lastPostion = position;
+        final tokens:Array<Token> = [];
+        for (_ in 0...n) {
+            tokens.push(readToken());
+        }
+        position = lastPostion;
+        
+        return tokens;
+    }
+
     public function readToken():Token {
         readChar();
         eatWhitespace();
 
         return switch (currentChar) {
-            case ".": new Token(TokenType.Dot, position, ".");
+            case ".":
+                switch (peekCharN(2)) {
+                    case [".", "."]:
+                        readChar();
+                        readChar();
+                        new Token(TokenType.ExclusiveRange, position, "...");
+                    case [".", _]:
+                        readChar();
+                        new Token(TokenType.InclusiveRange, position, "..");
+                    default: new Token(TokenType.Dot, position, ".");
+                }
             case ";": new Token(TokenType.Semicolon, position, ";");
             case "(": new Token(TokenType.LParen, position, "(");
             case ")": new Token(TokenType.RParen, position, ")");

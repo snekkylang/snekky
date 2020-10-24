@@ -1,0 +1,18 @@
+// Exclusive range
+for let i in 0...5 {
+    Sys.println(i);
+}
+
+Sys.println("");
+
+// Inclusive range
+for let i in 0..5 {
+    Sys.println(i);
+}
+
+Sys.println("");
+
+// Loop using range without variable
+for 0...5 {
+    Sys.println("executed");
+}

@@ -489,10 +489,10 @@ class Parser {
                 block.addNode(parseBlock()); 
                 nextToken();
             case TokenType.Ident:
-                switch (lexer.peekToken().type) {
-                    case TokenType.Assign: block.addNode(parseVariableAssign());
-                    case TokenType.Plus | TokenType.Minus | TokenType.Asterisk | TokenType.Slash | TokenType.Percent: 
+                switch [for (t in lexer.peekTokenN(2)) t.type] {
+                    case [TokenType.Plus | TokenType.Minus | TokenType.Asterisk | TokenType.Slash | TokenType.Percent, TokenType.Assign]:
                         block.addNode(parseVariableAssignOp());
+                    case [TokenType.Assign, _]: block.addNode(parseVariableAssign());
                     default: block.addNode(parseStatement());
                 }
             case TokenType.Illegal: error.illegalToken(currentToken);

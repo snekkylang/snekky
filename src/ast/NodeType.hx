@@ -43,6 +43,7 @@ enum NodeType {
     If;
     While;
     For;
+    Range;
 
     Index;
     IndexAssign;
