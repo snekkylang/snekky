@@ -21,6 +21,7 @@ class BuiltInTable {
             new MathNamespace(evaluator),
             new StringNamespace(evaluator),
             new ObjectNamespace(evaluator),
+            new RangeNamespace(evaluator),
             #if (playground != 1) 
             new FileNamespace(evaluator), 
             new HttpNamespace(evaluator)
@@ -34,6 +35,7 @@ class BuiltInTable {
             MathNamespace.name,
             StringNamespace.name,
             ObjectNamespace.name,
+            RangeNamespace.name,
             #if (playground != 1) 
             FileNamespace.name, 
             HttpNamespace.name

@@ -114,6 +114,20 @@ class Compiler {
                 }
 
                 emit(OpCode.Array, node.position, [cArray.values.length]);
+            case NodeType.Range:
+                final cRange = cast(node, RangeNode);
+
+                compile(cRange.end);
+                compile(cRange.start);
+                emit(OpCode.LoadBuiltIn, node.position, [BuiltInTable.resolveName("Range")]);
+                if (cRange.inclusive) {
+                    constantPool.addConstant(new StringObj("Inclusive", null));
+                } else {
+                    constantPool.addConstant(new StringObj("Exclusive", null));
+                }
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.LoadIndex, node.position, []);
+                emit(OpCode.Call, node.position, [2]);
             case NodeType.Index:
                 final cIndex = cast(node, IndexNode);
 

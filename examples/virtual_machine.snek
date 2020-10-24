@@ -47,26 +47,23 @@ let Stack = func() {
 
 let eval = func(code) {
     let stack = Stack();
-    mut i = 0;
 
-    while i < code.length() {
+    for let i in 0...code.length() {
         let instruction = code[i];
 
-        if (instruction.name == "push") {
+        if instruction.name == "push" {
             stack.push(instruction.value);
         } else if (instruction.name == "add") {
             let right = stack.pop();
             let left = stack.pop();
 
             stack.push(left + right);
-        } else if (instruction.name == "sub") {
+        } else if instruction.name == "sub" {
             let right = stack.pop();
             let left = stack.pop();
 
             stack.push(left - right);
         }
-
-        i += 1;
     }
 
     Sys.println(stack.values[0]);

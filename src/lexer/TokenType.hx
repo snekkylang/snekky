@@ -37,6 +37,8 @@ enum TokenType {
     RBrace;
     LBracket;
     RBracket;
+    ExclusiveRange;
+    InclusiveRange;
     
     // Keywords
     Function;

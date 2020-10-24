@@ -1,22 +1,22 @@
 let a = func(i, j) {
-    return 1.0 / ((i + j) * (i + j + 1) / 2 + i + 1);
+    return 1 / ((i + j) * (i + j + 1) / 2 + i + 1);
 };
 
 let au = func(u, v) {
     mut i = 0;
 
     while i < u.length() {
-        mut t = 0.0;
+        mut t = 0;
         mut j = 0;
 
         while j < u.length() {
-            t = t + a(i, j) * u[j];
+            t += a(i, j) * u[j];
 
-            j = j + 1;
+            j += 1;
         } 
 
         v[i] = t;
-        i = i + 1;
+        i += 1;
     }
 };
 
@@ -24,23 +24,23 @@ let atu = func(u, v) {
     mut i = 0;
 
     while i < u.length() {
-        mut t = 0.0;
+        mut t = 0;
         mut j = 0;
 
         while j < u.length() {
-            t = t + a(j, i) * u[j];
+            t += a(j, i) * u[j];
 
-            j = j + 1;
+            j += 1;
         } 
 
         v[i] = t;
-        i = i + 1;
+        i += 1;
     }
 };
 
 let atau = func(u, v, w) {
-    au(u,w);
-    atu(w,v);
+    au(u, w);
+    atu(w, v);
 };
 
 let spectralnorm = func(n) {
@@ -57,7 +57,7 @@ let spectralnorm = func(n) {
         v.push(0);
         w.push(0);
 
-        i = i + 1;
+        i += 1;
     }
 
     i = 0;
@@ -66,16 +66,16 @@ let spectralnorm = func(n) {
         atau(u, v, w);
         atau(v, u, w);
 
-        i = i + 1;   
+        i += 1;   
     }
 
     i = 0;
 
     while i < n {
-        vBv = vBv + u[i] * v[i];
-        vv = vv + v[i] * v[i];
+        vBv += u[i] * v[i];
+        vv += v[i] * v[i];
 
-        i = i + 1;
+        i += 1;
     }
 
     return Math.sqrt(vBv / vv);
