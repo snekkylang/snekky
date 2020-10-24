@@ -15,15 +15,15 @@ jobs:
           haxelib install console.hx
           haxelib install equals
           haxelib install hxcpp
-
       - name: Build
         run: haxe build.hxml
-
+      - name: Rename artifact
+        run: mv cpp/Snekky cpp/snekky
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: snekky-linux
-          path: cpp/Snekky
+          path: cpp/snekky
   windows:
     runs-on: windows-latest
     steps:
@@ -36,15 +36,18 @@ jobs:
           haxelib install console.hx
           haxelib install equals
           haxelib install hxcpp
-
       - name: Build
         run: haxe build.hxml
-
+      - name: Rename artifact
+        run: | 
+          cd cpp
+          ren Snekky.exe snekky.exe
+          cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: snekky-win
-          path: cpp/Snekky.exe
+          path: cpp/snekky.exe
   macos:
     runs-on: macos-latest
     steps:
@@ -57,12 +60,12 @@ jobs:
           haxelib install console.hx
           haxelib install equals
           haxelib install hxcpp
-
       - name: Build
         run: haxe build.hxml
-
+      - name: Rename artifact
+        run: mv cpp/snekky cpp/snekky
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
           name: snekky-macos
-          path: cpp/Snekky
+          path: cpp/snekky
