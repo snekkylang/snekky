@@ -17,7 +17,7 @@ private class HashIterator extends MemberObject {
 
         addFunctionMember("next", 0, function(p) {
             final next = iterator.next();
-            return new ArrayObj([next.value, new StringObj(next.key, evaluator)], evaluator);
+            return new ArrayObj([new StringObj(next.key, evaluator), next.value], evaluator);
         });
 
         addFunctionMember("hasNext", 0, function(p) {
