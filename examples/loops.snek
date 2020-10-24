@@ -20,6 +20,6 @@ let myHash = {
     axolotl: 1 + 2,
     string: "hello"
 };
-for let [value, key] in myHash {
+for let [key, value] in myHash {
     Sys.println(key >< " " >< value);
 }
