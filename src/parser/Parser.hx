@@ -480,9 +480,7 @@ class Parser {
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.For: block.addNode(parseFor());
             case TokenType.Break: block.addNode(parseBreak());
-            #if (playground != 1)
             case TokenType.Import: block.addNode(parseImport());
-            #end
             case TokenType.LBrace: 
                 block.addNode(parseBlock()); 
                 nextToken();

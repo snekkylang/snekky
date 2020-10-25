@@ -2,6 +2,5 @@
 -main Snekky
 -cpp cpp
 -D HXCPP_M64
--D playground=0
 -lib console.hx
 -lib equals
