@@ -1,3 +1,4 @@
+import haxe.io.Bytes;
 import haxe.io.Path;
 import evaluator.Evaluator;
 import compiler.Compiler;
@@ -6,46 +7,46 @@ import lexer.Lexer;
 import sys.io.File;
 
 class Snekky {
+
+    public static function compileString(filename:String, code:String, debug:Bool, compress:Bool):Bytes {
+        final lexer = new Lexer(filename, code);
+
+        final parser = new Parser(lexer);
+        parser.generateAst();
+
+        final compiler = new Compiler(debug);
+        compiler.compile(parser.ast);
+        final byteCode = compiler.getByteCode(compress);  
+
+        return byteCode;
+    }
+
+    public static function evaluateBytes(byteCode:Bytes) {
+        final evaluator = new Evaluator(byteCode);
+        evaluator.eval();
+    }
     
     public static function main() {
         final args = Sys.args();
 
-        #if (playground != 1)
         final filename = args[0];
-        #else
-        final filename = "input.snek";
-        #end
-        final noDebug = args.contains("--no-debug");
-        final noCompress = !args.contains("--dump") || args.contains("--no-compress");
+        final debug = !args.contains("--no-debug");
+        final compress = args.contains("--dump") && !args.contains("--no-compress");
 
-        final byteCode = if (Path.extension(filename) == "snek") {
-            #if (playground != 1)
+        if (Path.extension(filename) == "snek") {
             final code = File.getContent('./$filename');
-            #else
-            final code = args[0];
-            #end
 
-            final lexer = new Lexer(filename, code);
-
-            final parser = new Parser(lexer);
-            parser.generateAst();
-
-            final compiler = new Compiler(noDebug);
-            compiler.compile(parser.ast);
-
-            final byteCode = compiler.getByteCode(!noCompress);
+            final byteCode = compileString(filename, code, debug, compress);
 
             if (args.contains("--dump")) {
                 File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
                 Sys.exit(0);
             }
 
-            byteCode;
+            evaluateBytes(byteCode);
         } else {
-            File.getBytes('./$filename'); 
+            final byteCode = File.getBytes('./$filename');
+            evaluateBytes(byteCode);
         }
-
-        final evaluator = new Evaluator(byteCode);
-        evaluator.eval(); 
     }
 }

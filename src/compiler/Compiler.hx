@@ -32,13 +32,13 @@ class Compiler {
     final filenameTable = new FilenameTable();
     var error:CompileError = new CompileError("", "");
 
-    final noDebug:Bool;
+    final debug:Bool;
 
     // Positions of break instructions
     var breakPositions:Array<Int> = [];
 
-    public function new(noDebug:Bool) {
-        this.noDebug = noDebug;
+    public function new(debug:Bool) {
+        this.debug = debug;
     }
 
     public function getByteCode(compress:Bool):Bytes {
@@ -83,7 +83,7 @@ class Compiler {
                 error.filename = pFilename;
                 error.code = pCode;
 
-                if (!noDebug) {
+                if (debug) {
                     filenameTable.define(startIndex, instructions.length, cFile.filename);
                 }
             case NodeType.Block:
@@ -231,7 +231,7 @@ class Compiler {
                     if (symbolTable.currentScope.exists(name)) {
                         error.redeclareVariable(cVariable.position, name);
                     }
-                    if (!noDebug) {
+                    if (debug) {
                         localVariableTable.define(instructions.length, name);
                     }
                     return symbolTable.define(name, mutable);
@@ -287,7 +287,7 @@ class Compiler {
                     error.symbolImmutable(cVariableAssign.position, cVariableAssign.name.value);
                 }
                 
-                if (!noDebug) {
+                if (debug) {
                     localVariableTable.define(instructions.length, cVariableAssign.name.value);
                 }
                 compile(cVariableAssign.value);
@@ -302,7 +302,7 @@ class Compiler {
                     error.symbolImmutable(cVariableAssignOp.position, cVariableAssignOp.name.value);
                 }
                 
-                if (!noDebug) {
+                if (debug) {
                     localVariableTable.define(instructions.length, cVariableAssignOp.name.value);
                 }
                 compile(cVariableAssignOp.value);
@@ -467,7 +467,7 @@ class Compiler {
     }
 
     function emit(op:Int, position:Int, operands:Array<Int>) {
-        if (!noDebug) {
+        if (debug) {
             lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(error.code, position));
         }
         final instruction = Code.make(op, operands);
