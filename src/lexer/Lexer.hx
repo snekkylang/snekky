@@ -151,11 +151,31 @@ class Lexer {
             case "[": new Token(TokenType.LBracket, position, "[");
             case "]": new Token(TokenType.RBracket, position, "]");
             case ",": new Token(TokenType.Comma, position, ",");
-            case "+": new Token(TokenType.Plus, position, "+");
-            case "-": new Token(TokenType.Minus, position, "-");
+            case "+": 
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.PlusAssign, position, "+=");
+                } else new Token(TokenType.Plus, position, "+");
+            case "-": 
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.MinusAssign, position, "-=");
+                } else new Token(TokenType.Minus, position, "-");
             case "/": new Token(TokenType.Slash, position, "/");
-            case "*": new Token(TokenType.Asterisk, position, "*");
-            case "%": new Token(TokenType.Percent, position, "%");
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.SlashAssign, position, "/=");
+                } else new Token(TokenType.Slash, position, "/");
+            case "*": 
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.AsteriskAssign, position, "*=");
+                } else new Token(TokenType.Asterisk, position, "*");
+            case "%": 
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.PercentAssign, position, "%=");
+                } else new Token(TokenType.Percent, position, "%");
             case ":": new Token(TokenType.Colon, position, ":");
             case "\"": 
                 final string = readString();

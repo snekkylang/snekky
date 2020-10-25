@@ -8,6 +8,11 @@ enum TokenType {
     Number;
     String;
     Assign;
+    PlusAssign;
+    MinusAssign;
+    AsteriskAssign;
+    SlashAssign;
+    PercentAssign;
     Plus;
     Minus;
     Asterisk;
