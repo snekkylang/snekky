@@ -4,7 +4,9 @@ import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
+#if target.sys
 import sys.io.File;
+#end
 
 class Snekky {
 
@@ -27,6 +29,7 @@ class Snekky {
     }
     
     public static function main() {
+        #if target.sys
         final args = Sys.args();
 
         final filename = args[0];
@@ -48,5 +51,6 @@ class Snekky {
             final byteCode = File.getBytes('./$filename');
             evaluateBytes(byteCode);
         }
+        #end
     }
 }

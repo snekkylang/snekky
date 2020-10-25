@@ -53,6 +53,6 @@ class RuntimeError {
         printHead(message);
         printStackTrace();
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 }
