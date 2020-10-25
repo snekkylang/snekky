@@ -408,8 +408,6 @@ class Parser {
 
         nextToken();
         final op = currentToken;
-        nextToken();
-        assertToken(TokenType.Assign, "`=`");
 
         nextToken();
 
@@ -419,13 +417,13 @@ class Parser {
         nextToken();
 
         return new VariableAssignOpNode(nodePos, name, switch (op.type) {
-            case TokenType.Plus: new OperatorNode(nodePos, NodeType.Add, name, value);
-            case TokenType.Minus: new OperatorNode(nodePos, NodeType.Subtract, name, value);
-            case TokenType.Asterisk: new OperatorNode(nodePos, NodeType.Multiply, name, value);
-            case TokenType.Slash: new OperatorNode(nodePos, NodeType.Divide, name, value);
-            case TokenType.Percent: new OperatorNode(nodePos, NodeType.Modulo, name, value);
+            case TokenType.PlusAssign: new OperatorNode(nodePos, NodeType.Add, name, value);
+            case TokenType.MinusAssign: new OperatorNode(nodePos, NodeType.Subtract, name, value);
+            case TokenType.AsteriskAssign: new OperatorNode(nodePos, NodeType.Multiply, name, value);
+            case TokenType.SlashAssign: new OperatorNode(nodePos, NodeType.Divide, name, value);
+            case TokenType.PercentAssign: new OperatorNode(nodePos, NodeType.Modulo, name, value);
             default: 
-                error.unexpectedToken(op, "`=` or operator");
+                error.unexpectedToken(op, "operator assign");
                 null;
         });
     }
@@ -489,10 +487,10 @@ class Parser {
                 block.addNode(parseBlock()); 
                 nextToken();
             case TokenType.Ident:
-                switch [for (t in lexer.peekTokenN(2)) t.type] {
-                    case [TokenType.Plus | TokenType.Minus | TokenType.Asterisk | TokenType.Slash | TokenType.Percent, TokenType.Assign]:
+                switch (lexer.peekToken().type) {
+                    case TokenType.PlusAssign | TokenType.MinusAssign | TokenType.AsteriskAssign | TokenType.SlashAssign | TokenType.PercentAssign:
                         block.addNode(parseVariableAssignOp());
-                    case [TokenType.Assign, _]: block.addNode(parseVariableAssign());
+                    case TokenType.Assign: block.addNode(parseVariableAssign());
                     default: block.addNode(parseStatement());
                 }
             case TokenType.Illegal: error.illegalToken(currentToken);

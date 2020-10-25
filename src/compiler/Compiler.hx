@@ -305,7 +305,7 @@ class Compiler {
                 if (!noDebug) {
                     localVariableTable.define(instructions.length, cVariableAssignOp.name.value);
                 }
-                compile(cVariableAssignOp.op);
+                compile(cVariableAssignOp.value);
                 emit(OpCode.Store, cVariableAssignOp.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
