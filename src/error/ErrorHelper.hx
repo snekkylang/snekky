@@ -45,7 +45,7 @@ class ErrorHelper {
         #if target.sys
         Sys.exit(0);
         #else
-
+        throw "";
         #end
     }
 }

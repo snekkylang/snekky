@@ -8,6 +8,7 @@ import lexer.Lexer;
 import sys.io.File;
 #end
 
+@:expose
 class Snekky {
 
     public static function compileString(filename:String, code:String, debug:Bool, compress:Bool):Bytes {
