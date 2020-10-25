@@ -1,6 +1,5 @@
 package std.lib.namespaces;
 
-import haxe.Log;
 import object.StringObj;
 import object.NullObj;
 import evaluator.Evaluator;
