@@ -22,8 +22,10 @@ class BuiltInTable {
             new StringNamespace(evaluator),
             new ObjectNamespace(evaluator),
             new RangeNamespace(evaluator),
+            #if target.sys
             new FileNamespace(evaluator), 
             new HttpNamespace(evaluator)
+            #end
         ];
     }
 
@@ -34,8 +36,10 @@ class BuiltInTable {
             StringNamespace.name,
             ObjectNamespace.name,
             RangeNamespace.name,
+            #if target.sys
             FileNamespace.name, 
             HttpNamespace.name
+            #end
         ].indexOf(name);
     }
 

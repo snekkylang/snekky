@@ -33,7 +33,9 @@ class Parser {
     }
 
     public function writeAst() {
+        #if target.sys
         sys.io.File.saveContent("ast.json", JsonPrinter.print(ast));
+        #end
     }
 
     public function nextToken() {
@@ -450,7 +452,12 @@ class Parser {
         nextToken();
         assertSemicolon();
         nextToken();
+        #if target.sys
         final code = sys.io.File.getContent(filename);
+        #else
+        final code = "";
+        throw "Imports not supported on this target";
+        #end
 
         final lexer = new Lexer(filename, code);
 
@@ -480,7 +487,9 @@ class Parser {
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.For: block.addNode(parseFor());
             case TokenType.Break: block.addNode(parseBreak());
+            #if target.sys
             case TokenType.Import: block.addNode(parseImport());
+            #end
             case TokenType.LBrace: 
                 block.addNode(parseBlock()); 
                 nextToken();

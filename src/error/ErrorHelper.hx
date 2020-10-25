@@ -40,4 +40,12 @@ class ErrorHelper {
             linePos: linePos
         }
     }
+
+    public static inline function exit() {
+        #if target.sys
+        Sys.exit(0);
+        #else
+
+        #end
+    }
 }

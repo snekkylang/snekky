@@ -98,7 +98,7 @@ class CompileError {
         Console.log('Expected $expected.');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 
     public function missingSemicolon(token:Token) {
@@ -106,7 +106,7 @@ class CompileError {
         printHead(position.line, position.linePos, "missing semicolon");
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 
     public function unexpectedEof(token:Token) {
@@ -114,7 +114,7 @@ class CompileError {
         printHead(position.line, position.linePos, 'unexpcted end of file');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
     
     public function illegalToken(token:Token) {
@@ -122,7 +122,7 @@ class CompileError {
         printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
         printCode(position.line, position.linePos, position.linePos + token.literal.length);
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 
     public function symbolUndefined(cPosition:Int, symbol:String) {
@@ -130,7 +130,7 @@ class CompileError {
         printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
         printCode(position.line, position.linePos, -1, "not found in this scope");
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 
     public function symbolImmutable(cPosition:Int, symbol:String) {
@@ -138,7 +138,7 @@ class CompileError {
         printHead(position.line, position.linePos, 'cannot re-assign to immutable variable `$symbol`');
         printCode(position.line, position.linePos, -1, "cannot be re-assgined");
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 
     public function redeclareVariable(cPosition:Int, symbol:String) {
@@ -146,6 +146,6 @@ class CompileError {
         printHead(position.line, position.linePos, 'cannot re-declare immutable variable `$symbol`');
         printCode(position.line, position.linePos, -1, "has already been declared in this scope");
 
-        Sys.exit(0);
+        ErrorHelper.exit();
     }
 }
