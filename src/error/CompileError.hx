@@ -1,5 +1,6 @@
 package error;
 
+import lexer.Helper;
 import lexer.Token;
 
 class CompileError {
@@ -20,7 +21,7 @@ class CompileError {
         var min = 2147483647;
 
         for (line in code) {
-            if (line.length == 0) {
+            if (line.length == 0 || Helper.isLinebreak(line.charAt(0))) {
                 continue;
             }
 
