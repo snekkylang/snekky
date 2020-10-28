@@ -44,6 +44,7 @@ enum NodeType {
     While;
     For;
     Range;
+    Regex;
 
     Index;
     IndexAssign;

@@ -128,6 +128,16 @@ class Compiler {
                 emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [2]);
+            case NodeType.Regex:
+                final cRegex = cast(node, RegexNode);
+
+                compile(cRegex.flags);
+                compile(cRegex.pattern);
+                emit(OpCode.LoadBuiltIn, node.position, [BuiltInTable.resolveName("Regex")]);
+                constantPool.addConstant(new StringObj("compile", null));
+                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.LoadIndex, node.position, []);
+                emit(OpCode.Call, node.position, [2]);
             case NodeType.Index:
                 final cIndex = cast(node, IndexNode);
 

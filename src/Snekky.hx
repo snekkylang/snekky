@@ -4,9 +4,6 @@ import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
-#if target.sys
-import sys.io.File;
-#end
 
 @:expose
 class Snekky {
@@ -38,18 +35,18 @@ class Snekky {
         final compress = args.contains("--dump") && !args.contains("--no-compress");
 
         if (Path.extension(filename) == "snek") {
-            final code = File.getContent('./$filename');
+            final code = sys.io.File.getContent('./$filename');
 
             final byteCode = compileString(filename, code, debug, compress);
 
             if (args.contains("--dump")) {
-                File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
+                sys.io.File.saveBytes('${Path.withoutExtension(filename)}.bite', byteCode);
                 Sys.exit(0);
             }
 
             evaluateBytes(byteCode);
         } else {
-            final byteCode = File.getBytes('./$filename');
+            final byteCode = sys.io.File.getBytes('./$filename');
             evaluateBytes(byteCode);
         }
         #end

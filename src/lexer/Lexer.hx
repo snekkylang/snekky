@@ -88,6 +88,27 @@ class Lexer {
         return string.toString();
     }
 
+    function readRegex():String {
+        inString = true;
+        readChar();
+        readChar();
+
+        final regex = new StringBuf();
+
+        while (currentChar != "/" && currentChar != "\u{0}") {
+            if (currentChar == "\\") {
+                readChar();
+            }
+
+            regex.add(currentChar);
+
+            readChar();
+        }
+
+        inString = false;
+        return regex.toString();
+    }
+
     function readNumber():String {
         final startPosition = position;
 
@@ -146,6 +167,13 @@ class Lexer {
         eatWhitespace();
 
         return switch (currentChar) {
+            case "~":
+                if (peekChar() == "/") {
+                    final regex = readRegex();
+                    new Token(TokenType.Regex, position, regex);
+                } else {
+                    new Token(TokenType.Tilde, position, "~");
+                }
             case ".":
                 switch (peekCharN(2)) {
                     case [".", "."]:
