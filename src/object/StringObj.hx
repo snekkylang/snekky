@@ -40,6 +40,53 @@ class StringObj extends Object {
             }
             return new ArrayObj(arr, evaluator);
         });
+
+        addFunctionMember("contains", 1, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final sub = cast(p[0], StringObj).value;
+
+            return new NumberObj(StringTools.contains(value, sub) ? 1 : 0, evaluator);
+        });
+
+        addFunctionMember("indexOf", 2, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final sub = cast(p[0], StringObj).value;
+
+            assertParameterType(p[1], ObjectType.Number);
+            final start = Std.int(cast(p[1], NumberObj).value);
+
+            return new NumberObj(value.indexOf(sub, start), evaluator);
+        });
+
+        addFunctionMember("substr", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final len = Std.int(cast(p[1], NumberObj).value);
+
+            return new StringObj(value.substr(pos, len), evaluator);
+        });
+
+        addFunctionMember("substring", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final start = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final end = Std.int(cast(p[1], NumberObj).value);
+
+            return new StringObj(value.substring(start, end), evaluator);
+        });
+
+        addFunctionMember("replace", 2, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final sub = cast(p[0], StringObj).value;
+
+            assertParameterType(p[1], ObjectType.String);
+            final by = cast(p[1], StringObj).value;
+
+            return new StringObj(StringTools.replace(value, sub, by), evaluator);
+        });
     }
 
     override function toString():String {
