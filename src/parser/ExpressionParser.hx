@@ -174,58 +174,49 @@ class ExpressionParser {
                 parser.nextToken();
 
                 disjunction;
-
             case TokenType.Ident:
                 final ident = new IdentNode(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
 
                 ident; 
-
             case TokenType.Number:
                 parser.parseNumber();
-
             case TokenType.String:
                 final string = new StringNode(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
 
                 string;
-
             case TokenType.Function:
                 parser.nextToken();
                 parser.parseFunction();
-
             case TokenType.True:
                 final boolean = new BooleanNode(parser.currentToken.position, true);
                 parser.nextToken();
 
                 boolean;
-
             case TokenType.False:
                 final boolean = new BooleanNode(parser.currentToken.position, false);
                 parser.nextToken();
 
                 boolean;
-
             case TokenType.If:
                 final ifN = parser.parseIf();
 
                 ifN;
-
             case TokenType.LBracket:
                 parser.parseArray();
-
             case TokenType.LBrace:
                 parser.parseHash();
-
             case TokenType.Null:
                 final nullN = new NullNode(parser.currentToken.position);
                 parser.nextToken();
 
                 nullN;
-
+            case TokenType.Regex:
+                parser.parseRegex();
             default: 
                 parser.error.unexpectedToken(parser.currentToken, "expression");
-                new Node(-1, NodeType.Ident);
+                null;
         }
     }
 }

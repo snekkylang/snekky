@@ -42,7 +42,7 @@ class RegexNamespace extends MemberObject {
 
             assertParameterType(p[1], ObjectType.String);
             final flags = cast(p[1], StringObj).value;
-
+            
             return new Regex(evaluator, new EReg(pattern, flags)).getMembers();
         });
     }

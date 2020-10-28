@@ -31,6 +31,8 @@ enum TokenType {
     BitAnd;
     BitOr;
     ConcatString;
+    Tilde;
+    Regex;
 
     Comma;
     Semicolon;

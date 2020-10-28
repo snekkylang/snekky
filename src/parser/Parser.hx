@@ -49,6 +49,20 @@ class Parser {
         return new FloatNode(nodePos, n);
     }
 
+    public function parseRegex():RegexNode {
+        final nodePos = currentToken.position;
+
+        final pattern = new ExpressionNode(nodePos, new StringNode(nodePos, currentToken.literal));
+        nextToken();
+        final flags = if (currentToken.type == TokenType.Ident) {
+            final flags = new ExpressionNode(nodePos, new StringNode(nodePos, currentToken.literal));
+            nextToken();
+            flags;
+        } else new ExpressionNode(nodePos, new StringNode(nodePos, ""));
+
+        return new RegexNode(nodePos, pattern, flags);
+    }
+
     function parseBlock():BlockNode {
         nextToken();
         
