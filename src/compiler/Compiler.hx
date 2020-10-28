@@ -227,7 +227,7 @@ class Compiler {
             case NodeType.Variable:
                 final cVariable = cast(node, VariableNode);
 
-                inline function declareVariable(name:String, position:Int, mutable:Bool):Symbol {
+                inline function declareVariable(name:String, mutable:Bool):Symbol {
                     if (symbolTable.currentScope.exists(name)) {
                         error.redeclareVariable(cVariable.position, name);
                     }
@@ -240,7 +240,7 @@ class Compiler {
                 if (cVariable.name.type == NodeType.Ident) {
                     final cVariableName = cast(cVariable.name, IdentNode).value;
 
-                    final symbol = declareVariable(cVariableName, node.position, cVariable.mutable);
+                    final symbol = declareVariable(cVariableName, cVariable.mutable);
                     if (cVariable.value != null) {
                         compile(cVariable.value);
                     }
@@ -250,7 +250,7 @@ class Compiler {
                     final cVariableName = cast(cVariable.name, DestructureArrayNode);
 
                     for (i => varName in cVariableName.names) {
-                        final symbol = declareVariable(varName, node.position, cVariable.mutable);
+                        final symbol = declareVariable(varName, cVariable.mutable);
                         if (cVariable.value != null) {
                             compile(cVariable.value);
                         }        
@@ -264,7 +264,7 @@ class Compiler {
                     final cVariableName = cast(cVariable.name, DestructureHashNode);
 
                     for (varName in cVariableName.names) {
-                        final symbol = declareVariable(varName, node.position, cVariable.mutable);
+                        final symbol = declareVariable(varName, cVariable.mutable);
                         if (cVariable.value != null) {
                             compile(cVariable.value);
                         }        
