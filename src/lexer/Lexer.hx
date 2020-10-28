@@ -55,6 +55,19 @@ class Lexer {
         return code.substring(startPosition - 1, position);
     }
 
+    function escapeChar():String {
+        readChar();
+
+        return switch (currentChar) {
+            case "\"": "\"";
+            case "t": "\t";
+            case "n": "\n";
+            case "r": "\r";
+            case "\\": "\\";
+            default: "";
+        }
+    }
+
     function readString():String {
         inString = true;
         readChar();
@@ -63,10 +76,11 @@ class Lexer {
 
         while (currentChar != "\"" && currentChar != "\u{0}") {
             if (currentChar == "\\") {
-                readChar();
+                string.add(escapeChar());
+            } else {
+                string.add(currentChar);
             }
 
-            string.add(currentChar);
             readChar();
         }
 
