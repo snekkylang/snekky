@@ -1,12 +1,11 @@
 package std.lib.namespaces;
 
-import object.NullObj;
 import object.NumberObj;
 import object.StringObj;
 import object.Object;
 import evaluator.Evaluator;
 
-class StringNamespace extends MemberObject {
+class NumberNamespace extends MemberObject {
 
     public static final name = "Number";
 
