@@ -19,9 +19,10 @@ class BuiltInTable {
         namespaces = [
             new SysNamespace(evaluator),
             new MathNamespace(evaluator),
-            new StringNamespace(evaluator),
+            new NumberNamespace(evaluator),
             new ObjectNamespace(evaluator),
             new RangeNamespace(evaluator),
+            new RegexNamespace(evaluator),
             #if target.sys
             new FileNamespace(evaluator), 
             new HttpNamespace(evaluator)
@@ -33,9 +34,10 @@ class BuiltInTable {
         return [
             SysNamespace.name,
             MathNamespace.name,
-            StringNamespace.name,
+            NumberNamespace.name,
             ObjectNamespace.name,
             RangeNamespace.name,
+            RegexNamespace.name,
             #if target.sys
             FileNamespace.name, 
             HttpNamespace.name
