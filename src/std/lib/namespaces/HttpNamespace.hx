@@ -15,11 +15,11 @@ private class HttpClient extends MemberObject {
         final client = new Http(url);
 
         client.onData = function(data) {
-            callFunctionFunction("onData", [new StringObj(data, evaluator)]); 
+            callFunctionMember("onData", [new StringObj(data, evaluator)]); 
         };
 
         client.onStatus = function(status) {
-            callFunctionFunction("onStatus", [new NumberObj(status, evaluator)]);  
+            callFunctionMember("onStatus", [new NumberObj(status, evaluator)]);  
         };
         
         addFunctionMember("onData", 1, function(parameters) {
