@@ -22,31 +22,8 @@ let ins = {
     }
 };
 
-let Stack = func() {
-
-    let stack = [];
-    mut stackPointer = 0;
-
-    let push = func(value) {
-        stack[stackPointer] = value;
-        stackPointer = stackPointer + 1;
-    };
-
-    let pop = func() {
-        stackPointer = stackPointer - 1;
-        let value = stack[stackPointer];
-        return value;
-    };
-
-    return {
-        push: push,
-        pop: pop,
-        values: stack
-    };
-};
-
 let eval = func(code) {
-    let stack = Stack();
+    let stack = [];
 
     for let i in 0...code.length() {
         let instruction = code[i];
@@ -66,7 +43,7 @@ let eval = func(code) {
         }
     }
 
-    Sys.println(stack.values[0]);
+    Sys.println(stack[0]);
 };
 
 

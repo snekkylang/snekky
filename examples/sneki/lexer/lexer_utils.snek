@@ -29,7 +29,5 @@ LexerUtils.isNumber = func(s) {
 };
 
 LexerUtils.isWhitespace = func(s) {
-    return Array.includes([" ", "
-", "
-"], s);
+    return s == "\n" || s == "\r" || s == " ";
 };
