@@ -200,9 +200,9 @@ class ExpressionParser {
 
                 boolean;
             case TokenType.If:
-                final ifN = parser.parseIf();
-
-                ifN;
+                parser.parseIf();
+            case TokenType.When:
+                parser.parseWhen();
             case TokenType.LBracket:
                 parser.parseArray();
             case TokenType.LBrace:

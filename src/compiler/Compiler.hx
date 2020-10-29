@@ -372,6 +372,7 @@ class Compiler {
                 emit(OpCode.Return, node.position, []);
             case NodeType.If:
                 final cIf = cast(node, IfNode);
+
                 compile(cIf.condition);
 
                 final jumpNotInstructionPos = instructions.length;
@@ -390,6 +391,32 @@ class Compiler {
 
                 overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
                 overwriteInstruction(jumpInstructionPos, [jumpPos]);
+            case NodeType.When:
+                final cWhen = cast(node, WhenNode);
+
+                compile(cWhen.condition);
+                final condition = symbolTable.defineInternal();
+                emit(OpCode.Store, node.position, [condition]);
+
+                final jumpPositions:Array<Int> = [];
+                for (c in cWhen.cases) {
+                    compile(c.condition);
+                    emit(OpCode.Load, node.position, [condition]);
+                    emit(OpCode.Equals, node.position, []);
+                    
+                    final jumpNotPos = instructions.length;
+                    emit(OpCode.JumpNot, node.position, [0]);
+                    compile(c.consequence);
+                    jumpPositions.push(instructions.length);
+                    emit(OpCode.Jump, node.position, [0]);
+
+                    overwriteInstruction(jumpNotPos, [instructions.length]);
+                }
+                compile(cWhen.elseCase);
+
+                for (pos in jumpPositions) {
+                    overwriteInstruction(pos, [instructions.length]);
+                }
             case NodeType.For:
                 final cFor = cast(node, ForNode);
 

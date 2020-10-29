@@ -372,6 +372,48 @@ class Parser {
         return new WhileNode(nodePos, condition, block);
     }
 
+    public function parseWhen():WhenNode {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        final condition = expressionParser.parseExpression();
+
+        assertToken(TokenType.LBrace, "`{`");
+
+        nextToken();
+
+        var elseCase:Node = null;
+        final cases:Array<WhenNode.Case> = [];
+        while (currentToken.type != TokenType.RBrace) {
+            if (currentToken.type == TokenType.Else) {
+                nextToken();
+                assertToken(TokenType.Colon, "`:`");
+                nextToken();
+                final consequence = parseBlock();
+
+                nextToken();
+
+                assertToken(TokenType.RBrace, "`else` entry must be the last in when-expression");
+
+                elseCase = consequence;
+            } else {
+                final condition = expressionParser.parseExpression();
+                assertToken(TokenType.Colon, "`:`");
+                nextToken();
+                final consequence = parseBlock();
+    
+                nextToken();
+    
+                cases.push({condition: condition, consequence: consequence});
+            }
+        }
+
+        nextToken();
+
+        return new WhenNode(nodePos, condition, cases, elseCase);
+    }
+
     function parseFor():ForNode {
         final nodePos = currentToken.position;
 
@@ -500,6 +542,7 @@ class Parser {
             case TokenType.If: block.addNode(parseIf());
             case TokenType.While: block.addNode(parseWhile());
             case TokenType.For: block.addNode(parseFor());
+            case TokenType.When: block.addNode(parseWhen());
             case TokenType.Break: block.addNode(parseBreak());
             #if target.sys
             case TokenType.Import: block.addNode(parseImport());
