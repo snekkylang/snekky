@@ -391,9 +391,9 @@ class Parser {
                 nextToken();
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
-                final consequence = parseBlock();
+                final consequence = expressionParser.parseExpression();
 
-                nextToken();
+                //nextToken();
 
                 assertToken(TokenType.RBrace, "`else` entry must be the last in when-expression");
 
@@ -402,9 +402,9 @@ class Parser {
                 final condition = expressionParser.parseExpression();
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
-                final consequence = parseBlock();
+                final consequence = expressionParser.parseExpression();
 
-                nextToken();
+                //nextToken();
 
                 cases.push({condition: condition, consequence: consequence});
             }
