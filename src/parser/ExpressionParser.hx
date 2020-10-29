@@ -206,7 +206,14 @@ class ExpressionParser {
             case TokenType.LBracket:
                 parser.parseArray();
             case TokenType.LBrace:
-                parser.parseHash();
+                if (parser.resolveHashBlockAmbiguity() == NodeType.Block) {
+                    final block = parser.parseBlock();
+                    parser.nextToken();
+
+                    block;
+                } else {
+                    parser.parseHash();
+                }
             case TokenType.Null:
                 final nullN = new NullNode(parser.currentToken.position);
                 parser.nextToken();
