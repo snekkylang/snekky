@@ -23,12 +23,12 @@ class ExpressionParser {
     function disjunction():Node {
         var left = conjunction();
 
-        while (parser.currentToken.type == TokenType.LogicOr) {
+        while (parser.currentToken.type == TokenType.Or) {
             parser.nextToken();
             final nodePos = parser.currentToken.position;
             final right = conjunction();
 
-            left = new OperatorNode(nodePos, NodeType.LogicOr, left, right);
+            left = new OperatorNode(nodePos, NodeType.Or, left, right);
         }
 
         return left;
@@ -37,12 +37,12 @@ class ExpressionParser {
     function conjunction():Node {
         var left = comparison();
 
-        while (parser.currentToken.type == TokenType.LogicAnd) {
+        while (parser.currentToken.type == TokenType.And) {
             parser.nextToken();
             final nodePos = parser.currentToken.position;
             final right = comparison();
 
-            left = new OperatorNode(nodePos, NodeType.LogicAnd, left, right);
+            left = new OperatorNode(nodePos, NodeType.And, left, right);
         }
 
         return left;

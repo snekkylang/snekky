@@ -18,8 +18,8 @@ enum NodeType {
     Multiply;
     Divide;
     Modulo;
-    LogicOr;
-    LogicAnd;
+    Or;
+    And;
     LessThan;
     LessThanOrEqual;
     GreaterThan;

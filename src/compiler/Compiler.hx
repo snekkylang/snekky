@@ -164,7 +164,7 @@ class Compiler {
             case NodeType.Expression:
                 final cExpression = cast(node, ExpressionNode);
                 compile(cExpression.value);
-            case NodeType.LogicOr:
+            case NodeType.Or:
                 final cOperator = cast(node, OperatorNode);
 
                 compile(cOperator.left);
@@ -173,7 +173,7 @@ class Compiler {
                 emit(OpCode.Pop, node.position, []);
                 compile(cOperator.right);
                 overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
-            case NodeType.LogicAnd:
+            case NodeType.And:
                 final cOperator = cast(node, OperatorNode);
 
                 compile(cOperator.left);

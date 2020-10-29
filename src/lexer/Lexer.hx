@@ -225,12 +225,12 @@ class Lexer {
             case "&":
                 if (peekChar() == "&") {
                     readChar();
-                    new Token(TokenType.LogicAnd, position, "&&");
+                    new Token(TokenType.And, position, "&&");
                 } else new Token(TokenType.BitAnd, position, "&");
             case "|":
                 if (peekChar() == "|") {
                     readChar();
-                    new Token(TokenType.LogicOr, position, "|");
+                    new Token(TokenType.Or, position, "|");
                 } else new Token(TokenType.BitOr, position, "|");
             case "!":
                 if (peekChar() == "=") {

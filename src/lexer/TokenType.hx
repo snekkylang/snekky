@@ -22,8 +22,8 @@ enum TokenType {
     Bang;
     Equals;
     NotEquals;
-    LogicAnd;
-    LogicOr;
+    And;
+    Or;
     GreaterThan;
     LessThan;
     GreaterThanOrEqual;

@@ -1,6 +1,5 @@
 package std.lib.namespaces;
 
-import object.HashObj;
 import object.Object.ObjectType;
 import object.NumberObj;
 import evaluator.Evaluator;
