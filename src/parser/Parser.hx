@@ -13,10 +13,11 @@ class Parser {
 
     final lexer:Lexer;
     final expressionParser:ExpressionParser;
+
     public final error:CompileError;
     public final ast:FileNode;
     public var currentToken(default, null):Token;
-    
+
     public function new(lexer:Lexer) {
         this.lexer = lexer;
         ast = new FileNode(1, lexer.filename, lexer.code);
@@ -42,6 +43,14 @@ class Parser {
         currentToken = lexer.readToken();
     }
 
+    public function resolveHashBlockAmbiguity():NodeType {
+        return switch [for (t in lexer.peekTokenN(2)) t.type] {
+            case [TokenType.String | TokenType.Ident, TokenType.Colon]: NodeType.Hash;
+            case [TokenType.RBrace, _]: NodeType.Hash;
+            default: NodeType.Block;
+        }
+    }
+
     public function parseNumber():Node {
         final nodePos = currentToken.position;
         final n = Std.parseFloat(currentToken.literal);
@@ -63,9 +72,9 @@ class Parser {
         return new RegexNode(nodePos, pattern, flags);
     }
 
-    function parseBlock():BlockNode {
+    public function parseBlock():BlockNode {
         nextToken();
-        
+
         final block = new BlockNode(currentToken.position);
 
         while (currentToken.type != TokenType.RBrace) {
@@ -156,13 +165,13 @@ class Parser {
 
                 assertToken(TokenType.RBracket, "`]`");
                 nextToken();
-    
+
                 eIndex;
-            default: 
+            default:
                 error.unexpectedToken(currentToken, "`[` or `.`");
                 null;
         }
-        
+
         final indexNode = new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
 
         return if (currentToken.type == TokenType.Assign) {
@@ -195,7 +204,7 @@ class Parser {
 
         nextToken();
 
-        return new ArrayNode(nodePos, values);  
+        return new ArrayNode(nodePos, values);
     }
 
     public function parseHash():HashNode {
@@ -206,29 +215,19 @@ class Parser {
         final values:Map<ExpressionNode, ExpressionNode> = new Map();
 
         while (currentToken.type != TokenType.RBrace) {
-
-            final key = if (currentToken.type == TokenType.LBracket) {
-                nextToken();
-                final eKey = expressionParser.parseExpression();
-                assertToken(TokenType.RBracket, "`]");
+            final key = if (currentToken.type == TokenType.Ident || currentToken.type == TokenType.String) {
+                final eKey = new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
                 nextToken();
 
                 eKey;
             } else {
-                if (currentToken.type == TokenType.Ident || currentToken.type == TokenType.String) {
-                    final eKey = new ExpressionNode(currentToken.position, new StringNode(currentToken.position, currentToken.literal));
-                    nextToken();
-
-                    eKey;
-                } else {
-                    error.unexpectedToken(currentToken, "identifier or string");
-                    null;
-                }
+                error.unexpectedToken(currentToken, "identifier or string");
+                null;
             }
 
             assertToken(TokenType.Colon, "`:`");
             nextToken();
-            
+
             final value = expressionParser.parseExpression();
             if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.RBrace) {
                 error.unexpectedToken(currentToken, "`,` or `}`");
@@ -247,7 +246,7 @@ class Parser {
     function parseVariableName():Node {
         final nodePos = currentToken.position;
 
-        return switch(currentToken.type) {
+        return switch (currentToken.type) {
             case TokenType.Ident: new IdentNode(nodePos, currentToken.literal);
             case TokenType.LBracket | TokenType.LBrace:
                 final names:Array<String> = [];
@@ -256,7 +255,9 @@ class Parser {
                 while (currentToken.type != TokenType.RBracket && currentToken.type != TokenType.RBrace) {
                     names.push(currentToken.literal);
                     nextToken();
-                    if (currentToken.type != TokenType.Comma && currentToken.type != TokenType.RBracket && currentToken.type != TokenType.RBrace) {
+                    if (currentToken.type != TokenType.Comma
+                        && currentToken.type != TokenType.RBracket
+                        && currentToken.type != TokenType.RBrace) {
                         error.unexpectedToken(currentToken, "`,`");
                     }
                     if (currentToken.type == TokenType.Comma) {
@@ -272,7 +273,7 @@ class Parser {
             default:
                 error.unexpectedToken(currentToken, "identifier or `{`");
                 null;
-        }    
+        }
     }
 
     function parseVariable():VariableNode {
@@ -343,7 +344,7 @@ class Parser {
                 parseIf();
             } else {
                 assertToken(TokenType.LBrace, "`{`");
-            
+
                 final block = parseBlock();
                 nextToken();
 
@@ -402,9 +403,9 @@ class Parser {
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
                 final consequence = parseBlock();
-    
+
                 nextToken();
-    
+
                 cases.push({condition: condition, consequence: consequence});
             }
         }
@@ -423,7 +424,7 @@ class Parser {
             final mutable = currentToken.type == TokenType.Mut;
             nextToken();
             final variableName = parseVariableName();
-    
+
             nextToken();
             assertToken(TokenType.In, "`in`");
             nextToken();
@@ -433,7 +434,7 @@ class Parser {
             null;
         }
 
-        final iterator = expressionParser.parseExpression(); 
+        final iterator = expressionParser.parseExpression();
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
@@ -480,7 +481,7 @@ class Parser {
             case TokenType.AsteriskAssign: new OperatorNode(nodePos, NodeType.Multiply, name, value);
             case TokenType.SlashAssign: new OperatorNode(nodePos, NodeType.Divide, name, value);
             case TokenType.PercentAssign: new OperatorNode(nodePos, NodeType.Modulo, name, value);
-            default: 
+            default:
                 error.unexpectedToken(op, "operator assign");
                 null;
         });
@@ -493,7 +494,7 @@ class Parser {
             expression;
         } else {
             assertSemicolon();
-            nextToken();    
+            nextToken();
             new StatementNode(nodePos, expression);
         }
 
@@ -537,19 +538,31 @@ class Parser {
 
     function parseToken(block:BlockNode) {
         switch (currentToken.type) {
-            case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
-            case TokenType.Return: block.addNode(parseReturn());
-            case TokenType.If: block.addNode(parseIf());
-            case TokenType.While: block.addNode(parseWhile());
-            case TokenType.For: block.addNode(parseFor());
-            case TokenType.When: block.addNode(parseWhen());
-            case TokenType.Break: block.addNode(parseBreak());
+            case TokenType.Let | TokenType.Mut:
+                block.addNode(parseVariable());
+            case TokenType.Return:
+                block.addNode(parseReturn());
+            case TokenType.If:
+                block.addNode(parseIf());
+            case TokenType.While:
+                block.addNode(parseWhile());
+            case TokenType.For:
+                block.addNode(parseFor());
+            case TokenType.When:
+                block.addNode(parseWhen());
+            case TokenType.Break:
+                block.addNode(parseBreak());
             #if target.sys
-            case TokenType.Import: block.addNode(parseImport());
+            case TokenType.Import:
+                block.addNode(parseImport());
             #end
-            case TokenType.LBrace: 
-                block.addNode(parseBlock()); 
-                nextToken();
+            case TokenType.LBrace:
+                if (resolveHashBlockAmbiguity() == NodeType.Block) {
+                    block.addNode(parseBlock());
+                    nextToken();
+                } else {
+                    block.addNode(parseStatement());
+                }
             case TokenType.Ident:
                 switch (lexer.peekToken().type) {
                     case TokenType.PlusAssign | TokenType.MinusAssign | TokenType.AsteriskAssign | TokenType.SlashAssign | TokenType.PercentAssign:
@@ -557,8 +570,10 @@ class Parser {
                     case TokenType.Assign: block.addNode(parseVariableAssign());
                     default: block.addNode(parseStatement());
                 }
-            case TokenType.Illegal: error.illegalToken(currentToken);
-            default: block.addNode(parseStatement());
+            case TokenType.Illegal:
+                error.illegalToken(currentToken);
+            default:
+                block.addNode(parseStatement());
         }
     }
 }
