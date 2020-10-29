@@ -1,0 +1,9 @@
+// Dedicated regex syntax
+Sys.println(~/stork/g.replace("stork stork stork", "axolotl"));
+Sys.println(~/test/.match("test"));
+
+Sys.println(" ");
+
+// Without syntax sugar
+let regex = Regex.compile("stork", "g");
+Sys.println(regex.replace("stork stork stork", "axolotl"));
