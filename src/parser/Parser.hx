@@ -388,7 +388,7 @@ class Parser {
         while (currentToken.type != TokenType.RBrace) {
             if (currentToken.type == TokenType.Else) {
                 nextToken();
-                assertToken(TokenType.Colon, "`:`");
+                assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
                 final consequence = parseBlock();
 
@@ -399,7 +399,7 @@ class Parser {
                 elseCase = consequence;
             } else {
                 final condition = expressionParser.parseExpression();
-                assertToken(TokenType.Colon, "`:`");
+                assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
                 final consequence = parseBlock();
     

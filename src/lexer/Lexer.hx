@@ -238,10 +238,15 @@ class Lexer {
                     new Token(TokenType.NotEquals, position, "!=");
                 } else new Token(TokenType.Bang, position, "!");
             case "=":
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.Equals, position, "==");
-                } else new Token(TokenType.Assign, position, "=");
+                switch (peekChar()) {
+                    case "=":
+                        readChar();
+                        new Token(TokenType.Equals, position, "==");
+                    case ">":
+                        readChar();
+                        new Token(TokenType.Arrow, position, "=>");
+                    default: new Token(TokenType.Assign, position, "=");
+                }
 
             case "<":
                 if (peekChar() == "=") {

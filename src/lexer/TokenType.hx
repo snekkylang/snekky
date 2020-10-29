@@ -46,6 +46,7 @@ enum TokenType {
     RBracket;
     ExclusiveRange;
     InclusiveRange;
+    Arrow;
     
     // Keywords
     Function;
