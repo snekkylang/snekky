@@ -1,0 +1,22 @@
+// Whens work like switches in other languages
+let x = 2;
+when x {
+    1 => {
+        Sys.println("x == 1");
+    }
+    2 => {
+        Sys.println("x == 2");
+    }
+    else => { // Blocks can be used
+        Sys.println("x is neither 1 nor 2");
+    }
+}
+
+// Whens may also be used as expressions
+let y = when x {
+    1 => 2
+    2 => 4
+    else => 10
+};
+
+Sys.println(y);
