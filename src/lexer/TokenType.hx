@@ -62,4 +62,5 @@ enum TokenType {
     Null;
     For;
     In;
+    When;
 }

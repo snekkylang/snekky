@@ -43,6 +43,7 @@ enum NodeType {
     If;
     While;
     For;
+    When;
     Range;
     Regex;
 

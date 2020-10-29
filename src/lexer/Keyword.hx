@@ -16,7 +16,8 @@ class Keyword {
         "break" => TokenType.Break,
         "null" => TokenType.Null,
         "for" => TokenType.For,
-        "in" => TokenType.In
+        "in" => TokenType.In,
+        "when" => TokenType.When
     ];
 
     public static function isKeyword(ident:String):Bool {
