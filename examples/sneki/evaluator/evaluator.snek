@@ -35,9 +35,7 @@ let Evaluator = func(ast) {
                     currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
                 }                
             }
-            NodeType.Puts => {
-                Sys.println(evalExpression(ins.value.value));                
-            }
+            NodeType.Puts => Sys.println(evalExpression(ins.value.value));                
             NodeType.If => {
                 let condition = evalExpression(ins.condition.value);
                 if condition {
