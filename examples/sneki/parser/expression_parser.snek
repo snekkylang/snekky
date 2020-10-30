@@ -6,27 +6,32 @@ let ExpressionParser = func(lexer, parser) {
     factor = func() {
         let currentToken = parser.currentToken();
 
-        return if currentToken.type == TokenType.LParen {
-            parser.nextToken();
-            let comp = comparison();
-            parser.nextToken();
+        return when currentToken.type {
+            TokenType.LParen => {
+                parser.nextToken();
+                let comp = comparison();
+                parser.nextToken();
 
-            comp
-        } else if currentToken.type == TokenType.Ident {
-            let ident = IdentNode(currentToken.literal);
-            parser.nextToken();
+                comp  
+            }
+            TokenType.Ident => {
+                let ident = IdentNode(currentToken.literal);
+                parser.nextToken();
 
-            ident
-        } else if currentToken.type == TokenType.String {
-            let string = StringNode(currentToken.literal);
-            parser.nextToken();
+                ident
+            }
+            TokenType.String => {
+                let string = StringNode(currentToken.literal);
+                parser.nextToken();
 
-            string
-        } else {
-            let number = NumberNode(Number.parse(currentToken.literal));
-            parser.nextToken();
+                string                
+            }
+            else => {
+                let number = NumberNode(Number.parse(currentToken.literal));
+                parser.nextToken();
 
-            number
+                number               
+            }
         };
     };
 
@@ -34,13 +39,12 @@ let ExpressionParser = func(lexer, parser) {
         mut left = factor();
 
         while true {
-            let currentToken = parser.currentToken().type;
-            let type = if currentToken == TokenType.Plus {
-                NodeType.Add
-            } else if currentToken == TokenType.Minus {
-                NodeType.Subtract
-            } else {
-                return left;
+            let type = when parser.currentToken().type {
+                TokenType.Plus => NodeType.Add
+                TokenType.Subtract => NodeType.Subtract
+                else => {
+                    return left;
+                }
             };
 
             parser.nextToken();
@@ -54,15 +58,13 @@ let ExpressionParser = func(lexer, parser) {
     comparison = func() {
         let left = numeric();
 
-        let currentToken = parser.currentToken().type;
-        let type = if currentToken == TokenType.LessThan {
-            NodeType.LessThan
-        } else if currentToken == TokenType.GreaterThan {
-            NodeType.GreaterThan
-        } else  if currentToken == TokenType.Equals {
-            NodeType.Equals
-        } else {
-            return left;
+        let type = when parser.currentToken().type {
+            TokenType.LessThan => NodeType.LessThan
+            TokenType.GreaterThan => NodeType.GreaterThan
+            TokenType.Equals => NodeType.Equals
+            else => {
+                return left;
+            }
         };
 
         parser.nextToken();

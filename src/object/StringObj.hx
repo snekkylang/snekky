@@ -28,7 +28,14 @@ class StringObj extends Object {
             assertParameterType(p[0], ObjectType.Number);
             final index = Std.int(cast(p[0], NumberObj).value);
             final v = this.value.charAt(index);
-            return v == null ? new NullObj(evaluator) : new StringObj(v, evaluator);
+            return new StringObj(v, evaluator);
+        });
+
+        addFunctionMember("charCodeAt", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final index = Std.int(cast(p[0], NumberObj).value);
+            final v = this.value.charCodeAt(index);
+            return v == null ? new NullObj(evaluator) : new NumberObj(v, evaluator);
         });
 
         addFunctionMember("split", 1, function(p) {

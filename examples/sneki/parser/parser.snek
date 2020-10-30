@@ -70,24 +70,22 @@ let Parser = func(lexer) {
     };
 
     parseToken = func(block) {
-        let node = if currentToken.type == TokenType.Ident {
-            if lexer.peekToken().type == TokenType.Assign {
+        let node = when currentToken.type {
+            TokenType.Ident => if lexer.peekToken().type == TokenType.Assign {
                 parseVariable()
             } else {
                 let expr = expressionParser.parseExpression();
                 nextToken();
                 expr
             }
-        } else if currentToken.type == TokenType.Puts {
-            parsePuts()
-        } else if currentToken.type == TokenType.If {
-            parseIf(block)
-        } else if currentToken.type == TokenType.While {
-            parseWhile(block)
-        } else {
-            let expr = expressionParser.parseExpression();
-            nextToken();
-            expr
+            TokenType.Puts => parsePuts()
+            TokenType.If => parseIf(block)
+            TokenType.While => parseWhile(block)
+            else => {
+                let expr = expressionParser.parseExpression();
+                nextToken();
+                expr
+            }
         };
 
         block.addNode(node);

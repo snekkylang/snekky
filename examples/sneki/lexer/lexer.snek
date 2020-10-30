@@ -71,49 +71,37 @@ let Lexer = func(code) {
         readChar();
         eatWhitespace();
 
-        return if currentChar == ";" {
-            Token(TokenType.Semicolon, ";")
-        } else if currentChar == "(" {
-            Token(TokenType.LParen, "(")
-        } else if currentChar == ")" {
-            Token(TokenType.RParen, ")")
-        } else if currentChar == "{" {
-            Token(TokenType.LBrace, "{")
-        } else if currentChar == "}" {
-            Token(TokenType.RBrace, "}")
-        } else if currentChar == "+" {
-            Token(TokenType.Plus, "+")
-        } else if currentChar == "-" {
-            Token(TokenType.Minus, "-")
-        } else if currentChar == "," {
-            Token(TokenType.Comma, ",")
-        } else if currentChar == "<" {
-            Token(TokenType.LessThan, "<")
-        } else if currentChar == ">" {
-            Token(TokenType.GreaterThan, ">")
-        } else if currentChar == "=" {
-            if peekChar() == "=" {
+        return when currentChar {
+            ";" => Token(TokenType.Semicolon, ";")
+            "(" => Token(TokenType.LParen, "(")
+            ")" => Token(TokenType.RParen, ")")
+            "{" => Token(TokenType.LBrace, "{")
+            "}" => Token(TokenType.RBrace, "}")
+            "+" => Token(TokenType.Plus, "+")
+            "-" => Token(TokenType.Minus, "-")
+            "," => Token(TokenType.Comma, ",")
+            "<" => Token(TokenType.LessThan, "<")
+            ">" => Token(TokenType.GreaterThan, ">")
+            "\"" => Token(TokenType.String, readString())
+            "=" => if peekChar() == "=" {
                 readChar();
-                Token(TokenType.Equals, "==")
+                Token(TokenType.Equals, "==")  
             } else {
-                Token(TokenType.Assign, "=")
+                Token(TokenType.Assign, "=")  
             }
-        } else if LexerUtils.isNumber(currentChar) {
-            let number = readNumber();
-            Token(TokenType.Number, number)
-        } else if LexerUtils.isAscii(currentChar) {
-            let ident = readIdent();
+            else => when {
+                LexerUtils.isNumber(currentChar) => Token(TokenType.Number, readNumber())
+                LexerUtils.isAscii(currentChar) => {
+                    let ident = readIdent();
             
-            if Keyword.isKeyword(ident) {
-                Token(Keyword.resolve(ident), ident)
-            } else {
-                Token(TokenType.Ident, ident)
-            }
-        } else if currentChar == "\"" {
-            let string = readString();
-            Token(TokenType.String, string)
-        } else {
-            Token(TokenType.Illegal, currentChar)
+                    if Keyword.isKeyword(ident) {
+                        Token(Keyword.resolve(ident), ident)
+                    } else {
+                        Token(TokenType.Ident, ident)
+                    }  
+                }
+                else => Token(TokenType.Illegal, currentChar)
+            }   
         };
     };
 

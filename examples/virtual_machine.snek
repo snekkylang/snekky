@@ -28,18 +28,22 @@ let eval = func(code) {
     for let i in 0...code.length() {
         let instruction = code[i];
 
-        if instruction.name == "push" {
-            stack.push(instruction.value);
-        } else if (instruction.name == "add") {
-            let right = stack.pop();
-            let left = stack.pop();
+        when instruction.name {
+            "push" => {
+                stack.push(instruction.value); 
+            }
+            "add" => {
+                let right = stack.pop();
+                let left = stack.pop();
 
-            stack.push(left + right);
-        } else if instruction.name == "sub" {
-            let right = stack.pop();
-            let left = stack.pop();
+                stack.push(left + right);  
+            }
+            "sub" => {
+                let right = stack.pop();
+                let left = stack.pop();
 
-            stack.push(left - right);
+                stack.push(left - right);    
+            }
         }
     }
 
