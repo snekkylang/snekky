@@ -395,16 +395,24 @@ class Parser {
                 nextToken();
                 final consequence = expressionParser.parseExpression();
 
-                assertToken(TokenType.RBrace, "`else` entry must be the last in when-expression");
+                elseCase = if (currentToken.type == TokenType.Semicolon) {
+                    nextToken();
+                    new StatementNode(nodePos, consequence);
+                } else consequence;
 
-                elseCase = consequence;
+                assertToken(TokenType.RBrace, "`else` entry must be the last in when-expression");
             } else {
                 final condition = expressionParser.parseExpression();
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
                 final consequence = expressionParser.parseExpression();
 
-                cases.push({condition: condition, consequence: consequence});
+                if (currentToken.type == TokenType.Semicolon) {
+                    nextToken();
+                    cases.push({condition: condition, consequence: new StatementNode(nodePos, consequence)});
+                } else {
+                    cases.push({condition: condition, consequence: consequence});
+                }
             }
         }
 
