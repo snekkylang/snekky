@@ -191,7 +191,13 @@ class Compiler {
                 final cOperator = cast(node, OperatorNode);
 
                 compile(cOperator.left);
+                final left = symbolTable.defineInternal();
+                emit(OpCode.Store, node.position, [left]);
                 compile(cOperator.right);
+                final right = symbolTable.defineInternal();
+                emit(OpCode.Store, node.position, [right]);
+                emit(OpCode.Load, node.position, [left]);
+                emit(OpCode.Load, node.position, [right]);
                 if (node.type == NodeType.LessThanOrEqual) {
                     emit(OpCode.LessThan, node.position, []);
                 } else {
@@ -200,8 +206,8 @@ class Compiler {
                 final jumpPeekInstructionPos = instructions.length;
                 emit(OpCode.JumpPeek, node.position, [0]);
                 emit(OpCode.Pop, node.position, []);
-                compile(cOperator.left);
-                compile(cOperator.right);
+                emit(OpCode.Load, node.position, [left]);
+                emit(OpCode.Load, node.position, [right]);
                 emit(OpCode.Equals, node.position, []);
                 overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
             case NodeType.Add | NodeType.Multiply | NodeType.Equals | NodeType.LessThan | 
