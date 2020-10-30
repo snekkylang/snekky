@@ -378,7 +378,9 @@ class Parser {
 
         nextToken();
 
-        final condition = expressionParser.parseExpression();
+        final condition = if (currentToken.type != TokenType.LBrace) {
+            expressionParser.parseExpression();
+        } else null;
 
         assertToken(TokenType.LBrace, "`{`");
 
