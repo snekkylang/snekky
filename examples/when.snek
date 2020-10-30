@@ -20,3 +20,13 @@ let y = when x {
 };
 
 Sys.println(y);
+
+// Whens without general condition are possible
+when {
+    x >= 2 => {
+        Sys.println("x >= 2");
+    }
+    else => {
+        Sys.println("x < 2");
+    }
+}
