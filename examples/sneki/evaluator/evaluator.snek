@@ -14,47 +14,46 @@ let Evaluator = func(ast) {
     };
 
     let evalExpression = func(expr) {
-        return if expr.type == NodeType.Add {
-            evalExpression(expr.left) + evalExpression(expr.right)
-        } else if expr.type == NodeType.Subtract {
-            evalExpression(expr.left) - evalExpression(expr.right)
-        } else if expr.type == NodeType.LessThan {
-            evalExpression(expr.left) < evalExpression(expr.right)
-        } else if expr.type == NodeType.GreaterThan {
-            evalExpression(expr.left) > evalExpression(expr.right)
-        } else if expr.type == NodeType.Equals {
-            evalExpression(expr.left) == evalExpression(expr.right)
-        } else if expr.type == NodeType.Ident {
-            getVariableScope(expr.value, currentBlock).getVariable(expr.value)
-        } else {
-            expr.value
+        return when expr.type {
+            NodeType.Add => evalExpression(expr.left) + evalExpression(expr.right)
+            NodeType.Subtract => evalExpression(expr.left) - evalExpression(expr.right)
+            NodeType.LessThan => evalExpression(expr.left) < evalExpression(expr.right)
+            NodeType.GreaterThan => evalExpression(expr.left) > evalExpression(expr.right)
+            NodeType.Equals => evalExpression(expr.left) == evalExpression(expr.right)
+            NodeType.Ident => getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+            else => expr.value
         };
     };
 
     let executeInstruction = func(ins) {
-        if ins.type == NodeType.Variable {
-            let variableScope = getVariableScope(ins.name, currentBlock);
-            if variableScope != null {
-                variableScope.setVariable(ins.name, evalExpression(ins.value.value));
-            } else {
-                currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
+        when ins.type {
+            NodeType.Variable => {
+                let variableScope = getVariableScope(ins.name, currentBlock);
+                if variableScope != null {
+                    variableScope.setVariable(ins.name, evalExpression(ins.value.value));
+                } else {
+                    currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
+                }                
             }
-        } else if ins.type == NodeType.Puts {
-            Sys.println(evalExpression(ins.value.value));
-        } else if ins.type == NodeType.If {
-            let condition = evalExpression(ins.condition.value);
-            if condition {
-                executeBlock(ins.consequence);
-            } else if (ins.alternative != null) {
-                executeBlock(ins.alternative);
+            NodeType.Puts => {
+                Sys.println(evalExpression(ins.value.value));                
             }
-        } else if ins.type == NodeType.While {
-            mut condition = evalExpression(ins.condition.value);
-            while condition {
-                executeBlock(ins.body);
+            NodeType.If => {
+                let condition = evalExpression(ins.condition.value);
+                if condition {
+                    executeBlock(ins.consequence);
+                } else if (ins.alternative != null) {
+                    executeBlock(ins.alternative);
+                }                
+            }
+            NodeType.While => {
+                mut condition = evalExpression(ins.condition.value);
+                while condition {
+                    executeBlock(ins.body);
 
-                condition = evalExpression(ins.condition.value);
-            }  
+                    condition = evalExpression(ins.condition.value);
+                }                      
+            }
         }
     };
 
