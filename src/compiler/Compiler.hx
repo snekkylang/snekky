@@ -49,6 +49,8 @@ class Compiler {
         program.write(constantPool.toByteCode());
 
         final instructionsByteCode = instructions.getBytes();
+        instructions = new BytesOutput();
+        instructions.write(instructionsByteCode);
         program.writeInt32(instructionsByteCode.length);
         program.write(instructionsByteCode);
 
