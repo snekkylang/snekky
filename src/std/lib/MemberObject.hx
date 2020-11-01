@@ -1,8 +1,8 @@
 package std.lib;
 
+import object.ClosureObj;
 import object.HashObj;
 import object.BuiltInFunctionObj;
-import object.Closure.ClosureObj;
 import haxe.ds.StringMap;
 import evaluator.Evaluator;
 import object.Object;

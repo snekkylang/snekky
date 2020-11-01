@@ -41,7 +41,7 @@ class ErrorHelper {
         }
     }
 
-    public static inline function exit() {
+    public static dynamic function exit() {
         #if target.sys
         Sys.exit(0);
         #else
