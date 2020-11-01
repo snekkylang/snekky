@@ -17,9 +17,12 @@ class Parser {
     public final error:CompileError;
     public final ast:FileNode;
     public var currentToken(default, null):Token;
+    final isRepl:Bool;
 
-    public function new(lexer:Lexer) {
+    public function new(lexer:Lexer, isRepl:Bool) {
         this.lexer = lexer;
+        this.isRepl = isRepl;
+
         ast = new FileNode(1, lexer.filename, lexer.code);
         error = new CompileError(lexer.filename, lexer.code);
 
@@ -496,7 +499,7 @@ class Parser {
     function parseStatement():Node {
         final nodePos = currentToken.position;
         final expression = expressionParser.parseExpression();
-        final statement = if (currentToken.type == TokenType.RBrace) {
+        final statement = if (currentToken.type == TokenType.RBrace || (isRepl && currentToken.type == TokenType.Eof)) {
             expression;
         } else {
             assertSemicolon();
@@ -524,7 +527,7 @@ class Parser {
 
         final lexer = new Lexer(filename, code);
 
-        final parser = new Parser(lexer);
+        final parser = new Parser(lexer, isRepl);
         parser.generateAst();
 
         return parser.ast;

@@ -35,6 +35,10 @@ class FilenameTable {
         return prev.filename;
     }
 
+    public function concat(other:FilenameTable) {
+        table.concat(other.table);
+    }
+
     public function toByteCode():Bytes {
         final tableBytes = new BytesOutput();
 

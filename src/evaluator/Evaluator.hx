@@ -1,13 +1,6 @@
 package evaluator;
 
-import object.BuiltInFunctionObj;
-import object.NumberObj;
-import object.HashObj;
-import object.StringObj;
-import object.ArrayObj;
-import object.UserFunctionObj;
-import object.Closure.ClosureObj;
-import object.NullObj;
+import object.*;
 import haxe.zip.Uncompress;
 import compiler.debug.FilenameTable;
 import haxe.ds.StringMap;
@@ -29,15 +22,24 @@ class Evaluator {
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
     public var currentFrame:Frame;
-    final constantPool:Array<Object>;
-    final instructions:BytesInput;
-    final filenameTable:FilenameTable;
-    final lineNumberTable:LineNumberTable;
-    final localVariableTable:LocalVariableTable;
+    var constantPool:Array<Object>;
+    var instructions:BytesInput;
+    var filenameTable:FilenameTable;
+    var lineNumberTable:LineNumberTable;
+    var localVariableTable:LocalVariableTable;
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
 
     public function new(fileData:Bytes) {
+        newWithState(fileData);
+        builtInTable = new BuiltInTable(this);
+
+        error = new RuntimeError(frames, lineNumberTable, localVariableTable, filenameTable, instructions);
+        frames.add(new Frame(null, 0, null));
+        currentFrame = frames.first();
+    }
+
+    public function newWithState(fileData:Bytes) {
         final fileData = new BytesInput(fileData);
         final byteCode = if (fileData.readByte() == 1) {
             new BytesInput(Uncompress.run(fileData.readAll()));
@@ -48,12 +50,11 @@ class Evaluator {
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode, this);
+        final oPosition = instructions != null ? instructions.position : -1;
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
-        builtInTable = new BuiltInTable(this);
-
-        error = new RuntimeError(frames, lineNumberTable, localVariableTable, filenameTable, instructions);
-        frames.add(new Frame(null, 0, null));
-        currentFrame = frames.first();
+        if (oPosition != -1) {
+            instructions.position = oPosition;
+        }
     }
 
     public function callFunction(closure:ClosureObj, parameters:Array<Object>) {

@@ -1,7 +1,6 @@
 package object;
 
 import std.lib.MemberObject;
-import object.Closure.ClosureObj;
 import evaluator.Evaluator;
 import object.Object.ObjectType;
 
