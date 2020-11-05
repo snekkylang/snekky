@@ -1,5 +1,7 @@
 package repl;
 
+import error.ErrorHelper;
+import sys.thread.Thread;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
@@ -9,6 +11,7 @@ class Repl {
 
     final compiler = new Compiler(true);
     var evaluator:Evaluator = null;
+    var thread:Thread;
 
     public function new() {}
 
@@ -36,7 +39,12 @@ class Repl {
         do {
             printIndentation();
 
-            final line = Sys.stdin().readLine();
+            final line = try {
+                Sys.stdin().readLine();
+            } catch (e) {
+                Sys.exit(0);
+                null;
+            };
 
             openBraces -= line.split("").filter(c -> c == "}").length;
 
@@ -61,33 +69,45 @@ class Repl {
         }
     }
 
+    function handleInput() {
+        thread = Thread.create(() -> {
+            while (true) {
+                final code = read();
+                handleCommand(code);
+
+                final lexer = new Lexer("repl", code);
+                final parser = new Parser(lexer, true);
+                parser.generateAst();
+
+                compiler.compile(parser.ast);
+                final byteCode = compiler.getByteCode(false);
+
+                if (evaluator == null) {
+                    evaluator = new Evaluator(byteCode);
+                } else {
+                    evaluator.newWithState(byteCode);
+                }
+
+                evaluator.eval();
+
+                if (!evaluator.stack.isEmpty()) {
+                    Sys.println('==> ${evaluator.stack.pop()}');
+                }
+            }
+        });   
+
+        Sys.sleep(-1);
+    }
+
     public function start() {
         Sys.println('| Welcome to Snekky REPL -- Version ${Snekky.Version}');
         Sys.println("| type /exit to leave");
         Sys.println("");
 
-        while (true) {
-            final code = read();
-            handleCommand(code);
+        ErrorHelper.exit = function() {
+            handleInput();
+        };
 
-            final lexer = new Lexer("repl", code);
-            final parser = new Parser(lexer, true);
-            parser.generateAst();
-
-            compiler.compile(parser.ast);
-            final byteCode = compiler.getByteCode(false);
-
-            if (evaluator == null) {
-                evaluator = new Evaluator(byteCode);
-            } else {
-                evaluator.newWithState(byteCode);
-            }
-
-            evaluator.eval();
-
-            if (!evaluator.stack.isEmpty()) {
-                Sys.println('==> ${evaluator.stack.pop()}');
-            }
-        }
+        handleInput();
     }
 }
