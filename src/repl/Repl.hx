@@ -15,27 +15,40 @@ class Repl {
     function read():String {
         final code = new StringBuf();
         var openBraces = 0;
+        var indented = false;
 
-        do {
+        inline function printIndentation() {
             if (openBraces != 0) {
+                indented = true;
                 Sys.print("    ... ");
-            }
-            for (_ in 0...openBraces) {
-                Sys.print("    ");
-            }
-            final line = Sys.stdin().readLine();
-            if (StringTools.startsWith(line, "}")) {
-                Sys.print("\r");
-            }
-            for (char in line.split("")) {
-                if (char == "{") {
-                    openBraces++;
-                } else if (char == "}") {
-                    openBraces--;
+
+                for (_ in 0...openBraces) {
+                    Sys.print("    ");
                 }
+            } else if (indented) {
+                indented = false;
+                Sys.print("    ... ");
+            } else {
+                Sys.print("snekky> ");
             }
+        }
+        
+        do {
+            printIndentation();
+
+            final line = Sys.stdin().readLine();
+
+            openBraces -= line.split("").filter(c -> c == "}").length;
+
+            Sys.print("\033[1A");
+            Sys.print("\033[2K");
+            printIndentation();
+            Sys.println(line);
+
+            openBraces += line.split("").filter(c -> c == "{").length;
+
             code.add(line);
-        } while(openBraces != 0);
+        } while (openBraces != 0);
 
         return code.toString();
     }
@@ -54,7 +67,6 @@ class Repl {
         Sys.println("");
 
         while (true) {
-            Sys.print("snekky> ");
             final code = read();
             handleCommand(code);
 
