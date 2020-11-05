@@ -1,4 +1,3 @@
-import repl.Repl;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import evaluator.Evaluator;
@@ -34,7 +33,7 @@ class Snekky {
         final args = Sys.args();
 
         if (args.length == 0) {
-            final repl = new Repl();
+            final repl = new repl.Repl();
             repl.start();
         } else {
             final filename = args[0];
