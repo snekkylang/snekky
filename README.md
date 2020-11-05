@@ -8,6 +8,7 @@ The Snekky Programming Language
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
 
 ## Features
+- Built-in REPL.
 - Familiar syntax.
 - Compiles to a custom bytecode.
 - Arrays and hashes.
