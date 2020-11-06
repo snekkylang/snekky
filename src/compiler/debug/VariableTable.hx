@@ -4,20 +4,20 @@ import haxe.io.BytesInput;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
-private typedef FilenameEntry = {start:Int, end:Int, filename:String};
+private typedef VariableEntry = {start:Int, end:Int, name:String};
 
-class FilenameTable {
+class VariableTable {
 
-    final table:Array<FilenameEntry> = [];
+    final table:Array<VariableEntry> = [];
 
     public function new() {}
 
-    public function define(start:Int, end:Int, filename:String) {
-        table.push({start: start, end: end, filename: filename});
+    public function define(start:Int, end:Int, name:String) {
+        table.push({start: start, end: end, name: name});
     }
 
-    public function resolve(byteIndex:Int):String {
-        var prev:FilenameEntry = null;
+    public function resolve(byteIndex:Int) {
+        var prev:VariableEntry = null;
 
         for (entry in table) {
             if (entry.start <= byteIndex && entry.end >= byteIndex) {
@@ -32,17 +32,17 @@ class FilenameTable {
             }
         }
 
-        return prev == null ? null : prev.filename;
+        return prev == null ? null : prev.name;
     }
-    
+
     public function toByteCode():Bytes {
         final tableBytes = new BytesOutput();
 
         for (entry in table) {
             tableBytes.writeInt32(entry.start);
             tableBytes.writeInt32(entry.end);
-            tableBytes.writeInt32(Bytes.ofString(entry.filename).length);
-            tableBytes.writeString(entry.filename);
+            tableBytes.writeInt32(Bytes.ofString(entry.name).length);
+            tableBytes.writeString(entry.name);
         }
 
         final output = new BytesOutput();
@@ -52,7 +52,7 @@ class FilenameTable {
         return output.getBytes();
     }
 
-    public function fromByteCode(byteCode:BytesInput):FilenameTable {
+    public function fromByteCode(byteCode:BytesInput):VariableTable {
         final tableSize = byteCode.readInt32();
         final startPosition = byteCode.position;
 
@@ -62,9 +62,9 @@ class FilenameTable {
             final filenameLength = byteCode.readInt32();
             final filename = byteCode.readString(filenameLength);
 
-            table.push({start: start, end: end, filename: filename});
+            table.push({start: start, end: end, name: filename});
         }
 
         return this;
     }
-}
+} 

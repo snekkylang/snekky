@@ -8,7 +8,7 @@ import object.Object;
 import compiler.constant.ConstantPool;
 import haxe.io.Bytes;
 import haxe.io.BytesInput;
-import compiler.debug.LocalVariableTable;
+import compiler.debug.VariableTable;
 import error.RuntimeError;
 import compiler.debug.LineNumberTable;
 import std.BuiltInTable;
@@ -26,7 +26,7 @@ class Evaluator {
     var instructions:BytesInput;
     var filenameTable:FilenameTable;
     var lineNumberTable:LineNumberTable;
-    var localVariableTable:LocalVariableTable;
+    var variableTable:VariableTable;
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
 
@@ -34,7 +34,7 @@ class Evaluator {
         newWithState(fileData);
         builtInTable = new BuiltInTable(this);
 
-        error = new RuntimeError(frames, lineNumberTable, localVariableTable, filenameTable, instructions);
+        error = new RuntimeError(frames, lineNumberTable, variableTable, filenameTable, instructions);
         frames.add(new Frame(null, 0, null));
         currentFrame = frames.first();
     }
@@ -48,7 +48,7 @@ class Evaluator {
         }
         filenameTable = new FilenameTable().fromByteCode(byteCode);
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
-        localVariableTable = new LocalVariableTable().fromByteCode(byteCode);
+        variableTable = new VariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode, this);
         final oPosition = instructions != null ? instructions.position : -1;
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));

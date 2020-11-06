@@ -5,7 +5,7 @@ import compiler.debug.FilenameTable;
 import haxe.io.BytesInput;
 import object.Object;
 import evaluator.Frame;
-import compiler.debug.LocalVariableTable;
+import compiler.debug.VariableTable;
 import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;
 
@@ -13,14 +13,14 @@ class RuntimeError {
 
     final frames:GenericStack<Frame>;
     final lineNumberTable:LineNumberTable;
-    final localVariableTable:LocalVariableTable;
+    final variableTable:VariableTable;
     final filenameTable:FilenameTable;
     final byteCode:BytesInput;
 
-    public function new(frames:GenericStack<Frame>, lineNumberTable:LineNumberTable, localVariableTable:LocalVariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
+    public function new(frames:GenericStack<Frame>, lineNumberTable:LineNumberTable, variableTable:VariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
         this.frames = frames;
         this.lineNumberTable = lineNumberTable;
-        this.localVariableTable = localVariableTable;
+        this.variableTable = variableTable;
         this.filenameTable = filenameTable;
         this.byteCode = byteCode;
     }
@@ -41,7 +41,7 @@ class RuntimeError {
             } else {
                 -1;
             }
-            final functionName = localVariableTable.resolve(functionPosition - 2 * 5);
+            final functionName = variableTable.resolve(functionPosition - 2 * 5);
             Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
             position = lineNumberTable.resolve(frame.returnAddress);
