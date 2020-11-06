@@ -8,7 +8,7 @@ This document describes the structure of a Snekky bytecode file.
 - [Bytecode Structure](#bytecode-structure)
     - [FilenameTable](#filenametable)
     - [LineNumberTable](#linenumbertable)
-    - [LocalVariableTable](#localvariabletable)
+    - [VariableTable](#variabletable)
     - [ConstantPool](#constantpool)
         - [Float](#float)
         - [String](#string)
@@ -38,7 +38,7 @@ Bytecode File {
     byt compressed
     <FilenameTable>
     <LineNumberTable>
-    <LocalVariableTable>
+    <VariableTable>
     <ConstantPool>
     <Instructions>
 }
@@ -87,13 +87,14 @@ LineNumberTable {
 | source_line        | i32       | Line in source code.                                |
 | source_line_offset | i32       | Offset within the line in source code.              |
 
-### LocalVariableTable
-The LocalVariableTable maps the position where a variable is declared in bytecode (the index) to its name in source code. The LocalVariableTable is structured as follows
+### VariableTable
+The VariableTable maps the position where a variable is declared in bytecode (the index) to its name in source code. The VariableTable is structured as follows
 ```
-LocalVariableTable {
+VariableTable {
     i32 table_size
     [
-        i32 byte_index
+        i32 start_byte_index
+        i32 end_byte_index
         i32 variable_name_length
         str variable_name
     ]
@@ -102,7 +103,8 @@ LocalVariableTable {
 | Field name           | Data type | Description                                                  |
 |----------------------|-----------|--------------------------------------------------------------|
 | table_size           | i32       | The length of the table in bytes.                            |
-| byte_index           | i32       | Position where the variable was set in bytecode (its index). |
+| start_byte_index     | i32       | Start position of this variable in bytecode.                 |
+| end_byte_index       | i32       | End position of this variable in bytecode.                   |
 | variable_name_length | i32       | Length of the variable name (in bytes).                      |
 | variable_name        | str       | Name of the variable in source code.                         |
 

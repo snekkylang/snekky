@@ -11,7 +11,7 @@ import std.BuiltInTable;
 import haxe.io.Bytes;
 import compiler.constant.ConstantPool;
 import haxe.io.BytesOutput;
-import compiler.debug.LocalVariableTable;
+import compiler.debug.VariableTable;
 import compiler.debug.LineNumberTable;
 import error.ErrorHelper;
 import ast.NodeType;
@@ -27,7 +27,7 @@ class Compiler {
     final constantPool = new ConstantPool();
     var instructions = new BytesOutput();
     final lineNumberTable = new LineNumberTable();
-    final localVariableTable = new LocalVariableTable();
+    final variableTable = new VariableTable();
     final symbolTable = new SymbolTable();
     final filenameTable = new FilenameTable();
     var error:CompileError = new CompileError("", "");
@@ -45,7 +45,7 @@ class Compiler {
         final program = new BytesOutput();
         program.write(filenameTable.toByteCode());
         program.write(lineNumberTable.toByteCode());
-        program.write(localVariableTable.toByteCode());
+        program.write(variableTable.toByteCode());
         program.write(constantPool.toByteCode());
 
         final instructionsByteCode = instructions.getBytes();
@@ -249,18 +249,21 @@ class Compiler {
                     if (symbolTable.currentScope.exists(name)) {
                         error.redeclareVariable(cVariable.position, name);
                     }
-                    if (debug) {
-                        localVariableTable.define(instructions.length, name);
-                    }
+
                     return symbolTable.define(name, mutable);
                 }
         
                 if (cVariable.name.type == NodeType.Ident) {
                     final cVariableName = cast(cVariable.name, IdentNode).value;
+                    final variableStart = instructions.length;
 
                     final symbol = declareVariable(cVariableName, cVariable.mutable);
                     if (cVariable.value != null) {
                         compile(cVariable.value);
+                    }
+
+                    if (debug) {
+                        variableTable.define(variableStart, instructions.length, cVariableName);
                     }
     
                     emit(OpCode.Store, cVariable.position, [symbol.index]);
@@ -268,10 +271,16 @@ class Compiler {
                     final cVariableName = cast(cVariable.name, DestructureArrayNode);
 
                     for (i => varName in cVariableName.names) {
+                        final variableStart = instructions.length;
+
                         final symbol = declareVariable(varName, cVariable.mutable);
                         if (cVariable.value != null) {
                             compile(cVariable.value);
-                        }        
+                        }
+                        
+                        if (debug) {
+                            variableTable.define(variableStart, instructions.length, varName);
+                        }
 
                         emit(OpCode.DestructureArray, node.position, [i]);                        
                         emit(OpCode.Store, cVariable.position, [symbol.index]);  
@@ -282,10 +291,16 @@ class Compiler {
                     final cVariableName = cast(cVariable.name, DestructureHashNode);
 
                     for (varName in cVariableName.names) {
+                        final variableStart = instructions.length;
+
                         final symbol = declareVariable(varName, cVariable.mutable);
                         if (cVariable.value != null) {
                             compile(cVariable.value);
-                        }        
+                        }
+                        
+                        if (debug) {
+                            variableTable.define(variableStart, instructions.length, varName);
+                        }
 
                         constantPool.addConstant(new StringObj(varName, null));
                         emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
@@ -298,6 +313,7 @@ class Compiler {
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);
 
+                final variableStart = instructions.length;
                 final symbol = symbolTable.resolve(cVariableAssign.name.value);
                 if (symbol == null) {
                     error.symbolUndefined(cVariableAssign.position, cVariableAssign.name.value);
@@ -305,14 +321,16 @@ class Compiler {
                     error.symbolImmutable(cVariableAssign.position, cVariableAssign.name.value);
                 }
                 
-                if (debug) {
-                    localVariableTable.define(instructions.length, cVariableAssign.name.value);
-                }
                 compile(cVariableAssign.value);
+
+                if (debug) {
+                    variableTable.define(variableStart, instructions.length, cVariableAssign.name.value);
+                }
                 emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
             case NodeType.VariableAssignOp:
                 final cVariableAssignOp = cast(node, VariableAssignOpNode);
 
+                final variableStart = instructions.length;
                 final symbol = symbolTable.resolve(cVariableAssignOp.name.value);
                 if (symbol == null) {
                     error.symbolUndefined(cVariableAssignOp.position, cVariableAssignOp.name.value);
@@ -320,10 +338,11 @@ class Compiler {
                     error.symbolImmutable(cVariableAssignOp.position, cVariableAssignOp.name.value);
                 }
                 
-                if (debug) {
-                    localVariableTable.define(instructions.length, cVariableAssignOp.name.value);
-                }
                 compile(cVariableAssignOp.value);
+
+                if (debug) {
+                    variableTable.define(variableStart, instructions.length, cVariableAssignOp.name.value);
+                }
                 emit(OpCode.Store, cVariableAssignOp.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
