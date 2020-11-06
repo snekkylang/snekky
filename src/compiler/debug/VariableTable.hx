@@ -20,7 +20,7 @@ class VariableTable {
         var prev:VariableEntry = null;
 
         for (entry in table) {
-            if (entry.start <= byteIndex && entry.end >= byteIndex) {
+            if (entry.start < byteIndex && entry.end >= byteIndex) {
                 if (prev == null) {
                     prev = entry;
                     continue;
@@ -59,10 +59,10 @@ class VariableTable {
         while (byteCode.position < startPosition + tableSize) {
             final start = byteCode.readInt32();
             final end = byteCode.readInt32();
-            final filenameLength = byteCode.readInt32();
-            final filename = byteCode.readString(filenameLength);
+            final nameLength = byteCode.readInt32();
+            final name = byteCode.readString(nameLength);
 
-            table.push({start: start, end: end, name: filename});
+            table.push({start: start, end: end, name: name});
         }
 
         return this;

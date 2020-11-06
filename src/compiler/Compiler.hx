@@ -256,7 +256,6 @@ class Compiler {
                 if (cVariable.name.type == NodeType.Ident) {
                     final cVariableName = cast(cVariable.name, IdentNode).value;
                     final variableStart = instructions.length;
-
                     final symbol = declareVariable(cVariableName, cVariable.mutable);
                     if (cVariable.value != null) {
                         compile(cVariable.value);
@@ -264,7 +263,7 @@ class Compiler {
 
                     if (debug) {
                         variableTable.define(variableStart, instructions.length, cVariableName);
-                    }
+                    };
     
                     emit(OpCode.Store, cVariable.position, [symbol.index]);
                 } else if (cVariable.name.type == NodeType.DestructureArray) {
