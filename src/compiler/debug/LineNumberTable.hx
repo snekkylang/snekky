@@ -30,12 +30,6 @@ class LineNumberTable {
         }
     }
 
-    public function concat(other:LineNumberTable) {
-        for (k => v in other.table) {
-            table.set(k, v);
-        }
-    }
-
     public function toByteCode():Bytes {
         final tableBytes = new BytesOutput();
 
