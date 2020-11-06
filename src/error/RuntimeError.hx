@@ -41,7 +41,7 @@ class RuntimeError {
             } else {
                 -1;
             }
-            final functionName = variableTable.resolve(functionPosition - 2 * 5);
+            final functionName = variableTable.resolve(functionPosition);
             Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
             position = lineNumberTable.resolve(frame.returnAddress);
