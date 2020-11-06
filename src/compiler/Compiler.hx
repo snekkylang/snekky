@@ -261,11 +261,11 @@ class Compiler {
                         compile(cVariable.value);
                     }
 
+                    emit(OpCode.Store, cVariable.position, [symbol.index]);
+
                     if (debug) {
                         variableTable.define(variableStart, instructions.length, cVariableName);
-                    };
-    
-                    emit(OpCode.Store, cVariable.position, [symbol.index]);
+                    }
                 } else if (cVariable.name.type == NodeType.DestructureArray) {
                     final cVariableName = cast(cVariable.name, DestructureArrayNode);
 
@@ -276,13 +276,13 @@ class Compiler {
                         if (cVariable.value != null) {
                             compile(cVariable.value);
                         }
-                        
-                        if (debug) {
-                            variableTable.define(variableStart, instructions.length, varName);
-                        }
 
                         emit(OpCode.DestructureArray, node.position, [i]);                        
                         emit(OpCode.Store, cVariable.position, [symbol.index]);  
+
+                        if (debug) {
+                            variableTable.define(variableStart, instructions.length, varName);
+                        }
                     }
 
                     emit(OpCode.Pop, node.position, []);
@@ -296,15 +296,15 @@ class Compiler {
                         if (cVariable.value != null) {
                             compile(cVariable.value);
                         }
-                        
-                        if (debug) {
-                            variableTable.define(variableStart, instructions.length, varName);
-                        }
 
                         constantPool.addConstant(new StringObj(varName, null));
                         emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
                         emit(OpCode.DestructureHash, node.position, []);                        
-                        emit(OpCode.Store, cVariable.position, [symbol.index]);  
+                        emit(OpCode.Store, cVariable.position, [symbol.index]);
+                        
+                        if (debug) {
+                            variableTable.define(variableStart, instructions.length, varName);
+                        }
                     }
 
                     emit(OpCode.Pop, node.position, []);  
