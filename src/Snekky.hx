@@ -8,7 +8,7 @@ import lexer.Lexer;
 @:expose
 class Snekky {
 
-    public static inline final Version = "0.6.0";
+    public static inline final Version = "0.7.0";
 
     public static function compileString(filename:String, code:String, debug:Bool, compress:Bool):Bytes {
         final lexer = new Lexer(filename, code);
