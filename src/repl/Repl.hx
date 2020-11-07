@@ -51,7 +51,7 @@ class Repl {
             Sys.print("\033[1A");
             Sys.print("\033[2K");
             printIndentation();
-            Sys.println(line);
+            Console.log(Highlighter.highlight(line));
 
             openBraces += line.split("").filter(c -> c == "{").length;
 
