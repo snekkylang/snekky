@@ -1,4 +1,5 @@
 import haxe.io.Bytes;
+import haxe.io.Path;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
