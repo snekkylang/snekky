@@ -221,7 +221,7 @@ class Lexer {
             case ":": new Token(TokenType.Colon, position, ":");
             case "\"": 
                 final string = readString();
-                new Token(TokenType.String, position - 1, string);
+                new Token(TokenType.String, position - 2, string);
             case "&":
                 if (peekChar() == "&") {
                     readChar();
