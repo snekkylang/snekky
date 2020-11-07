@@ -1,5 +1,4 @@
 import haxe.io.Bytes;
-import haxe.io.Path;
 import evaluator.Evaluator;
 import compiler.Compiler;
 import parser.Parser;
@@ -8,7 +7,7 @@ import lexer.Lexer;
 @:expose
 class Snekky {
 
-    public static inline final Version = "0.7.0";
+    public static inline final Version = "0.8.0";
 
     public static function compileString(filename:String, code:String, debug:Bool, compress:Bool):Bytes {
         final lexer = new Lexer(filename, code);
