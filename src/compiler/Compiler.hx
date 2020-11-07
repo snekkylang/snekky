@@ -367,8 +367,10 @@ class Compiler {
 
                 symbolTable.newScope();
                 for (parameter in cFunction.parameters) {
+                    final variableStart = instructions.length;
                     final symbol = symbolTable.define(parameter.value, false);
                     emit(OpCode.Store, node.position, [symbol.index]);
+                    variableTable.define(variableStart, instructions.length, parameter.value);
                 }
 
                 compile(cFunction.block);
