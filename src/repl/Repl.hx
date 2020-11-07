@@ -61,19 +61,34 @@ class Repl {
         return code.toString();
     }
 
-    function handleCommand(line:String) {
+    function handleCommand(line:String):Bool {
+        if (!StringTools.startsWith(line, "/")) {
+            return false;
+        }
+
         switch (line.substr(1)) {
             case "exit": 
                 Sys.println("|  Goodbye");
                 Sys.exit(0);
+            case "clear":
+                Sys.print("\033[2J");
+            case "help":
+                Sys.println("| help - Shows this dialoge.");
+                Sys.println("| exit - Exists the REPL environment.");
+                Sys.println("| clear - Clears the screen.");
+            default: Sys.println("| Unknown command");
         }
+
+        return true;
     }
 
     function handleInput() {
         thread = Thread.create(() -> {
             while (true) {
                 final code = read();
-                handleCommand(code);
+                if (handleCommand(code)) {
+                    continue;
+                }
 
                 final lexer = new Lexer("repl", code);
                 final parser = new Parser(lexer, true);
@@ -101,7 +116,7 @@ class Repl {
 
     public function start() {
         Sys.println('| Welcome to Snekky REPL -- Version ${Snekky.Version}');
-        Sys.println("| type /exit to leave");
+        Sys.println("| Type /help for more information");
         Sys.println("");
 
         ErrorHelper.exit = function() {
