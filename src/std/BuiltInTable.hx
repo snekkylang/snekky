@@ -1,5 +1,6 @@
 package std;
 
+import std.lib.namespaces.json.JsonNamespace;
 import object.BuiltInFunctionObj;
 import std.lib.MemberObject;
 import std.lib.namespaces.*;
@@ -23,6 +24,7 @@ class BuiltInTable {
             new ObjectNamespace(evaluator),
             new RangeNamespace(evaluator),
             new RegexNamespace(evaluator),
+            new JsonNamespace(evaluator),
             #if target.sys
             new FileNamespace(evaluator), 
             new HttpNamespace(evaluator),
@@ -39,6 +41,7 @@ class BuiltInTable {
             ObjectNamespace.name,
             RangeNamespace.name,
             RegexNamespace.name,
+            JsonNamespace.name,
             #if target.sys
             FileNamespace.name, 
             HttpNamespace.name,
