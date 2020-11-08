@@ -11,6 +11,7 @@ Please do not take this project too seriously. I'm in no way a professional. To 
 - Built-in REPL.
 - Familiar syntax.
 - Compiles to a custom bytecode.
+- Multithreading.
 - Arrays and hashes.
 - Lambdas and closures are supported.
 - `if`s and functions may implicitly return a value.
