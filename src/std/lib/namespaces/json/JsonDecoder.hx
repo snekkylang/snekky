@@ -26,10 +26,6 @@ class JsonDecoder {
         currentToken = lexer.readToken();
     }
 
-    public function decode():Object {
-        return parseToken();
-    }
-
     function nextToken() {
         currentToken = lexer.readToken();
     }
@@ -45,7 +41,7 @@ class JsonDecoder {
             nextToken();
             assertToken(TokenType.Colon, "`:`");
             nextToken();
-            final value = parseToken();
+            final value = decode();
 
             if (currentToken.type == TokenType.Comma) {
                 if (lexer.peekToken().type == TokenType.RBrace) {
@@ -68,7 +64,7 @@ class JsonDecoder {
         final array:Array<Object> = [];
 
         while (currentToken.type != TokenType.RBracket) {
-            array.push(parseToken());
+            array.push(decode());
             
             if (currentToken.type == TokenType.Comma) {
                 if (lexer.peekToken().type == TokenType.RBracket) {
@@ -90,7 +86,7 @@ class JsonDecoder {
         }
     }
 
-    function parseToken() {
+    public function decode() {
         final o = switch (currentToken.type) {
             case TokenType.LBrace: parseHash();
             case TokenType.LBracket: parseArray();
