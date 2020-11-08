@@ -1,0 +1,19 @@
+// Every thread has a channel which should be used for any communication
+let channel = Thread.run(func() {
+    let fib = func(n) {
+        return if n < 2 {
+            n
+        } else {
+            fib(n - 1) + fib (n - 2)   
+        };
+    };
+
+    // Blocking if `true`
+    let b = channel.receive(true);
+
+    Sys.println(fib(b));
+});
+
+Sys.println("before");
+channel.send(15);
+Sys.println("after");
