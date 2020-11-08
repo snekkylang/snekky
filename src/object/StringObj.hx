@@ -52,7 +52,7 @@ class StringObj extends Object {
             assertParameterType(p[0], ObjectType.String);
             final sub = cast(p[0], StringObj).value;
 
-            return new NumberObj(StringTools.contains(value, sub) ? 1 : 0, evaluator);
+            return new BooleanObj(StringTools.contains(value, sub), evaluator);
         });
 
         addFunctionMember("indexOf", 2, function(p) {

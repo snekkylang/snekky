@@ -5,6 +5,7 @@ import std.lib.MemberObject;
 
 enum ObjectType {
     Number;
+    Boolean;
     String;
     Array;
     Hash;

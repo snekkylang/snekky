@@ -1,5 +1,6 @@
 package std.lib.namespaces;
 
+import object.BooleanObj;
 import object.Object.ObjectType;
 import object.NumberObj;
 import evaluator.Evaluator;
@@ -17,7 +18,7 @@ private class ExclusiveRange extends MemberObject {
         });
 
         addFunctionMember("hasNext", 0, function(p) {
-            return new NumberObj(current + 1 < end ? 1 : 0, evaluator);
+            return new BooleanObj(current + 1 < end, evaluator);
         });
 
         addFunctionMember("Iterator", 0, function(p) {

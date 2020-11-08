@@ -1,5 +1,6 @@
 package compiler.constant;
 
+import object.BooleanObj;
 import evaluator.Evaluator;
 import object.NullObj;
 import object.UserFunctionObj;
@@ -48,6 +49,11 @@ class ConstantPool {
                     constantsBytes.writeInt16(cUserFunction.parametersCount);
                 case ObjectType.Null:
                     constantsBytes.writeByte(ConstantType.Null);
+                case ObjectType.Boolean:
+                    final cBoolean = cast(const, BooleanObj);
+
+                    constantsBytes.writeByte(ConstantType.Boolean);
+                    constantsBytes.writeByte(cBoolean.value ? 1 : 0);
                 default:
             }
         }
@@ -81,6 +87,9 @@ class ConstantPool {
                     pool.push(new UserFunctionObj(position, parametersCount, evaluator));
                 case ConstantType.Null:
                     pool.push(new NullObj(evaluator));
+                case ConstantType.Boolean:
+                    final value = byteCode.readByte();
+                    pool.push(new BooleanObj(value != 0, evaluator));
                 default:
             }    
         }

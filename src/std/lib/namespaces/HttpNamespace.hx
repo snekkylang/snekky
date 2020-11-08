@@ -1,5 +1,6 @@
 package std.lib.namespaces;
 
+import object.BooleanObj;
 import object.NumberObj;
 import object.StringObj;
 import object.NullObj;
@@ -31,8 +32,8 @@ private class HttpClient extends MemberObject {
         });
 
         addFunctionMember("request", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
-            final post = cast(p[0], NumberObj).value != 0;
+            assertParameterType(p[0], ObjectType.Boolean);
+            final post = cast(p[0], BooleanObj).value;
             
             client.request(post);
 

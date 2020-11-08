@@ -1,5 +1,6 @@
 package compiler;
 
+import object.BooleanObj;
 import compiler.symbol.Symbol;
 import object.NullObj;
 import object.StringObj;
@@ -513,7 +514,7 @@ class Compiler {
                     case NodeType.Float:
                         constantPool.addConstant(new NumberObj(cast(node, FloatNode).value, null));
                     case NodeType.Boolean:
-                        constantPool.addConstant(new NumberObj(cast(node, BooleanNode).value ? 1 : 0, null));
+                        constantPool.addConstant(new BooleanObj(cast(node, BooleanNode).value, null));
                     case NodeType.String:
                         constantPool.addConstant(new StringObj(cast(node, StringNode).value, null));
                     case NodeType.Null:

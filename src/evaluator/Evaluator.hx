@@ -228,18 +228,18 @@ class Evaluator {
                 final cLeft = cast(left, NumberObj).value;
                 final cRight = cast(right, NumberObj).value;
 
-                final result = switch (opCode) {
-                    case OpCode.Add: cLeft + cRight;
-                    case OpCode.Subtract: cLeft - cRight;
-                    case OpCode.Multiply: cLeft * cRight;
-                    case OpCode.Divide: cLeft / cRight;
-                    case OpCode.Modulo: cLeft % cRight;
-                    case OpCode.LessThan: cLeft < cRight ? 1 : 0;
-                    case OpCode.GreaterThan: cLeft > cRight ? 1 : 0;
-                    default: -1;
+                final o = switch (opCode) {
+                    case OpCode.Add: new NumberObj(cLeft + cRight, this);
+                    case OpCode.Subtract: new NumberObj(cLeft - cRight, this);
+                    case OpCode.Multiply: new NumberObj(cLeft * cRight, this);
+                    case OpCode.Divide: new NumberObj(cLeft / cRight, this);
+                    case OpCode.Modulo: new NumberObj(cLeft % cRight, this);
+                    case OpCode.LessThan: new BooleanObj(cLeft < cRight, this);
+                    case OpCode.GreaterThan: new BooleanObj(cLeft > cRight, this);
+                    default: new NullObj(this);
                 };
 
-                stack.add(new NumberObj(result, this));
+                stack.add(o);
             case OpCode.Equals:
                 final right = stack.pop();
                 final left = stack.pop();
@@ -265,11 +265,15 @@ class Evaluator {
                         final cLeft = cast(left, HashObj).value;
                         final cRight = cast(right, HashObj).value;
                         cLeft.equals(cRight);
+                    case [ObjectType.Boolean, ObjectType.Boolean]:
+                        final cLeft = cast(left, BooleanObj).value;
+                        final cRight = cast(right, BooleanObj).value;
+                        cLeft == cRight;
                     case [ObjectType.Null, ObjectType.Null]: true;
                     default: false;
                 }
 
-                stack.add(new NumberObj(equals ? 1 : 0, this));
+                stack.add(new BooleanObj(equals, this));
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
@@ -300,17 +304,25 @@ class Evaluator {
                 stack.add(builtInTable.resolveIndex(builtInIndex));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
-                final conditionValue = cast(stack.pop(), NumberObj).value;
+                try {
+                    final conditionValue = cast(stack.pop(), BooleanObj).value;
 
-                if (conditionValue == 0) {
-                    instructions.position = jumpIndex;
+                    if (!conditionValue) {
+                        instructions.position = jumpIndex;
+                    }
+                } catch (e) {
+                    error.error("expected condition to evaluate to boolean");
                 }
             case OpCode.JumpPeek:
                 final jumpIndex = instructions.readInt32();
-                final conditionValue = cast(stack.first(), NumberObj).value;
+                try {
+                    final conditionValue = cast(stack.first(), BooleanObj).value;
 
-                if (conditionValue == 1) {
-                    instructions.position = jumpIndex;
+                    if (conditionValue) {
+                        instructions.position = jumpIndex;
+                    }
+                } catch (e) {
+                    error.error("expected condition to evaluate to boolean");
                 }
             case OpCode.Jump:
                 final jumpIndex = instructions.readInt32();
@@ -358,16 +370,16 @@ class Evaluator {
                     final value = cast(negValue, NumberObj).value;
                     stack.add(new NumberObj(-value, this));      
                 } else {
-                    error.error("only floats can be negated");   
+                    error.error("only numbers can be negated");   
                 }
             case OpCode.Not:
                 final invValue = stack.pop();
 
-                if (invValue.type == ObjectType.Number) {
-                    final value = cast(invValue, NumberObj).value;
-                    stack.add(new NumberObj(value == 1 ? 0 : 1, this));      
+                if (invValue.type == ObjectType.Boolean) {
+                    final value = cast(invValue, BooleanObj).value;
+                    stack.add(new BooleanObj(!value, this));      
                 } else {
-                    error.error("only floats can be inverted");   
+                    error.error("only booleans can be inverted");   
                 }
             case OpCode.Pop:
                 stack.pop();

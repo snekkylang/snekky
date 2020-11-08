@@ -1,5 +1,5 @@
 # File Structure
-###### Last updated 2020-01-10
+###### Last updated 2020-08-11
 This document describes the structure of a Snekky bytecode file.
 
 **Table of Contents**
@@ -14,6 +14,7 @@ This document describes the structure of a Snekky bytecode file.
         - [String](#string)
         - [Function](#function)
         - [Null](#null)
+        - [Boolean](#boolean)
     - [Instructions](#instructions)
         - [Instruction](#instruction)
 
@@ -130,6 +131,7 @@ Constant {
         <FloatConstant>
         <StringConstant>
         <FunctionConstant>
+        <BooleanConstant>
     )
 }
 ```
@@ -144,6 +146,7 @@ Data types are mapped as follows:
 | 1         | String                |
 | 2         | Function              |
 | 3         | Null                  |
+| 4         | Boolean               |
 
 #### Float
 Snekky uses 64-bit floats to represent all numbers and booleans.
@@ -184,6 +187,17 @@ FunctionConstant {
 
 #### Null
 Null does not have any additional data.
+
+#### Boolean
+Value `1` means `true`, `0` means `false`.
+```
+BooleanConstant {
+    byt value
+}
+```
+| Field name | Data type | Description            |
+|------------|-----------|------------------------|
+| value      | byt       | Value of the constant. |
 
 ### Instructions
 This part of a bytecode file contains the program's instructions.
