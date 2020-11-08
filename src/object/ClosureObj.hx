@@ -9,7 +9,7 @@ using equals.Equal;
 class ClosureObj extends Object {
 
     public final func:Function;
-    public final context:Frame;
+    public var context:Frame;
 
     public function new(func:Function, context:Frame, evaluator:Evaluator) {
         super(ObjectType.Closure, evaluator);

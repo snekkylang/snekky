@@ -25,7 +25,8 @@ class BuiltInTable {
             new RegexNamespace(evaluator),
             #if target.sys
             new FileNamespace(evaluator), 
-            new HttpNamespace(evaluator)
+            new HttpNamespace(evaluator),
+            new ThreadNamespace(evaluator)
             #end
         ];
     }
@@ -40,7 +41,8 @@ class BuiltInTable {
             RegexNamespace.name,
             #if target.sys
             FileNamespace.name, 
-            HttpNamespace.name
+            HttpNamespace.name,
+            ThreadNamespace.name
             #end
         ].indexOf(name);
     }

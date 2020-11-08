@@ -29,8 +29,14 @@ class Evaluator {
     var variableTable:VariableTable;
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
+    public final fileData:Bytes;
+    #if target.sys
+    final threadLocks:Array<sys.thread.Lock> = [];
+    #end
 
     public function new(fileData:Bytes) {
+        this.fileData = fileData;
+
         newWithState(fileData);
         builtInTable = new BuiltInTable(this);
 
@@ -83,10 +89,22 @@ class Evaluator {
         return stack.pop();
     }
 
+    #if target.sys
+    public function addThreadLock(lock:sys.thread.Lock) {
+        threadLocks.push(lock);
+    }
+    #end
+
     public function eval() {
         while (instructions.position < instructions.length) {
             evalInstruction();
         }
+
+        #if target.sys
+        for (lock in threadLocks) {
+            lock.wait();
+        }
+        #end
     }
 
     function evalInstruction() {
@@ -273,7 +291,6 @@ class Evaluator {
                 }
             case OpCode.Load:
                 final localIndex = instructions.readInt32();
-
                 final value = currentFrame.getVariable(localIndex);
 
                 stack.add(value);
