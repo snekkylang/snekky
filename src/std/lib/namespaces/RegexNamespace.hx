@@ -1,6 +1,6 @@
 package std.lib.namespaces;
 
-import object.NumberObj;
+import object.BooleanObj;
 import object.Object.ObjectType;
 import object.StringObj;
 import evaluator.Evaluator;
@@ -14,7 +14,7 @@ class Regex extends MemberObject {
             assertParameterType(p[0], ObjectType.String);
             final s = cast(p[0], StringObj).value;
 
-            return new NumberObj(regex.match(s) ? 1: 0, evaluator);
+            return new BooleanObj(regex.match(s), evaluator);
         });
 
         addFunctionMember("replace", 2, function(p) {

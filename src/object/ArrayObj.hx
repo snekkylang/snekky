@@ -19,7 +19,7 @@ private class ArrayIterator extends MemberObject {
         });
 
         addFunctionMember("hasNext", 0, function(p) {
-            return new NumberObj(index < value.length - 1 ? 1 : 0, evaluator);
+            return new BooleanObj(index < value.length - 1, evaluator);
         });
     }
 }

@@ -1,6 +1,6 @@
 package std.lib.namespaces;
 
-import object.NumberObj;
+import object.BooleanObj;
 import object.Object;
 import sys.thread.Lock;
 import sys.thread.Thread;
@@ -28,8 +28,8 @@ class Channel extends MemberObject {
         });
 
         addFunctionMember("receive", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
-            final blocking = cast(p[0], NumberObj).value != 0;
+            assertParameterType(p[0], ObjectType.Boolean);
+            final blocking = cast(p[0], BooleanObj).value;
             if (blocking && message == null) {
                 lock = new Lock();
                 lock.wait();

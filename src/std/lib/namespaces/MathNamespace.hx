@@ -1,6 +1,5 @@
 package std.lib.namespaces;
 
-import object.NullObj;
 import object.NumberObj;
 import object.Object;
 import evaluator.Evaluator;

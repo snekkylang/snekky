@@ -21,7 +21,7 @@ private class HashIterator extends MemberObject {
         });
 
         addFunctionMember("hasNext", 0, function(p) {
-            return new NumberObj(iterator.hasNext() ? 1 : 0, evaluator);
+            return new BooleanObj(iterator.hasNext(), evaluator);
         });
     }
 }
