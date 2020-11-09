@@ -16,4 +16,12 @@ class BooleanObj extends Object {
     override function toString():String {
         return value ? "true" : "false";
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.Boolean) {
+            return false;
+        }
+
+        return cast(o, BooleanObj).value == value;
+    }
 }

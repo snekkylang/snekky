@@ -24,4 +24,12 @@ class UserFunctionObj extends Function {
     override function toString():String {
         return 'func($position, UserDefined)';
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.UserFunction) {
+            return false;
+        }
+
+        return cast(o, UserFunctionObj).position == position;
+    }
 }

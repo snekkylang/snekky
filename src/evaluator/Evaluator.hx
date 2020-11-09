@@ -15,8 +15,6 @@ import std.BuiltInTable;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
-using equals.Equal;
-
 class Evaluator {
 
     public final stack:GenericStack<Object> = new GenericStack();
@@ -244,34 +242,7 @@ class Evaluator {
                 final right = stack.pop();
                 final left = stack.pop();
                 
-                final equals = switch [left.type, right.type] {
-                    case [ObjectType.Number, ObjectType.Number]:
-                        final cLeft = cast(left, NumberObj).value;
-                        final cRight = cast(right, NumberObj).value;
-                        cLeft == cRight;
-                    case [ObjectType.String, ObjectType.String]:
-                        final cLeft = cast(left, StringObj).value;
-                        final cRight = cast(right, StringObj).value;
-                        cLeft == cRight;
-                    case [ObjectType.Closure, ObjectType.Closure]:
-                        final cLeft = cast(left, ClosureObj).func;
-                        final cRight = cast(right, ClosureObj).func;
-                        cLeft.equals(cRight);
-                    case [ObjectType.Array, ObjectType.Array]:
-                        final cLeft = cast(left, ArrayObj).value;
-                        final cRight = cast(right, ArrayObj).value;
-                        cLeft.equals(cRight);   
-                    case [ObjectType.Hash, ObjectType.Hash]:
-                        final cLeft = cast(left, HashObj).value;
-                        final cRight = cast(right, HashObj).value;
-                        cLeft.equals(cRight);
-                    case [ObjectType.Boolean, ObjectType.Boolean]:
-                        final cLeft = cast(left, BooleanObj).value;
-                        final cRight = cast(right, BooleanObj).value;
-                        cLeft == cRight;
-                    case [ObjectType.Null, ObjectType.Null]: true;
-                    default: false;
-                }
+                final equals = left.equals(right);
 
                 stack.add(new BooleanObj(equals, this));
             case OpCode.Constant:

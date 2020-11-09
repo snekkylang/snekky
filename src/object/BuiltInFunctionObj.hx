@@ -22,4 +22,12 @@ class BuiltInFunctionObj extends Function {
     override function toString():String {
         return "#func(BuiltIn)";
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.BuiltInFunction) {
+            return false;
+        }
+
+        return cast(o, BuiltInFunctionObj).func == func;
+    }
 }

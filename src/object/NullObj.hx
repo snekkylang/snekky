@@ -20,4 +20,8 @@ class NullObj extends Object {
     override function toString():String {
         return "null";
     }
+
+    override function equals(o:Object):Bool {
+        return o.type == ObjectType.Null;
+    }
 }

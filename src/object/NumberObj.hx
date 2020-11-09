@@ -24,4 +24,12 @@ class NumberObj extends Object {
     override function toString():String {
         return Std.string(value);
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.Number) {
+            return false;
+        }
+
+        return cast(o, NumberObj).value == value;
+    }
 }
