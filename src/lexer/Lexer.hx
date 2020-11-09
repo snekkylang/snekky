@@ -63,7 +63,10 @@ class Lexer {
             case "t": "\t";
             case "n": "\n";
             case "r": "\r";
+            case "b": "\u0008";
+            case "f": "\u000C";
             case "\\": "\\";
+            case "/": "/";
             default: "";
         }
     }

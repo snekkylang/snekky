@@ -13,7 +13,12 @@ class JsonNamespace extends MemberObject {
         super(evaluator);
 
         addFunctionMember("encode", 1, function(p) {
-            return new StringObj(JsonEncoder.encode(p[0]), evaluator);
+            return try {
+                new StringObj(JsonEncoder.encode(p[0]), evaluator);
+            } catch (e) {
+                error(e.message);
+                null;
+            }
         });
 
         addFunctionMember("decode", 1, function(p) {
