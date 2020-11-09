@@ -99,4 +99,12 @@ class StringObj extends Object {
     override function toString():String {
         return value;
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.String) {
+            return false;
+        }
+
+        return cast(o, StringObj).value == value;
+    }
 }

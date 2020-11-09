@@ -74,4 +74,12 @@ class ArrayObj extends Object {
     override function toString():String {
         return value.map(o -> o.toString()).toString(); 
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.Array) {
+            return false;
+        }
+
+        return cast(o, ArrayObj).value.equals(value);
+    }
 }

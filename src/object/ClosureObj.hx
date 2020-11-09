@@ -25,4 +25,12 @@ class ClosureObj extends Object {
     override function toString():String {
         return '#closure(${func.toString()})';
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.Closure) {
+            return false;
+        }
+
+        return cast(o, ClosureObj).func == func;
+    }
 }

@@ -68,4 +68,12 @@ class HashObj extends Object {
         buffer.add("}");
         return buffer.toString();
     }
+
+    override function equals(o:Object):Bool {
+        if (o.type != ObjectType.Hash) {
+            return false;
+        }
+
+        return value.equals(cast(o, HashObj).value);
+    }
 }

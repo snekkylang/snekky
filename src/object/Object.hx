@@ -28,4 +28,8 @@ class Object extends MemberObject {
     public function toString():String {
         return "#object";
     }
+
+    public function equals(o:Object):Bool {
+        return false;
+    }
 }
