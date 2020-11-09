@@ -1,6 +1,5 @@
 package std.lib.namespaces.json;
 
-import object.NullObj;
 import object.BooleanObj;
 import object.StringObj;
 import haxe.iterators.ArrayIterator;
@@ -57,7 +56,7 @@ class JsonEncoder {
                 encoded.add(cBoolean.value ? "true" : "false");
             case ObjectType.Null:
                 encoded.add("null");
-            default: 
+            default: throw 'failed to encode JSON. unsupported data type ${object.type}';
         }
 
         return encoded.toString();

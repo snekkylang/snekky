@@ -109,8 +109,14 @@ class JsonDecoder {
             case TokenType.False:
                 nextToken();
                 new BooleanObj(false, evaluator);
+            case TokenType.Minus:
+                nextToken();
+                final n = new NumberObj(-Std.parseFloat(currentToken.literal), evaluator);
+                nextToken();
+
+                n;
             default:
-                throw "failed to parse JSON. unsupported datatype";
+                throw 'failed to parse JSON. unexpected token ${currentToken.type}';
                 null;
         }
 
