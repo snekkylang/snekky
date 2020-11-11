@@ -1,0 +1,16 @@
+let object = {
+    number: -1.2,
+    string: "Hello, world!",
+    array: [
+        true,
+        false
+    ]
+};
+
+let encoded = Json.encode(object);
+
+Sys.println("Encoded: " >< encoded);
+
+let decoded = Json.decode(encoded);
+
+Sys.println("Decoded: " >< decoded);
