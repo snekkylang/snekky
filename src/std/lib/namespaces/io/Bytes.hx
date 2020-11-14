@@ -11,13 +11,6 @@ class Bytes extends MemberObject {
     public function new(evaluator:Evaluator, bytes:haxe.io.Bytes) {
         super(evaluator);
 
-        addFunctionMember("get", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
-            final pos = Std.int(cast(p[0], NumberObj).value);
-
-            return new NumberObj(bytes.get(pos), evaluator);
-        });
-
         addFunctionMember("getNumber", 2, function(p) {
             assertParameterType(p[0], ObjectType.Number);
             final pos = Std.int(cast(p[0], NumberObj).value);
