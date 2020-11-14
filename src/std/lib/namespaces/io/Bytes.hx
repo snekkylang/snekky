@@ -49,17 +49,17 @@ class Bytes extends MemberObject {
                 default: error('unsupported data type `$type`');
             }
 
-            addFunctionMember("getString", 2, function(p) {
-                assertParameterType(p[0], ObjectType.Number);
-                final pos = Std.int(cast(p[0], NumberObj).value);
-
-                assertParameterType(p[1], ObjectType.Number);
-                final len = Std.int(cast(p[1], NumberObj).value);
-
-                return new StringObj(bytes.getString(pos, len), evaluator);
-            });
-
             return new NullObj(evaluator);
+        });
+
+        addFunctionMember("getString", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final len = Std.int(cast(p[1], NumberObj).value);
+
+            return new StringObj(bytes.getString(pos, len), evaluator);
         });
 
         addFunctionMember("toString", 0, function(p) {
