@@ -171,11 +171,14 @@ class Lexer {
 
         return switch (currentChar) {
             case "~":
-                if (peekChar() == "/") {
-                    final regex = readRegex();
-                    new Token(TokenType.Regex, position, regex);
-                } else {
-                    new Token(TokenType.Tilde, position, "~");
+                switch (peekChar()) {
+                    case "/":
+                        final regex = readRegex();
+                        new Token(TokenType.Regex, position, regex);
+                    case "=":
+                        readChar();
+                        new Token(TokenType.BitNotAssign, position, "~=");
+                    default: new Token(TokenType.BitNot, position, "~");
                 }
             case ".":
                 switch (peekCharN(2)) {
@@ -196,6 +199,11 @@ class Lexer {
             case "[": new Token(TokenType.LBracket, position, "[");
             case "]": new Token(TokenType.RBracket, position, "]");
             case ",": new Token(TokenType.Comma, position, ",");
+            case "^": 
+                if (peekChar() == "=") {
+                    readChar();
+                    new Token(TokenType.BitXorAssign, position, "^=");
+                } else new Token(TokenType.BitXor, position, "^");
             case "+": 
                 if (peekChar() == "=") {
                     readChar();
@@ -226,15 +234,25 @@ class Lexer {
                 final string = readString();
                 new Token(TokenType.String, position - 2, string);
             case "&":
-                if (peekChar() == "&") {
-                    readChar();
-                    new Token(TokenType.And, position, "&&");
-                } else new Token(TokenType.BitAnd, position, "&");
+                switch (peekChar()) {
+                    case "&":
+                        readChar();
+                        new Token(TokenType.And, position, "&&");
+                    case "=":
+                        readChar();
+                        new Token(TokenType.BitAndAssign, position, "&=");
+                    default: new Token(TokenType.BitAnd, position, "&");
+                }
             case "|":
-                if (peekChar() == "|") {
-                    readChar();
-                    new Token(TokenType.Or, position, "|");
-                } else new Token(TokenType.BitOr, position, "|");
+                switch (peekChar()) {
+                    case "|":
+                        readChar();
+                        new Token(TokenType.Or, position, "||");
+                    case "=":
+                        readChar();
+                        new Token(TokenType.BitOrAssign, position, "|=");
+                    default: new Token(TokenType.BitOr, position, "|");
+                }
             case "!":
                 if (peekChar() == "=") {
                     readChar();
@@ -252,10 +270,18 @@ class Lexer {
                 }
 
             case "<":
-                if (peekChar() == "=") {
-                    readChar();
-                    new Token(TokenType.LessThanOrEqual, position, "<=");
-                } else new Token(TokenType.LessThan, position, "<");
+                switch (peekChar()) {
+                    case "=":
+                        readChar();
+                        new Token(TokenType.LessThanOrEqual, position, "<=");
+                    case "<":
+                        readChar();
+                        if (peekChar() == "=") {
+                            readChar();
+                            new Token(TokenType.BitShiftLeftAssign, position, "<<=");
+                        } else new Token(TokenType.BitShiftLeft, position, "<<");
+                    default: new Token(TokenType.LessThan, position, "<");
+                }
             case ">":
                 switch (peekChar()) {
                     case "=":
@@ -264,6 +290,12 @@ class Lexer {
                     case "<":
                         readChar();
                         new Token(TokenType.ConcatString, position, "><");
+                    case ">":
+                        readChar();
+                        if (peekChar() == "=") {
+                            readChar();
+                            new Token(TokenType.BitShiftRightAssign, position, ">>=");
+                        } else new Token(TokenType.BitShiftRight, position, ">>");
                     default: new Token(TokenType.GreaterThan,position, ">");
                 }
             case "\u{0}": new Token(TokenType.Eof, position, currentChar);

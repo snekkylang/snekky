@@ -13,6 +13,12 @@ enum TokenType {
     AsteriskAssign;
     SlashAssign;
     PercentAssign;
+    BitAndAssign;
+    BitOrAssign;
+    BitShiftLeftAssign;
+    BitShiftRightAssign;
+    BitXorAssign;
+    BitNotAssign;
     Plus;
     Minus;
     Asterisk;
@@ -30,8 +36,11 @@ enum TokenType {
     LessThanOrEqual;
     BitAnd;
     BitOr;
+    BitShiftLeft;
+    BitShiftRight;
+    BitXor;
+    BitNot;
     ConcatString;
-    Tilde;
     Regex;
 
     Comma;

@@ -215,7 +215,9 @@ class Evaluator {
                 final left = stack.pop().toString();
 
                 stack.add(new StringObj('$left$right', this));
-            case OpCode.Add | OpCode.Multiply | OpCode.LessThan | OpCode.GreaterThan | OpCode.Subtract | OpCode.Divide | OpCode.Modulo:
+            case OpCode.Add | OpCode.Multiply | OpCode.LessThan | OpCode.GreaterThan | OpCode.Subtract 
+                | OpCode.Divide | OpCode.Modulo | OpCode.BitAnd | OpCode.BitOr | OpCode.BitShiftLeft
+                | OpCode.BitShiftRight | OpCode.BitXor:
                 final right = stack.pop();
                 final left = stack.pop();
 
@@ -234,6 +236,11 @@ class Evaluator {
                     case OpCode.Modulo: new NumberObj(cLeft % cRight, this);
                     case OpCode.LessThan: new BooleanObj(cLeft < cRight, this);
                     case OpCode.GreaterThan: new BooleanObj(cLeft > cRight, this);
+                    case OpCode.BitAnd: new NumberObj(Std.int(cLeft) & Std.int(cRight), this);
+                    case OpCode.BitOr: new NumberObj(Std.int(cLeft) | Std.int(cRight), this);
+                    case OpCode.BitShiftLeft: new NumberObj(Std.int(cLeft) << Std.int(cRight), this);
+                    case OpCode.BitShiftRight: new NumberObj(Std.int(cLeft) >> Std.int(cRight), this);
+                    case OpCode.BitXor: new NumberObj(Std.int(cLeft) ^ Std.int(cRight), this);
                     default: new NullObj(this);
                 };
 
@@ -342,6 +349,15 @@ class Evaluator {
                     stack.add(new NumberObj(-value, this));      
                 } else {
                     error.error("only numbers can be negated");   
+                }
+            case OpCode.BitNot:
+                final notValue = stack.pop();
+
+                if (notValue.type == ObjectType.Number) {
+                    final value = cast(notValue, NumberObj).value;
+                    stack.add(new NumberObj(~Std.int(value), this));
+                } else {
+                    error.error("cannot perform operation");
                 }
             case OpCode.Not:
                 final invValue = stack.pop();
