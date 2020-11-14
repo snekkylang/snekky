@@ -29,6 +29,12 @@ enum NodeType {
     NotEquals;
     Negate;
     Not;
+    BitAnd;
+    BitOr;
+    BitXor;
+    BitNot;
+    BitShiftLeft;
+    BitShiftRight;
 
     Float;
     String;

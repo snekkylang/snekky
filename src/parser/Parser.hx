@@ -490,6 +490,11 @@ class Parser {
             case TokenType.AsteriskAssign: new OperatorNode(nodePos, NodeType.Multiply, name, value);
             case TokenType.SlashAssign: new OperatorNode(nodePos, NodeType.Divide, name, value);
             case TokenType.PercentAssign: new OperatorNode(nodePos, NodeType.Modulo, name, value);
+            case TokenType.BitAndAssign: new OperatorNode(nodePos, NodeType.BitAnd, name, value);
+            case TokenType.BitOrAssign: new OperatorNode(nodePos, NodeType.BitOr, name, value);
+            case TokenType.BitShiftLeftAssign: new OperatorNode(nodePos, NodeType.BitShiftLeft, name, value);
+            case TokenType.BitShiftRightAssign: new OperatorNode(nodePos, NodeType.BitShiftRight, name, value);
+            case TokenType.BitXorAssign: new OperatorNode(nodePos, NodeType.BitOr, name, value);
             default:
                 error.unexpectedToken(op, "operator assign");
                 null;
@@ -574,7 +579,10 @@ class Parser {
                 }
             case TokenType.Ident:
                 switch (lexer.peekToken().type) {
-                    case TokenType.PlusAssign | TokenType.MinusAssign | TokenType.AsteriskAssign | TokenType.SlashAssign | TokenType.PercentAssign:
+                    case TokenType.PlusAssign | TokenType.MinusAssign | TokenType.AsteriskAssign 
+                        | TokenType.SlashAssign | TokenType.PercentAssign | TokenType.BitAndAssign
+                        | TokenType.BitOrAssign | TokenType.BitShiftLeftAssign | TokenType.BitShiftRightAssign
+                        | TokenType.BitXorAssign:
                         block.addNode(parseVariableAssignOp());
                     case TokenType.Assign: block.addNode(parseVariableAssign());
                     default: block.addNode(parseStatement());

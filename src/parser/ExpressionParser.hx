@@ -35,7 +35,7 @@ class ExpressionParser {
     }
 
     function conjunction():Node {
-        var left = comparison();
+        var left = bitOr();
 
         while (parser.currentToken.type == TokenType.And) {
             parser.nextToken();
@@ -43,6 +43,61 @@ class ExpressionParser {
             final right = comparison();
 
             left = new OperatorNode(nodePos, NodeType.And, left, right);
+        }
+
+        return left;
+    }
+
+    function bitOr():Node {
+        var left = bitXor();
+
+        while (true) {
+            final type = switch(parser.currentToken.type) {
+                case TokenType.BitOr: NodeType.BitOr;
+                default: break;
+            }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new OperatorNode(nodePos, type, left, right);
+        }
+
+        return left;
+    }
+
+    
+    function bitXor():Node {
+        var left = bitAnd();
+
+        while (true) {
+            final type = switch(parser.currentToken.type) {
+                case TokenType.BitXor: NodeType.BitXor;
+                default: break;
+            }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new OperatorNode(nodePos, type, left, right);
+        }
+
+        return left;
+    }
+
+    function bitAnd():Node {
+        var left = comparison();
+
+        while (true) {
+            final type = switch(parser.currentToken.type) {
+                case TokenType.BitAnd: NodeType.BitAnd;
+                default: break;
+            }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new OperatorNode(nodePos, type, left, right);
         }
 
         return left;
@@ -68,7 +123,7 @@ class ExpressionParser {
     }
 
     function range():Node {
-        var start = new ExpressionNode(parser.currentToken.position, numeric());
+        var start = new ExpressionNode(parser.currentToken.position, bitShift());
 
         while (true) {
             final inclusive = switch(parser.currentToken.type) {
@@ -86,6 +141,25 @@ class ExpressionParser {
         return start;
     }
 
+    function bitShift():Node {
+        var left = numeric();
+
+        while (true) {
+            final type = switch(parser.currentToken.type) {
+                case TokenType.BitShiftLeft: NodeType.BitShiftLeft;
+                case TokenType.BitShiftRight: NodeType.BitShiftRight;
+                default: break;
+            }
+
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = term();
+            left = new OperatorNode(nodePos, type, left, right);
+        }
+
+        return left; 
+    }
+
     function numeric():Node {
         var left = term();
 
@@ -96,7 +170,6 @@ class ExpressionParser {
                 case TokenType.ConcatString: NodeType.ConcatString;
                 default: break;
             }
-
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
@@ -141,6 +214,12 @@ class ExpressionParser {
                 final right = access();
 
                 new OperatorNode(parser.currentToken.position, NodeType.Not, null, right);
+            case TokenType.BitNot:
+                parser.nextToken();
+
+                final right = access();
+
+                new OperatorNode(parser.currentToken.position, NodeType.BitNot, null, right);
             default: access();
         }
     }

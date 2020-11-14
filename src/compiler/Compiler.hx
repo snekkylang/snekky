@@ -213,8 +213,9 @@ class Compiler {
                 emit(OpCode.Load, node.position, [right]);
                 emit(OpCode.Equals, node.position, []);
                 overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
-            case NodeType.Add | NodeType.Multiply | NodeType.Equals | NodeType.LessThan | 
-                NodeType.GreaterThan | NodeType.Subtract | NodeType.Divide | NodeType.Modulo | NodeType.ConcatString | NodeType.NotEquals:
+            case NodeType.Add | NodeType.Multiply | NodeType.Equals | NodeType.LessThan | NodeType.GreaterThan 
+                | NodeType.Subtract | NodeType.Divide | NodeType.Modulo | NodeType.ConcatString | NodeType.NotEquals
+                | NodeType.BitAnd | NodeType.BitOr | NodeType.BitShiftLeft | NodeType.BitShiftRight | NodeType.BitXor:
 
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.left);
@@ -230,18 +231,24 @@ class Compiler {
                     case NodeType.Divide: emit(OpCode.Divide, node.position, []);
                     case NodeType.Modulo: emit(OpCode.Modulo, node.position, []);
                     case NodeType.ConcatString: emit(OpCode.ConcatString, node.position, []);
+                    case NodeType.BitAnd: emit(OpCode.BitAnd, node.position, []);
+                    case NodeType.BitOr: emit(OpCode.BitOr, node.position, []);
+                    case NodeType.BitShiftLeft: emit(OpCode.BitShiftLeft, node.position, []);
+                    case NodeType.BitShiftRight: emit(OpCode.BitShiftRight, node.position, []);
+                    case NodeType.BitXor: emit(OpCode.BitXor, node.position, []);
                     case NodeType.NotEquals:
                         emit(OpCode.Equals, node.position, []);
                         emit(OpCode.Not, node.position, []);
                     default:
                 }
-            case NodeType.Negate | NodeType.Not:
+            case NodeType.Negate | NodeType.Not | NodeType.BitNot:
                 final cOperator = cast(node, OperatorNode);
                 compile(cOperator.right);
-                if (cOperator.type == NodeType.Negate) {
-                    emit(OpCode.Negate, node.position, []);
-                } else {
-                    emit(OpCode.Not, node.position, []);
+                switch (cOperator.type) {
+                    case NodeType.Not: emit(OpCode.Not, node.position, []);
+                    case NodeType.BitNot: emit(OpCode.BitNot, node.position, []);
+                    case NodeType.Negate: emit(OpCode.Negate, node.position, []);
+                    default:
                 }
             case NodeType.Variable:
                 final cVariable = cast(node, VariableNode);
