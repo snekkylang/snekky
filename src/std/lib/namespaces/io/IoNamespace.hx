@@ -17,5 +17,9 @@ class IoNamespace extends MemberObject {
             
             return new Bytes(evaluator, haxe.io.Bytes.alloc(size)).getMembers();
         });
+
+        addFunctionMember("BytesOutput", 0, function(p) {
+            return new BytesOutput(evaluator, new haxe.io.BytesOutput()).getMembers();
+        });
     }
 }

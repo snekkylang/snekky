@@ -59,6 +59,13 @@ class ArrayObj extends Object {
             return this.value.pop();
         });
 
+        addFunctionMember("join", 1, function(p) {
+            assertParameterType(p[0], ObjectType.String);
+            final seperator = cast(p[0], StringObj).value;
+
+            return new StringObj(value.join(seperator), evaluator);
+        });
+
         addFunctionMember("map", 1, function(p) {
             assertParameterType(p[0], ObjectType.Closure);
             final callback = cast(p[0], ClosureObj);

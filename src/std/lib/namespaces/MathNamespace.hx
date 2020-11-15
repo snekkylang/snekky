@@ -33,5 +33,9 @@ class MathNamespace extends MemberObject {
 
             return new NumberObj(Math.sqrt(value), evaluator);
         });
+
+        addFunctionMember("random", 0, function(p) {
+            return new NumberObj(Math.random(), evaluator);
+        });
     }
 }

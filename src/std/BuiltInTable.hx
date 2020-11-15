@@ -2,6 +2,7 @@ package std;
 
 import std.lib.namespaces.io.IoNamespace;
 import std.lib.namespaces.json.JsonNamespace;
+import std.lib.namespaces.net.NetNamespace;
 import object.BuiltInFunctionObj;
 import std.lib.MemberObject;
 import std.lib.namespaces.*;
@@ -30,7 +31,8 @@ class BuiltInTable {
             #if target.sys
             new FileNamespace(evaluator), 
             new HttpNamespace(evaluator),
-            new ThreadNamespace(evaluator)
+            new ThreadNamespace(evaluator),
+            new NetNamespace(evaluator)
             #end
         ];
     }
@@ -48,7 +50,8 @@ class BuiltInTable {
             #if target.sys
             FileNamespace.name, 
             HttpNamespace.name,
-            ThreadNamespace.name
+            ThreadNamespace.name,
+            NetNamespace.name
             #end
         ].indexOf(name);
     }
