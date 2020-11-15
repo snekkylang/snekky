@@ -1,0 +1,105 @@
+import "discord/websocket/websocket";
+
+let Client = func(token) {
+
+    let baseUrl = "https://discord.com/api/v8";
+    mut ws = null;
+
+    let export = {};
+    export.onReady = func() {};
+    export.onGuildCreate = func(d) {};
+    export.onMessage = func(d) {};
+
+    let makeAuthorizedRequest = func(url, body, post) {
+        let client = Http.Client(baseUrl >< url);
+        client.addHeader("Authorization", "Bot " >< token);
+        if (body != null) {
+            client.setPostData(body);
+        }
+        if (post) {
+            client.addHeader("Content-Type", "application/json");
+        }
+        client.request(post);
+    };
+
+    let createMessage = func(channelId, msg) {
+        let payload = Json.encode({
+            content: msg,
+            tts: false
+        });
+
+        makeAuthorizedRequest("/channels/" >< channelId >< "/messages", payload, true);
+    };
+    export.createMessage = createMessage;
+
+    let login = func() {
+        Discord.Logger.log("Fetching gateway address...");
+        mut gatewayAddress = "gateway.discord.gg";
+
+        Discord.Logger.log("Connecting to websocket...");
+        ws = WebSocket(gatewayAddress, 443, "/?v=8&encoding=json", [], true);
+        ws.connect();
+        while (!ws.isReady()) {}
+        Discord.Logger.log("Connected to websocket");
+
+        Thread.run(func() {
+            mut lastSequenceNumber = null;
+
+            while true {
+                let raw = ws.read();
+                let msg = Json.decode(raw);
+                lastSequenceNumber = msg.s;
+
+                when msg.op {
+                    0 => when msg.t {
+                        "READY" => {
+                            Discord.Logger.log("Authenticated");
+                            export.user = msg.d.user;
+                            export.onReady();
+                        }
+                        "GUILD_CREATE" => {
+                            export.onGuildCreate(msg.d);
+                        }
+                        "MESSAGE_CREATE" => {
+                            export.onMessage(msg.d);
+                        }
+                        else => Discord.Logger.log("Received unhandled event " >< msg.t);
+                    }
+                    10 => {
+                        let heartbeatInterval = msg.d.heartbeat_interval;
+                        Discord.Logger.log("Heartbeat interval is " >< heartbeatInterval);
+
+                        Thread.run(func() {
+                            while true {
+                                Sys.sleep(heartbeatInterval / 1000);
+                                ws.write(Json.encode({
+                                    op: 1,
+                                    d: lastSequenceNumber
+                                }), true);
+                                Discord.Logger.log("Sent heartbeat ACK");
+                            }
+                        });
+                    }
+                    else => Discord.Logger.log("Received unhandled message " >< msg.op);
+                }
+            }
+        });
+
+        Discord.Logger.log("Authenticating...");
+        ws.write(Json.encode({
+            op: 2,
+            d: {
+                token: token,
+                intents: 513,
+                properties: {
+                    "$os": "linux",
+                    "$browser": "snekky",
+                    "$device": "snekky"
+                }   
+            }
+        }), true);
+    };
+    export.login = login;
+
+    return export;
+};

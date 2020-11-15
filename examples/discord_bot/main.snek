@@ -1,0 +1,66 @@
+import "discord/discord";
+
+let random = func(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+};
+
+let config = Json.decode(File.read("./config.json"));
+let client = Discord.Client(config.token);
+
+client.onReady = func() {
+    Sys.println("Ready!");
+};
+
+client.onMessage = func(msg) {
+    if msg.author.id == client.user.id || msg.content.charAt(0) != "!" {
+        return;
+    }
+
+    let args = msg.content.substring(1, msg.content.length()).split(" ");
+
+    when args[0] {
+        "help" => client.createMessage(msg.channel_id, "Commands: !ping, !rps, !8ball, !help");
+        "ping" => client.createMessage(msg.channel_id, "Pong!");
+        "rps" => {
+            let possibleAnswers = ["rock", "paper", "scissors"];
+
+            if args.length() < 2 || !possibleAnswers.contains(args[1]) {
+                client.createMessage(msg.channel_id, "Error! Wrong Syntax: !rps <rock/paper/scissors>");
+                return;
+            }
+
+            let answer = possibleAnswers[random(0, possibleAnswers.length())];
+            client.createMessage(msg.channel_id, "I choose " >< answer);
+            let input = args[1];
+
+            let resolveWin = func(winning) {
+                let message = when {
+                    answer == winning => "I win!"
+                    answer != input => "You win!"
+                    else => "Draw!"
+                };
+
+                client.createMessage(msg.channel_id, message);
+            };
+
+            when input {
+                "rock" => resolveWin("paper");
+                "paper" => resolveWin("scissors");
+                "scissors" => resolveWin("rock");
+            }
+        }
+        "8ball" => {
+            if args.length() < 2 {
+                client.createMessage(msg.channel_id, "Error! Wrong Syntax: !8ball <question>");
+                return;
+            }
+
+            let possibleAnswers = ["Yes", "No", "Maybe"];
+            let answer = possibleAnswers[random(0, possibleAnswers.length())];
+
+            client.createMessage(msg.channel_id, answer);
+        }
+    }
+};
+
+client.login();

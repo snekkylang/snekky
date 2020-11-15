@@ -66,6 +66,16 @@ class ArrayObj extends Object {
             return new StringObj(value.join(seperator), evaluator);
         });
 
+        addFunctionMember("contains", 1, function(p) {
+            for (v in value) {
+                if (v.equals(p[0])) {
+                    return new BooleanObj(true, evaluator);
+                }
+            }
+
+            return new BooleanObj(false, evaluator);
+        });
+
         addFunctionMember("map", 1, function(p) {
             assertParameterType(p[0], ObjectType.Closure);
             final callback = cast(p[0], ClosureObj);

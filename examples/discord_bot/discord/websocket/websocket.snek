@@ -1,0 +1,169 @@
+let WebSocket = func(host, port, path, protocols, secure) {
+
+    let key = "YXhvbG90bHMgYXJlIGNvb2w=";
+    mut ready = false;
+
+    mut socket = Net.Socket({
+        host: host,
+        port: port,
+        secure: secure
+    });
+
+    let random = func(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
+    };
+
+    let isReady = func() {
+        return ready;
+    };
+
+    // TODO: verify handshake
+    let generateHandshake = func() {
+        let handshake = [
+            "GET " >< path >< " HTTP/1.1",
+            "Host: " >< host,
+            "Upgrade: websocket",
+            "Connection: Upgrade",
+            "Sec-WebSocket-Key: " >< key,
+            "Sec-WebSocket-Protocol: " >< protocols.join(", "),
+            "Sec-WebSocket-Version: 13"
+        ].join("\r\n") >< "\r\n\r\n";
+
+        return handshake;
+    };
+
+    let connect = func() {
+        socket.connect();
+
+        socket.write(generateHandshake(), false);
+        
+        while true {
+            if socket.readLine().length() == 0 {
+                ready = true;
+                return;
+            }
+        }
+    };
+
+    let close = func() {
+        socket.close();
+    };
+
+    let write = func(msg, final) {
+        let out = Io.BytesOutput();
+        out.setBigEndian(true);
+        if final {
+            out.writeByte(128 | 1); // 0x80
+        } else {
+            out.writeByte(0 | 1)
+        }
+
+        let data = msg.toBytes(false);
+
+        when {
+            data.length() < 126 => out.writeByte(data.length() | 128);
+            data.length() < 65535 => {
+                out.writeByte(126 | 128);
+                out.writeUInt16(data.length());  
+            }
+            else => {
+                out.writeByte(127 | 128);
+                out.writeInt32(0);
+                out.writeInt32(data.length());
+            }
+        }
+
+        let mask = Io.Bytes(4);
+        mask.setByte(0, random(0, 256));
+        mask.setByte(1, random(0, 256));
+        mask.setByte(2, random(0, 256));
+        mask.setByte(3, random(0, 256));
+
+        out.writeHex(mask.toHex());
+
+        let payload = Io.Bytes(data.length());
+        for let n in 0...data.length() {
+            payload.setByte(n, data.getByte(n) ^ mask.getByte(n % mask.length()));
+        }
+        out.writeHex(payload.toHex());
+
+        socket.write(out.getBytes().toHex(), true);
+    };
+
+    let read = func() {
+        mut final = false;
+        let data = Io.BytesOutput();
+        data.setBigEndian(true);
+
+        while (!final) {
+            let header = socket.read(2, true).toBytes(true);
+            let opCode = header.getByte(0) & 15; // 0x0f
+            final = (header.getByte(0) & 128) != 0; // 0x80
+            let masked = (header.getByte(1) & 128) != 0; // 0x80
+            mut payloadLength = header.getByte(1) & 127; // 0x7F
+
+            mut payloadLengthExt = 0;
+            if payloadLength >= 126 { // 0x7e
+                payloadLengthExt = 2;
+                if payloadLength == 127 { // 0x7f
+                    payloadLengthExt = 8;
+                }
+
+                let header = socket.read(payloadLengthExt, true).toBytes(true);
+                payloadLength = 0;
+                for let i in 0...payloadLengthExt {
+                    payloadLength += header.getByte(i) << ((payloadLengthExt - i - 1) * 8);
+                }
+            }
+
+            let mask = if masked {
+                socket.read(4, true).toBytes(true);
+            } else {
+                Io.Bytes(4);
+            };
+
+            let payload = Io.BytesOutput();
+            payload.setBigEndian(true);
+            while payloadLength > 0 {
+                let frame = socket.read(payloadLength, true).toBytes(true);
+                payloadLength -= frame.length();
+                payload.writeHex(frame.toHex())
+            }
+
+            when opCode {
+                9 => {
+                    let pong = Io.BytesOutput();
+                    pong.setBigEndian(true);
+                    pong.writeByte(138); // 0x8a
+                    pong.writeByte(128); // 0x80
+                    pong.writeInt32(random(0, 2147483647));
+                    socket.write(pong.getBytes().toHex(), true);
+                }
+                8 => {
+                    socket.close();
+                }
+                else => if opCode < 3 {
+                    if (masked) {
+                        let maskedBytes = payload.getBytes();
+
+                        for let i in 0...payload.length() {
+                            data.writeInt32(maskedBytes.getByte(i) ^ mask.getByte(i % 4));
+                        }
+                    } else {
+                        data.writeHex(payload.getBytes().toHex());
+                    }
+                }
+            }
+        }
+
+        return data.getBytes().toString();
+    };
+
+    return {
+        connect: connect,
+        close: close,
+        write: write,
+        read: read,
+        isReady: isReady
+    };
+};
