@@ -1,0 +1,12 @@
+let Discord = {
+    Client: {
+        import "discord/client/client";
+
+        Client
+    },
+    Logger: {
+        log: func(m) {
+            Sys.println("[Discord] " >< m);
+        }
+    }
+};
