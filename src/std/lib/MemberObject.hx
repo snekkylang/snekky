@@ -25,9 +25,9 @@ class MemberObject {
         members.set(memberName, new ClosureObj(new BuiltInFunctionObj(memberFunction, parametersCount, evaluator), evaluator.currentFrame, evaluator));
     }
 
-    function callFunctionMember(name:String, parameters:Array<Object>) {
+    function callFunctionMember(name:String, parameters:Array<Object>):Object {
         final func = cast(members.get(name), ClosureObj);
-        evaluator.callFunction(func, parameters);
+        return evaluator.callFunction(func, parameters);
     }
 
     function addObjectMember(name:String, object:Object) {

@@ -11,43 +11,97 @@ class Bytes extends MemberObject {
     public function new(evaluator:Evaluator, bytes:haxe.io.Bytes) {
         super(evaluator);
 
-        addFunctionMember("getNumber", 2, function(p) {
+        addFunctionMember("getByte", 1, function(p) {
             assertParameterType(p[0], ObjectType.Number);
             final pos = Std.int(cast(p[0], NumberObj).value);
-            
-            assertParameterType(p[1], ObjectType.String);
-            final type = cast(p[1], StringObj).value;
 
-            return switch (type) {
-                case "byte": new NumberObj(bytes.get(pos), evaluator);
-                case "uint16": new NumberObj(bytes.getUInt16(pos), evaluator);
-                case "int32": new NumberObj(bytes.getInt32(pos), evaluator);
-                case "float32": new NumberObj(bytes.getFloat(pos), evaluator);
-                case "float64": new NumberObj(bytes.getDouble(pos), evaluator);
-                default: 
-                    error('unsupported data type `$type`');
-                    null;
-            }
+            return new NumberObj(bytes.get(pos), evaluator);
         });
 
-        addFunctionMember("setNumber", 3, function(p) {
+        addFunctionMember("getUInt16", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            return new NumberObj(bytes.getUInt16(pos), evaluator);
+        });
+
+        addFunctionMember("getInt32", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            return new NumberObj(bytes.getInt32(pos), evaluator);
+        });
+
+        addFunctionMember("getFloat32", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            return new NumberObj(bytes.getFloat(pos), evaluator);
+        });
+
+        addFunctionMember("getFloat64", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            return new NumberObj(bytes.getDouble(pos), evaluator);
+        });
+
+        addFunctionMember("setByte", 2, function(p) {
             assertParameterType(p[0], ObjectType.Number);
             final pos = Std.int(cast(p[0], NumberObj).value);
 
             assertParameterType(p[1], ObjectType.Number);
             final value = cast(p[1], NumberObj).value;
-            
-            assertParameterType(p[2], ObjectType.String);
-            final type = cast(p[2], StringObj).value;
 
-            switch (type) {
-                case "byte": bytes.set(pos, Std.int(value));
-                case "uint16": bytes.setUInt16(pos, Std.int(value));
-                case "int32": bytes.setInt32(pos, Std.int(value));
-                case "float32": bytes.setFloat(pos, value);
-                case "float64": bytes.setDouble(pos, value);
-                default: error('unsupported data type `$type`');
-            }
+            bytes.set(pos, Std.int(value));
+
+            return new NullObj(evaluator);
+        });
+
+        addFunctionMember("setUInt16", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final value = cast(p[1], NumberObj).value;
+
+            bytes.setUInt16(pos, Std.int(value));
+
+            return new NullObj(evaluator);
+        });
+
+        addFunctionMember("setInt32", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final value = cast(p[1], NumberObj).value;
+
+            bytes.setInt32(pos, Std.int(value));
+
+            return new NullObj(evaluator);
+        });
+
+        addFunctionMember("setFloat32", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final value = cast(p[1], NumberObj).value;
+
+            bytes.setFloat(pos, value);
+
+            return new NullObj(evaluator);
+        });
+
+        addFunctionMember("setFloat64", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final pos = Std.int(cast(p[0], NumberObj).value);
+
+            assertParameterType(p[1], ObjectType.Number);
+            final value = cast(p[1], NumberObj).value;
+
+            bytes.setDouble(pos, value);
 
             return new NullObj(evaluator);
         });
@@ -59,15 +113,19 @@ class Bytes extends MemberObject {
             assertParameterType(p[1], ObjectType.Number);
             final len = Std.int(cast(p[1], NumberObj).value);
 
-            return new StringObj(bytes.getString(pos, len), evaluator);
+            return new StringObj(new UnicodeString(bytes.getString(pos, len)), evaluator);
         });
 
-        addFunctionMember("toString", 0, function(p) {
-            return new StringObj(bytes.toString(), evaluator);
+        addFunctionMember("length", 0, function(p) {
+            return new NumberObj(bytes.length, evaluator);
         });
 
         addFunctionMember("toHex", 0, function(p) {
             return new StringObj(bytes.toHex(), evaluator);
+        });
+
+        addFunctionMember("toString", 0, function(p) {
+            return new StringObj(bytes.toString(), evaluator); 
         });
     }
 }

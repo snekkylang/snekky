@@ -61,7 +61,7 @@ class Evaluator {
         }
     }
 
-    public function callFunction(closure:ClosureObj, parameters:Array<Object>) {
+    public function callFunction(closure:ClosureObj, parameters:Array<Object>):Object {
         parameters.reverse();
 
         for (p in parameters) {
@@ -81,6 +81,10 @@ class Evaluator {
                 instructions.position = cUserFunction.position;
                 eval();
                 instructions.position = oPosition;
+            case ObjectType.BuiltInFunction:
+                final cBuiltInFunction = cast(closure.func, BuiltInFunctionObj);
+
+                builtInTable.callFunction(cBuiltInFunction);
             default:
         }
 
