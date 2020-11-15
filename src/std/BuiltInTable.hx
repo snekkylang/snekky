@@ -1,8 +1,8 @@
 package std;
 
 import std.lib.namespaces.io.IoNamespace;
-import std.lib.namespaces.json.JsonNamespace;
-import std.lib.namespaces.net.NetNamespace;
+import std.lib.namespaces.json.*;
+import std.lib.namespaces.net.*;
 import object.BuiltInFunctionObj;
 import std.lib.MemberObject;
 import std.lib.namespaces.*;
