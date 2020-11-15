@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import object.Object.ObjectType;
+import object.NumberObj;
 import object.StringObj;
 import object.NullObj;
 import evaluator.Evaluator;
@@ -40,6 +42,32 @@ class SysNamespace extends MemberObject {
             #end
 
             return new StringObj(input, evaluator);
+        });
+
+        addFunctionMember("sleep", 1, function(p) {
+            #if target.sys
+            assertParameterType(p[0], ObjectType.Number);
+            final time = cast(p[0], NumberObj).value;
+            
+            Sys.sleep(time);
+            #else
+            throw "unsupported";
+            #end
+
+            return new NullObj(evaluator);
+        });
+
+        addFunctionMember("exit", 1, function(p) {
+            #if target.sys
+            assertParameterType(p[0], ObjectType.Number);
+            final code = Std.int(cast(p[0], NumberObj).value);
+            
+            Sys.exit(code);
+            #else
+            throw "unsupported";
+            #end
+
+            return new NullObj(evaluator);
         });
     }
 }
