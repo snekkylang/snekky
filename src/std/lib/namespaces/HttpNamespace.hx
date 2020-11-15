@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import object.ClosureObj;
+import sys.thread.Lock;
 import object.BooleanObj;
 import object.NumberObj;
 import object.StringObj;
@@ -16,11 +18,17 @@ private class HttpClient extends MemberObject {
         final client = new Http(url);
 
         client.onData = function(data) {
-            callFunctionMember("onData", [new StringObj(data, evaluator)]); 
+            final newEvaluator = new Evaluator(evaluator.fileData);
+        
+            final func = cast(members.get("onData"), ClosureObj);
+            newEvaluator.callFunction(func, [new StringObj(data, evaluator)]);
         };
 
         client.onStatus = function(status) {
-            callFunctionMember("onStatus", [new NumberObj(status, evaluator)]);  
+            final newEvaluator = new Evaluator(evaluator.fileData);
+        
+            final func = cast(members.get("onStatus"), ClosureObj);
+            newEvaluator.callFunction(func, [new NumberObj(status, evaluator)]);
         };
         
         addFunctionMember("onData", 1, function(parameters) {
