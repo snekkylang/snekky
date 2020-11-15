@@ -69,3 +69,22 @@ jobs:
         with:
           name: snekky-macos
           path: cpp/snekky
+  javascript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.3
+      - name: Install dependencies
+        run: |
+          haxelib install console.hx
+          haxelib install equals
+          haxelib install hxcpp
+      - name: Build
+        run: haxe build-js.hxml
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: snekky-js
+          path: js/snekky.js
