@@ -71,7 +71,7 @@ class Repl {
                 Sys.println("|  Goodbye");
                 Sys.exit(0);
             case "clear":
-                Sys.print("\033[2J");
+                Sys.print("\033c");
             case "help":
                 Sys.println("| help - Shows this dialoge.");
                 Sys.println("| exit - Exists the REPL environment.");
