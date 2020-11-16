@@ -74,7 +74,7 @@ class Repl {
                 Sys.print("\033c");
             case "help":
                 Sys.println("| help - Shows this dialoge.");
-                Sys.println("| exit - Exists the REPL environment.");
+                Sys.println("| exit - Exits the REPL environment.");
                 Sys.println("| clear - Clears the screen.");
             default: Sys.println("| Unknown command");
         }
