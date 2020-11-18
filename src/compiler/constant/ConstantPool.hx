@@ -18,12 +18,7 @@ class ConstantPool {
     public function new() { }
 
     public function addConstant(obj:Object):Int {
-        for (i => c in constants) {
-            if (c.equals(obj)) {
-                return i;
-            }
-        }
-        return constants.push(obj) - 1;
+        return constants.push(obj);
     }
 
     public function getSize():Int {
