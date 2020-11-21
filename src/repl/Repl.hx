@@ -1,5 +1,6 @@
 package repl;
 
+import sys.thread.Lock;
 import error.ErrorHelper;
 import sys.thread.Thread;
 import evaluator.Evaluator;
@@ -8,7 +9,6 @@ import parser.Parser;
 import lexer.Lexer;
 
 class Repl {
-
     final compiler = new Compiler(true);
     var evaluator:Evaluator = null;
     var thread:Thread;
@@ -35,7 +35,7 @@ class Repl {
                 Sys.print("snekky> ");
             }
         }
-        
+
         do {
             printIndentation();
 
@@ -67,7 +67,7 @@ class Repl {
         }
 
         switch (line.substr(1)) {
-            case "exit": 
+            case "exit":
                 Sys.println("|  Goodbye");
                 Sys.exit(0);
             case "clear":
@@ -76,53 +76,60 @@ class Repl {
                 Sys.println("| help - Shows this dialoge.");
                 Sys.println("| exit - Exits the REPL environment.");
                 Sys.println("| clear - Clears the screen.");
-            default: Sys.println("| Unknown command");
+            default:
+                Sys.println("| Unknown command");
         }
 
         return true;
     }
 
     function handleInput() {
+        final lock = new Lock();
         thread = Thread.create(() -> {
-            while (true) {
-                final code = read();
-                if (handleCommand(code)) {
-                    continue;
-                }
+            ErrorHelper.exit = function() {
+                lock.release();
+            };
 
-                final lexer = new Lexer("repl", code);
-                final parser = new Parser(lexer, true);
-                parser.generateAst();
-
-                compiler.compile(parser.ast);
-                final byteCode = compiler.getByteCode(false);
-
-                if (evaluator == null) {
-                    evaluator = new Evaluator(byteCode);
-                } else {
-                    evaluator.newWithState(byteCode);
-                }
-
-                evaluator.eval();
-
-                if (!evaluator.stack.isEmpty()) {
-                    Sys.println('==> ${evaluator.stack.pop()}');
-                }
+            final code = read();
+            if (handleCommand(code)) {
+                return;
             }
-        });   
 
-        Sys.sleep(-1);
+            final lexer = new Lexer("repl", code);
+            final parser = new Parser(lexer, true);
+            parser.generateAst();
+
+            compiler.compile(parser.ast);
+            final byteCode = compiler.getByteCode(false);
+
+            if (evaluator == null) {
+                evaluator = new Evaluator(byteCode);
+            } else {
+                evaluator.newWithState(byteCode);
+            }
+
+            evaluator.eval();
+
+            if (!evaluator.stack.isEmpty()) {
+                Sys.println('==> ${evaluator.stack.pop()}');
+            }
+
+            lock.release();
+        });
+
+        lock.wait();
+        handleInput();
     }
 
     public function start() {
+        final lock = new Lock();
+
         Sys.println('| Welcome to Snekky REPL -- Version ${Snekky.Version}');
         Sys.println("| Type /help for more information");
         Sys.println("");
 
-        ErrorHelper.exit = function() {
-            handleInput();
-        };
-
         handleInput();
+
+        lock.wait();
     }
 }
