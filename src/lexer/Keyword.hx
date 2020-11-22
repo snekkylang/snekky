@@ -14,6 +14,7 @@ class Keyword {
         "return" => TokenType.Return, 
         "import" => TokenType.Import,
         "break" => TokenType.Break,
+        "continue" => TokenType.Continue,
         "null" => TokenType.Null,
         "for" => TokenType.For,
         "in" => TokenType.In,

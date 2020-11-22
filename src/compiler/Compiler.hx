@@ -36,8 +36,8 @@ class Compiler {
 
     final debug:Bool;
 
-    // Positions of break instructions
-    var breakPositions:GenericStack<Int> = new GenericStack();
+    final breakPositions:GenericStack<Int> = new GenericStack();
+    final continuePositions:GenericStack<Int> = new GenericStack();
 
     public function new(debug:Bool) {
         this.debug = debug;
@@ -159,6 +159,8 @@ class Compiler {
             case NodeType.Break:
                 breakPositions.add(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);
+            case NodeType.Continue:
+                emit(OpCode.Jump, node.position, [continuePositions.first()]);
             case NodeType.Statement:
                 final cStatement = cast(node, StatementNode);
 
@@ -471,6 +473,7 @@ class Compiler {
                 emit(OpCode.Store, node.position, [iterator]);
 
                 final jumpPos = instructions.length;
+                continuePositions.add(jumpPos);
                 emit(OpCode.Load, node.position, [iterator]);
                 emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
@@ -495,11 +498,13 @@ class Compiler {
                     overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
+                continuePositions.pop();
                 overwriteInstruction(jumpNotPos, [instructions.length]);
             case NodeType.While:
                 final cWhile = cast(node, WhileNode);
 
                 final jumpPos = instructions.length;
+                continuePositions.add(jumpPos);
                 compile(cWhile.condition);
 
                 final jumpNotInstructionPos = instructions.length;
@@ -511,6 +516,7 @@ class Compiler {
                     overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
+                continuePositions.pop();
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 final constantIndex = switch (node.type) {

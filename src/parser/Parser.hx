@@ -327,6 +327,16 @@ class Parser {
         return new BreakNode(nodePos);
     }
 
+    function parseContinue():ContinueNode {
+        final nodePos = currentToken.position;
+        nextToken();
+
+        assertSemicolon();
+        nextToken();
+
+        return new ContinueNode(nodePos);
+    }
+
     public function parseIf():IfNode {
         final nodePos = currentToken.position;
 
@@ -572,6 +582,8 @@ class Parser {
                 block.addNode(parseWhen());
             case TokenType.Break:
                 block.addNode(parseBreak());
+            case TokenType.Continue:
+                block.addNode(parseContinue());
             #if target.sys
             case TokenType.Import:
                 block.addNode(parseImport());

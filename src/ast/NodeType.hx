@@ -46,6 +46,7 @@ enum NodeType {
 
     Return;
     Break;
+    Continue;
     If;
     While;
     For;
