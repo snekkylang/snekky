@@ -37,7 +37,8 @@ class Compiler {
     final debug:Bool;
 
     final breakPositions:GenericStack<Int> = new GenericStack();
-    final continuePositions:GenericStack<Int> = new GenericStack();
+    final loopPositions:GenericStack<Int> = new GenericStack();
+    var functionDepth = 0;
 
     public function new(debug:Bool) {
         this.debug = debug;
@@ -157,10 +158,16 @@ class Compiler {
 
                 emit(OpCode.StoreIndex, node.position, []);
             case NodeType.Break:
+                if (loopPositions.isEmpty()) {
+                    error.illegalBreak(node.position);
+                }
                 breakPositions.add(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);
             case NodeType.Continue:
-                emit(OpCode.Jump, node.position, [continuePositions.first()]);
+                if (loopPositions.isEmpty()) {
+                    error.illegalContinue(node.position);
+                }
+                emit(OpCode.Jump, node.position, [loopPositions.first()]);
             case NodeType.Statement:
                 final cStatement = cast(node, StatementNode);
 
@@ -372,6 +379,7 @@ class Compiler {
                 final jumpInstructionPos = instructions.length;
                 emit(OpCode.Jump, node.position, [0]);
 
+                functionDepth++;
                 constantPool.addConstant(new UserFunctionObj(instructions.length, cFunction.parameters.length, null));
 
                 symbolTable.newScope();
@@ -388,6 +396,7 @@ class Compiler {
                 overwriteInstruction(jumpInstructionPos, [instructions.length]);
 
                 symbolTable.setParent();
+                functionDepth--;
             case NodeType.FunctionCall:
                 final cCall = cast(node, CallNode);
                 
@@ -401,6 +410,10 @@ class Compiler {
                 emit(OpCode.Call, node.position, [cCall.parameters.length]);
             case NodeType.Return:
                 final cReturn = cast(node, ReturnNode);
+
+                if (functionDepth <= 0) {
+                    error.illegalReturn(node.position);
+                }
 
                 if (cReturn.value != null) {
                     compile(cReturn.value);
@@ -473,7 +486,7 @@ class Compiler {
                 emit(OpCode.Store, node.position, [iterator]);
 
                 final jumpPos = instructions.length;
-                continuePositions.add(jumpPos);
+                loopPositions.add(jumpPos);
                 emit(OpCode.Load, node.position, [iterator]);
                 emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
@@ -498,13 +511,13 @@ class Compiler {
                     overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
-                continuePositions.pop();
+                loopPositions.pop();
                 overwriteInstruction(jumpNotPos, [instructions.length]);
             case NodeType.While:
                 final cWhile = cast(node, WhileNode);
 
                 final jumpPos = instructions.length;
-                continuePositions.add(jumpPos);
+                loopPositions.add(jumpPos);
                 compile(cWhile.condition);
 
                 final jumpNotInstructionPos = instructions.length;
@@ -516,7 +529,7 @@ class Compiler {
                     overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
-                continuePositions.pop();
+                loopPositions.pop();
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 final constantIndex = switch (node.type) {
