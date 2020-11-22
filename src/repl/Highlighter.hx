@@ -17,7 +17,9 @@ private enum abstract TokenColor(String) {
 
 class Highlighter {
 
-    public static function highlight(code:String):String {
+    public static function highlight(code:String) {
+        Console.logPrefix = "";
+
         final lexer = new Lexer("repl", code);
 
         final highlightedCode = new StringBuf();
@@ -56,6 +58,7 @@ class Highlighter {
             highlightedCode.add(highlighted);
         }
 
-        return highlightedCode.toString();
+        Console.log(highlightedCode.toString());
+        Console.logPrefix = "|  ";
     }
 }
