@@ -126,6 +126,14 @@ class CompileError {
         ErrorHelper.exit();
     }
 
+    public function importFailed(token:Token, fileName:String) {
+        final position = ErrorHelper.resolvePosition(code, token.position);
+        printHead(position.line, position.linePos, 'failed to import file `$filename`');
+        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+
+        ErrorHelper.exit();
+    }
+
     public function symbolUndefined(cPosition:Int, symbol:String) {
         final position = ErrorHelper.resolvePosition(code, cPosition);
         printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');

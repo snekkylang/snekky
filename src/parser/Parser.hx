@@ -519,18 +519,24 @@ class Parser {
         nextToken();
 
         assertToken(TokenType.String, "string containing path to source file");
-        final filename = '${currentToken.literal}.snek';
+        final fileName = '${currentToken.literal}.snek';
         nextToken();
         assertSemicolon();
         nextToken();
         #if target.sys
-        final code = sys.io.File.getContent(filename);
+        final code = try {
+            sys.io.File.getContent(fileName);
+        } catch (e) {
+            error.importFailed(currentToken, fileName);
+
+            return null;
+        }
         #else
         final code = "";
         throw "Imports not supported on this target";
         #end
 
-        final lexer = new Lexer(filename, code);
+        final lexer = new Lexer(fileName, code);
 
         final parser = new Parser(lexer, isRepl);
         parser.generateAst();
