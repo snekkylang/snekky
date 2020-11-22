@@ -123,12 +123,12 @@ class Compiler {
                 compile(cRange.end);
                 compile(cRange.start);
                 emit(OpCode.LoadBuiltIn, node.position, [BuiltInTable.resolveName("Range")]);
-                if (cRange.inclusive) {
+                final constantIndex = if (cRange.inclusive) {
                     constantPool.addConstant(new StringObj("Inclusive", null));
                 } else {
                     constantPool.addConstant(new StringObj("Exclusive", null));
                 }
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantIndex]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [2]);
             case NodeType.Regex:
@@ -137,8 +137,7 @@ class Compiler {
                 compile(cRegex.flags);
                 compile(cRegex.pattern);
                 emit(OpCode.LoadBuiltIn, node.position, [BuiltInTable.resolveName("Regex")]);
-                constantPool.addConstant(new StringObj("compile", null));
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("compile", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [2]);
             case NodeType.Index:
@@ -305,8 +304,7 @@ class Compiler {
                             compile(cVariable.value);
                         }
 
-                        constantPool.addConstant(new StringObj(varName, null));
-                        emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                        emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj(varName, null))]);
                         emit(OpCode.DestructureHash, node.position, []);                        
                         emit(OpCode.Store, cVariable.position, [symbol.index]);
                         
@@ -465,8 +463,7 @@ class Compiler {
                 final cFor = cast(node, ForNode);
 
                 compile(cFor.iterator);
-                constantPool.addConstant(new StringObj("Iterator", null));
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("Iterator", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [0]);
                 final iterator = symbolTable.defineInternal();
@@ -474,15 +471,13 @@ class Compiler {
 
                 final jumpPos = instructions.length;
                 emit(OpCode.Load, node.position, [iterator]);
-                constantPool.addConstant(new StringObj("hasNext", null));
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [0]);
                 final jumpNotPos = instructions.length;
                 emit(OpCode.JumpNot, node.position, [0]);
                 emit(OpCode.Load, node.position, [iterator]);
-                constantPool.addConstant(new StringObj("next", null));
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("next", null))]);
                 emit(OpCode.LoadIndex, node.position, []);
                 emit(OpCode.Call, node.position, [0]);
                 symbolTable.newScope();
@@ -517,7 +512,7 @@ class Compiler {
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
-                switch (node.type) {
+                final constantIndex = switch (node.type) {
                     case NodeType.Float:
                         constantPool.addConstant(new NumberObj(cast(node, FloatNode).value, null));
                     case NodeType.Boolean:
@@ -526,10 +521,10 @@ class Compiler {
                         constantPool.addConstant(new StringObj(cast(node, StringNode).value, null));
                     case NodeType.Null:
                         constantPool.addConstant(new NullObj(null));
-                    default:
+                    default: 0;
                 }
 
-                emit(OpCode.Constant, node.position, [constantPool.getSize() - 1]);
+                emit(OpCode.Constant, node.position, [constantIndex]);
             default:
         }
     }
