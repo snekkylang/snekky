@@ -9,11 +9,13 @@ import parser.Parser;
 import lexer.Lexer;
 
 class Repl {
-    final compiler = new Compiler(true);
+    var compiler = new Compiler(true);
     var evaluator:Evaluator = null;
     var thread:Thread;
 
-    public function new() {}
+    public function new() {
+        Console.logPrefix = "|  ";
+    }
 
     function read():String {
         final code = new StringBuf();
@@ -51,7 +53,7 @@ class Repl {
             Sys.print("\033[1A");
             Sys.print("\033[2K");
             printIndentation();
-            Console.log(Highlighter.highlight(line));
+            Highlighter.highlight(line);
 
             openBraces += line.split("").filter(c -> c == "{").length;
 
@@ -68,16 +70,21 @@ class Repl {
 
         switch (line.substr(1)) {
             case "exit":
-                Sys.println("|  Goodbye");
+                Console.log("Goodbye");
                 Sys.exit(0);
             case "clear":
                 Sys.print("\033c");
+            case "reset":
+                compiler = new Compiler(true);
+                evaluator = null;
+                Console.log("Environment reset");
             case "help":
-                Sys.println("| help - Shows this dialoge.");
-                Sys.println("| exit - Exits the REPL environment.");
-                Sys.println("| clear - Clears the screen.");
+                Console.log("help - Shows this dialoge.");
+                Console.log("exit - Exits the REPL environment.");
+                Console.log("clear - Clears the screen.");
+                Console.log("reset - Resets the environment.");
             default:
-                Sys.println("| Unknown command");
+                Console.log("Unknown command");
         }
 
         return true;
@@ -94,6 +101,7 @@ class Repl {
             try {
                 final code = read();
                 if (handleCommand(code)) {
+                    lock.release();
                     return;
                 }
 
@@ -127,8 +135,8 @@ class Repl {
     public function start() {
         final lock = new Lock();
 
-        Sys.println('| Welcome to Snekky REPL -- Version ${Snekky.Version}');
-        Sys.println("| Type /help for more information");
+        Console.log('Welcome to Snekky REPL -- Version ${Snekky.Version}');
+        Console.log("Type /help for more information");
         Sys.println("");
 
         handleInput();
