@@ -69,6 +69,7 @@ enum TokenType {
     Return;
     Import;
     Break;
+    Continue;
     Null;
     For;
     In;
