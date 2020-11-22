@@ -38,7 +38,7 @@ class Highlighter {
             final highlighted = switch (token.type) {
                 case TokenType.Let | TokenType.Mut | TokenType.In | TokenType.True | TokenType.False | TokenType.Function | TokenType.Null: 
                     highlightToken(token, TokenColor.Keyword1);
-                case TokenType.If | TokenType.Else | TokenType.While | TokenType.Break | TokenType.Return | TokenType.For | TokenType.When | TokenType.Import:
+                case TokenType.If | TokenType.Else | TokenType.While | TokenType.Break | TokenType.Continue | TokenType.Return | TokenType.For | TokenType.When | TokenType.Import:
                     highlightToken(token, TokenColor.Keyword2);
                 case TokenType.Ident:
                     if (~/^[A-Z][a-z]+(?:[A-Z][a-z]+)*$/.match(token.literal)) {
