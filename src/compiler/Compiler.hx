@@ -1,5 +1,6 @@
 package compiler;
 
+import haxe.ds.GenericStack;
 import object.BooleanObj;
 import compiler.symbol.Symbol;
 import object.NullObj;
@@ -36,7 +37,7 @@ class Compiler {
     final debug:Bool;
 
     // Positions of break instructions
-    var breakPositions:Array<Int> = [];
+    var breakPositions:GenericStack<Int> = new GenericStack();
 
     public function new(debug:Bool) {
         this.debug = debug;
@@ -156,7 +157,7 @@ class Compiler {
 
                 emit(OpCode.StoreIndex, node.position, []);
             case NodeType.Break:
-                breakPositions.push(instructions.length);
+                breakPositions.add(instructions.length);
                 emit(OpCode.Jump, node.position, [0]);
             case NodeType.Statement:
                 final cStatement = cast(node, StatementNode);
@@ -490,8 +491,8 @@ class Compiler {
                 symbolTable.setParent();
                 emit(OpCode.Jump, node.position, [jumpPos]);
 
-                for (pos in breakPositions) {
-                    overwriteInstruction(pos, [instructions.length]);
+                while (!breakPositions.isEmpty()) {
+                    overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
                 overwriteInstruction(jumpNotPos, [instructions.length]);
@@ -506,8 +507,8 @@ class Compiler {
                 compile(cWhile.block);
                 emit(OpCode.Jump, node.position, [jumpPos]);
 
-                for (pos in breakPositions) {
-                    overwriteInstruction(pos, [instructions.length]);
+                while (!breakPositions.isEmpty()) {
+                    overwriteInstruction(breakPositions.pop(), [instructions.length]);   
                 }
 
                 overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
