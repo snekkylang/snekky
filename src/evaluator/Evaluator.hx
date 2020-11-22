@@ -336,14 +336,10 @@ class Evaluator {
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:
-                try {
-                    instructions.position = frames.pop().returnAddress;
-                    currentFrame = frames.first();
-                    if (stack.isEmpty()) {
-                        stack.add(new NullObj(this));
-                    }
-                } catch (e) {
-                    error.error("illegal return statement");
+                instructions.position = frames.pop().returnAddress;
+                currentFrame = frames.first();
+                if (stack.isEmpty()) {
+                    stack.add(new NullObj(this));
                 }
             case OpCode.Negate:
                 final negValue = stack.pop();

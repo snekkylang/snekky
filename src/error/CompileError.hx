@@ -134,6 +134,30 @@ class CompileError {
         ErrorHelper.exit();
     }
 
+    public function illegalContinue(cPosition:Int) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
+        printHead(position.line, position.linePos, 'illegal continue statement');
+        printCode(position.line, position.linePos, -1, "may only be used inside loops");
+
+        ErrorHelper.exit();
+    }
+    
+    public function illegalBreak(cPosition:Int) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
+        printHead(position.line, position.linePos, 'illegal break statement');
+        printCode(position.line, position.linePos, -1, "may only be used inside loops");
+
+        ErrorHelper.exit();
+    }
+
+    public function illegalReturn(cPosition:Int) {
+        final position = ErrorHelper.resolvePosition(code, cPosition);
+        printHead(position.line, position.linePos, 'illegal return statement');
+        printCode(position.line, position.linePos, -1, "may only be used inside functions");
+
+        ErrorHelper.exit();
+    }
+
     public function symbolUndefined(cPosition:Int, symbol:String) {
         final position = ErrorHelper.resolvePosition(code, cPosition);
         printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
