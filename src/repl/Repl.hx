@@ -88,31 +88,34 @@ class Repl {
         thread = Thread.create(() -> {
             ErrorHelper.exit = function() {
                 lock.release();
+                throw "execution failed";
             };
 
-            final code = read();
-            if (handleCommand(code)) {
-                return;
-            }
+            try {
+                final code = read();
+                if (handleCommand(code)) {
+                    return;
+                }
 
-            final lexer = new Lexer("repl", code);
-            final parser = new Parser(lexer, true);
-            parser.generateAst();
+                final lexer = new Lexer("repl", code);
+                final parser = new Parser(lexer, true);
+                parser.generateAst();
 
-            compiler.compile(parser.ast);
-            final byteCode = compiler.getByteCode(false);
+                compiler.compile(parser.ast);
+                final byteCode = compiler.getByteCode(false);
 
-            if (evaluator == null) {
-                evaluator = new Evaluator(byteCode);
-            } else {
-                evaluator.newWithState(byteCode);
-            }
+                if (evaluator == null) {
+                    evaluator = new Evaluator(byteCode);
+                } else {
+                    evaluator.newWithState(byteCode);
+                }
 
-            evaluator.eval();
+                evaluator.eval();
 
-            if (!evaluator.stack.isEmpty()) {
-                Sys.println('==> ${evaluator.stack.pop()}');
-            }
+                if (!evaluator.stack.isEmpty()) {
+                    Sys.println('==> ${evaluator.stack.pop()}');
+                }
+            } catch (e) {}
 
             lock.release();
         });
@@ -129,7 +132,6 @@ class Repl {
         Sys.println("");
 
         handleInput();
-
         lock.wait();
     }
 }
