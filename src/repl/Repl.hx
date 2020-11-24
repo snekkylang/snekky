@@ -58,7 +58,7 @@ class Repl {
             openBraces += line.split("").filter(c -> c == "{").length;
 
             code.add(line);
-        } while (openBraces != 0);
+        } while (openBraces > 0);
 
         return code.toString();
     }
