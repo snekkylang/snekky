@@ -23,7 +23,7 @@ class Repl {
         var indented = false;
 
         inline function printIndentation() {
-            if (openBraces != 0) {
+            if (openBraces > 0) {
                 indented = true;
                 Sys.print("    ... ");
 
