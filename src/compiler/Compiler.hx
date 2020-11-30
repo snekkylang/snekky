@@ -286,13 +286,14 @@ class Compiler {
                 } else if (cVariable.name.type == NodeType.DestructureArray) {
                     final cVariableName = cast(cVariable.name, DestructureArrayNode);
 
+                    if (cVariable.value != null) {
+                        compile(cVariable.value);
+                    }
+
                     for (i => varName in cVariableName.names) {
                         final variableStart = instructions.length;
 
                         final symbol = declareVariable(varName, cVariable.mutable);
-                        if (cVariable.value != null) {
-                            compile(cVariable.value);
-                        }
 
                         emit(OpCode.DestructureArray, node.position, [i]);                        
                         emit(OpCode.Store, cVariable.position, [symbol.index]);  
@@ -306,13 +307,14 @@ class Compiler {
                 } else {
                     final cVariableName = cast(cVariable.name, DestructureHashNode);
 
+                    if (cVariable.value != null) {
+                        compile(cVariable.value);
+                    }
+
                     for (varName in cVariableName.names) {
                         final variableStart = instructions.length;
 
                         final symbol = declareVariable(varName, cVariable.mutable);
-                        if (cVariable.value != null) {
-                            compile(cVariable.value);
-                        }
 
                         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj(varName, null))]);
                         emit(OpCode.DestructureHash, node.position, []);                        
