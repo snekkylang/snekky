@@ -340,10 +340,11 @@ class Compiler {
                 
                 compile(cVariableAssign.value);
 
+                emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
+
                 if (debug) {
                     variableTable.define(variableStart, instructions.length, cVariableAssign.name.value);
                 }
-                emit(OpCode.Store, cVariableAssign.position, [symbol.index]);
             case NodeType.VariableAssignOp:
                 final cVariableAssignOp = cast(node, VariableAssignOpNode);
 
@@ -357,10 +358,11 @@ class Compiler {
                 
                 compile(cVariableAssignOp.value);
 
+                emit(OpCode.Store, cVariableAssignOp.position, [symbol.index]);
+
                 if (debug) {
                     variableTable.define(variableStart, instructions.length, cVariableAssignOp.name.value);
                 }
-                emit(OpCode.Store, cVariableAssignOp.position, [symbol.index]);
             case NodeType.Ident:
                 final cIdent = cast(node, IdentNode);
                 final symbol = symbolTable.resolve(cIdent.value);
