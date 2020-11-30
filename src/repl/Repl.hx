@@ -79,7 +79,7 @@ class Repl {
                 evaluator = null;
                 Console.log("Environment reset");
             case "help":
-                Console.log("help - Shows this dialoge.");
+                Console.log("help - Shows this dialogue.");
                 Console.log("exit - Exits the REPL environment.");
                 Console.log("clear - Clears the screen.");
                 Console.log("reset - Resets the environment.");
