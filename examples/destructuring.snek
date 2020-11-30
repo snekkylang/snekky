@@ -1,0 +1,16 @@
+// Array destructuring
+let [var1, var2, add] = [1, 2, func(x, y) {
+    return x + y;
+}];
+
+Sys.println(add(var1, var2));
+
+// Hash destructuring
+let {valid, data} = {
+    valid: true,
+    data: "This is a test"
+};
+
+if valid {
+    Sys.println(data);
+}
