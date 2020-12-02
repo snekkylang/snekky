@@ -1,6 +1,5 @@
 package object;
 
-import haxe.io.Encoding;
 import std.lib.namespaces.io.Bytes;
 import evaluator.Evaluator;
 import object.Object.ObjectType;
@@ -97,11 +96,12 @@ class StringObj extends Object {
             return new StringObj(StringTools.replace(value, sub, by), evaluator);
         });
 
-        addFunctionMember("toBytes", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Boolean);
-            final hex = cast(p[0], BooleanObj).value;
+        addFunctionMember("toBytes", 0, function(p) {
+            return new Bytes(evaluator, haxe.io.Bytes.ofHex(value)).getMembers();
+        });
 
-            return new Bytes(evaluator, hex ? haxe.io.Bytes.ofHex(value) : haxe.io.Bytes.ofString(value)).getMembers();
+        addFunctionMember("toHex", 0, function(p) {
+            return new StringObj(haxe.io.Bytes.ofString(value).toHex(), evaluator);
         });
     }
 
