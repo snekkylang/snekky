@@ -35,7 +35,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
     let connect = func() {
         socket.connect();
 
-        socket.write(generateHandshake(), false);
+        socket.write(generateHandshake());
         
         while true {
             if socket.readLine().length() == 0 {
@@ -58,7 +58,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
             out.writeByte(0 | 1)
         }
 
-        let data = msg.toBytes(false);
+        let data = msg.toHex().toBytes();
 
         when {
             data.length() < 126 => out.writeByte(data.length() | 128);
@@ -87,7 +87,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
         }
         out.writeHex(payload.toHex());
 
-        socket.write(out.getBytes().toHex(), true);
+        socket.writeHex(out.getBytes().toHex());
     };
 
     let read = func() {
@@ -96,7 +96,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
         data.setBigEndian(true);
 
         while (!final) {
-            let header = socket.read(2, true).toBytes(true);
+            let header = socket.readHex(2).toBytes();
             let opCode = header.getByte(0) & 15; // 0x0f
             final = (header.getByte(0) & 128) != 0; // 0x80
             let masked = (header.getByte(1) & 128) != 0; // 0x80
@@ -109,7 +109,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
                     payloadLengthExt = 8;
                 }
 
-                let header = socket.read(payloadLengthExt, true).toBytes(true);
+                let header = socket.readHex(payloadLengthExt).toBytes();
                 payloadLength = 0;
                 for let i in 0...payloadLengthExt {
                     payloadLength += header.getByte(i) << ((payloadLengthExt - i - 1) * 8);
@@ -117,7 +117,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
             }
 
             let mask = if masked {
-                socket.read(4, true).toBytes(true);
+                socket.readHex(4).toBytes();
             } else {
                 Io.Bytes(4);
             };
@@ -125,7 +125,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
             let payload = Io.BytesOutput();
             payload.setBigEndian(true);
             while payloadLength > 0 {
-                let frame = socket.read(payloadLength, true).toBytes(true);
+                let frame = socket.readHex(payloadLength).toBytes();
                 payloadLength -= frame.length();
                 payload.writeHex(frame.toHex())
             }
@@ -137,7 +137,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
                     pong.writeByte(138); // 0x8a
                     pong.writeByte(128); // 0x80
                     pong.writeInt32(random(0, 2147483647));
-                    socket.write(pong.getBytes().toHex(), true);
+                    socket.writeHex(pong.getBytes().toHex());
                 }
                 8 => {
                     socket.close();
