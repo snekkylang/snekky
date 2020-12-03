@@ -106,6 +106,17 @@ class ArrayObj extends Object {
 
             return new ArrayObj(newArray, evaluator);
         });
+
+        addFunctionMember("forEach", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Closure);
+            final callback = cast(p[0], ClosureObj);
+            
+            for (v in value) {
+                evaluator.callFunction(callback, [v]);
+            }
+
+            return new ArrayObj(value, evaluator);
+        });
     }
 
     override function toString():String {
