@@ -290,20 +290,23 @@ class Compiler {
                         compile(cVariable.value);
                     }
 
+                    final target = symbolTable.defineInternal();
+                    emit(OpCode.Store, node.position, [target]);
+
                     for (i => varName in cVariableName.names) {
                         final variableStart = instructions.length;
 
                         final symbol = declareVariable(varName, cVariable.mutable);
-
-                        emit(OpCode.DestructureArray, node.position, [i]);                        
+                        
+                        emit(OpCode.Load, node.position, [target]);  
+                        emit(OpCode.Constant, node.position, [constantPool.addConstant(new NumberObj(i, null))]);
+                        emit(OpCode.LoadIndex, node.position, []);   
                         emit(OpCode.Store, cVariable.position, [symbol.index]);  
 
                         if (debug) {
                             variableTable.define(variableStart, instructions.length, varName);
                         }
                     }
-
-                    emit(OpCode.Pop, node.position, []);
                 } else {
                     final cVariableName = cast(cVariable.name, DestructureHashNode);
 
@@ -311,21 +314,23 @@ class Compiler {
                         compile(cVariable.value);
                     }
 
+                    final target = symbolTable.defineInternal();
+                    emit(OpCode.Store, node.position, [target]);
+
                     for (varName in cVariableName.names) {
                         final variableStart = instructions.length;
 
                         final symbol = declareVariable(varName, cVariable.mutable);
 
+                        emit(OpCode.Load, node.position, [target]);  
                         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj(varName, null))]);
-                        emit(OpCode.DestructureHash, node.position, []);                        
+                        emit(OpCode.LoadIndex, node.position, []);                 
                         emit(OpCode.Store, cVariable.position, [symbol.index]);
                         
                         if (debug) {
                             variableTable.define(variableStart, instructions.length, varName);
                         }
-                    }
-
-                    emit(OpCode.Pop, node.position, []);  
+                    } 
                 }
             case NodeType.VariableAssign:
                 final cVariableAssign = cast(node, VariableAssignNode);

@@ -138,31 +138,6 @@ class Evaluator {
                 }
 
                 stack.add(new HashObj(hashValues, this));
-            case OpCode.DestructureArray:
-                final target = stack.first();
-                final destructureIndex = instructions.readInt32();
-
-                if (target.type == ObjectType.Array) {
-                    final cTarget = cast(target, ArrayObj);
-
-                    final value = cTarget.value[destructureIndex]; 
-                    stack.add(value == null ? new NullObj(this) : value); 
-                } else {
-                    error.error("cannot destructure object");
-                }
-            case OpCode.DestructureHash:
-                final index = stack.pop();
-                final target = stack.first();
-
-                if (target.type == ObjectType.Hash) {
-                    final cTarget = cast(target, HashObj);
-                    final cIndex = cast(index, StringObj);
-
-                    final value = cTarget.value.get(cIndex.value); 
-                    stack.add(value == null ? new NullObj(this) : value); 
-                } else {
-                    error.error("cannot destructure object");
-                }  
             case OpCode.LoadIndex:
                 final index = stack.pop();
                 final target = stack.pop();
