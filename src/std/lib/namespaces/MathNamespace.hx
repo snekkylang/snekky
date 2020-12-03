@@ -37,5 +37,15 @@ class MathNamespace extends MemberObject {
         addFunctionMember("random", 0, function(p) {
             return new NumberObj(Math.random(), evaluator);
         });
+
+        addFunctionMember("pow", 2, function(p) {
+            assertParameterType(p[0], ObjectType.Number);
+            final value = cast(p[0], NumberObj).value;
+
+            assertParameterType(p[1], ObjectType.Number);
+            final exponent = cast(p[1], NumberObj).value;
+
+            return new NumberObj(Math.pow(value, exponent), evaluator);
+        });
     }
 }
