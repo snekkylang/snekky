@@ -79,12 +79,13 @@ class ArrayObj extends Object {
         addFunctionMember("map", 1, function(p) {
             assertParameterType(p[0], ObjectType.Closure);
             final callback = cast(p[0], ClosureObj);
+            final newArray:Array<Object> = [];
 
-            for (k => v in this.value) {
-                this.value[k] = evaluator.callFunction(callback, [v]);
+            for (k => v in value) {
+                newArray[k] = evaluator.callFunction(callback, [v]);
             }
 
-            return new NullObj(evaluator);
+            return new ArrayObj(newArray, evaluator);
         });
     }
 
