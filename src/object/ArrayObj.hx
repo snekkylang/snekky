@@ -81,8 +81,27 @@ class ArrayObj extends Object {
             final callback = cast(p[0], ClosureObj);
             final newArray:Array<Object> = [];
 
-            for (k => v in value) {
-                newArray[k] = evaluator.callFunction(callback, [v]);
+            for (v in value) {
+                newArray.push(evaluator.callFunction(callback, [v]));
+            }
+
+            return new ArrayObj(newArray, evaluator);
+        });
+
+        addFunctionMember("filter", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Closure);
+            final callback = cast(p[0], ClosureObj);
+            final newArray:Array<Object> = [];
+            
+            for (v in value) {
+                final cbResult = evaluator.callFunction(callback, [v]);
+                if (cbResult.type != ObjectType.Boolean) {
+                    error("expected callback to return boolean");
+                }
+                final include = cast(cbResult, BooleanObj).value;
+                if (include) {
+                    newArray.push(v);
+                }
             }
 
             return new ArrayObj(newArray, evaluator);
