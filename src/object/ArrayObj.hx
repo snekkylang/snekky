@@ -117,6 +117,23 @@ class ArrayObj extends Object {
 
             return new ArrayObj(value, evaluator);
         });
+
+        addFunctionMember("sort", 1, function(p) {
+            assertParameterType(p[0], ObjectType.Closure);
+            final callback = cast(p[0], ClosureObj);
+
+            value.sort(function(v1, v2) {
+                final cbResult = evaluator.callFunction(callback, [v1, v2]);
+                if (cbResult.type != ObjectType.Number) {
+                    error("expected callback to return number");
+                }
+                final pos = Std.int(cast(cbResult, NumberObj).value);
+
+                return pos;
+            });
+
+            return new NullObj(evaluator);
+        });
     }
 
     override function toString():String {
