@@ -13,7 +13,7 @@ class SysNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("println", 1, function(p) {
+        addFunctionMember("println", [null], function(p) {
             #if target.sys
             Sys.println(p[0].toString());
             #else
@@ -23,7 +23,7 @@ class SysNamespace extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("print", 1, function(p) {
+        addFunctionMember("print", [null], function(p) {
             #if target.sys
             Sys.print(p[0].toString());
             #else
@@ -33,7 +33,7 @@ class SysNamespace extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("readLine", 0, function(p) {
+        addFunctionMember("readLine", [], function(p) {
             #if target.sys
             final input = Sys.stdin().readLine();
             #else
@@ -44,9 +44,8 @@ class SysNamespace extends MemberObject {
             return new StringObj(input, evaluator);
         });
 
-        addFunctionMember("sleep", 1, function(p) {
+        addFunctionMember("sleep", [ObjectType.Number], function(p) {
             #if target.sys
-            assertParameterType(p[0], ObjectType.Number);
             final time = cast(p[0], NumberObj).value;
             
             Sys.sleep(time);
@@ -57,9 +56,8 @@ class SysNamespace extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("exit", 1, function(p) {
+        addFunctionMember("exit", [ObjectType.Number], function(p) {
             #if target.sys
-            assertParameterType(p[0], ObjectType.Number);
             final code = Std.int(cast(p[0], NumberObj).value);
             
             Sys.exit(code);

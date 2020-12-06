@@ -18,7 +18,7 @@ class Channel extends MemberObject {
         var message:Object = null;
         var lock:Lock = null;
 
-        addFunctionMember("send", 1, function(p) {
+        addFunctionMember("send", [null], function(p) {
             message = p[0];
 
             if (lock != null) {
@@ -28,8 +28,7 @@ class Channel extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("receive", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Boolean);
+        addFunctionMember("receive", [ObjectType.Boolean], function(p) {
             final blocking = cast(p[0], BooleanObj).value;
             if (blocking && message == null) {
                 lock = new Lock();
@@ -48,8 +47,7 @@ class ThreadNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("run", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Closure);
+        addFunctionMember("run", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             final lock = new Lock();
 

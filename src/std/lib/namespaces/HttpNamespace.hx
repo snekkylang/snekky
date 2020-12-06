@@ -1,7 +1,6 @@
 package std.lib.namespaces;
 
 import object.ClosureObj;
-import sys.thread.Lock;
 import object.BooleanObj;
 import object.NumberObj;
 import object.StringObj;
@@ -31,16 +30,15 @@ private class HttpClient extends MemberObject {
             newEvaluator.callFunction(func, [new NumberObj(status, evaluator)]);
         };
         
-        addFunctionMember("onData", 1, function(parameters) {
+        addFunctionMember("onData", [ObjectType.String], function(parameters) {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("onStatus", 1, function(parameters) {
+        addFunctionMember("onStatus", [ObjectType.Number], function(parameters) {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("request", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Boolean);
+        addFunctionMember("request", [ObjectType.Boolean], function(p) {
             final post = cast(p[0], BooleanObj).value;
             
             client.request(post);
@@ -48,9 +46,7 @@ private class HttpClient extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("addHeader", 2, function(p) {
-            assertParameterType(p[0], ObjectType.String);
-            assertParameterType(p[1], ObjectType.String);
+        addFunctionMember("addHeader", [ObjectType.String, ObjectType.String], function(p) {
             final header = cast(p[0], StringObj).value;
             final value = cast(p[1], StringObj).value;
 
@@ -59,9 +55,7 @@ private class HttpClient extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("addParameter", 2, function(p) {
-            assertParameterType(p[0], ObjectType.String);
-            assertParameterType(p[1], ObjectType.String);
+        addFunctionMember("addParameter", [ObjectType.String, ObjectType.String], function(p) {
             final name = cast(p[0], StringObj).value;
             final value = cast(p[0], StringObj).value;
 
@@ -70,8 +64,7 @@ private class HttpClient extends MemberObject {
             return new NullObj(evaluator); 
         });
 
-        addFunctionMember("setPostData", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("setPostData", [ObjectType.String], function(p) {
             final data = cast(p[0], StringObj).value;
 
             client.setPostData(data);
@@ -88,8 +81,7 @@ class HttpNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("Client", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("Client", [ObjectType.String], function(p) {
             final url = cast(p[0], StringObj).value;
 
             return new HttpClient(evaluator, url).getMembers();

@@ -12,16 +12,16 @@ private class ExclusiveRange extends MemberObject {
 
         var current = start - 1;
 
-        addFunctionMember("next", 0, function(p) {
+        addFunctionMember("next", [], function(p) {
             current++;
             return new NumberObj(current, evaluator);
         });
 
-        addFunctionMember("hasNext", 0, function(p) {
+        addFunctionMember("hasNext", [], function(p) {
             return new BooleanObj(current + 1 < end, evaluator);
         });
 
-        addFunctionMember("Iterator", 0, function(p) {
+        addFunctionMember("Iterator", [], function(p) {
             return new ExclusiveRange(evaluator, start, end).getMembers();
         });
     }
@@ -34,18 +34,14 @@ class RangeNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("Exclusive", 2, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
-            assertParameterType(p[1], ObjectType.Number);
+        addFunctionMember("Exclusive", [ObjectType.Number, ObjectType.Number], function(p) {
             final start = cast(p[0], NumberObj).value;
             final end = cast(p[1], NumberObj).value;
 
             return new ExclusiveRange(evaluator, start, end).getMembers();
         });
 
-        addFunctionMember("Inclusive", 2, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
-            assertParameterType(p[1], ObjectType.Number);
+        addFunctionMember("Inclusive", [ObjectType.Number, ObjectType.Number], function(p) {
             final start = cast(p[0], NumberObj).value;
             final end = cast(p[1], NumberObj).value + 1;
 

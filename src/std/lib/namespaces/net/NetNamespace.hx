@@ -14,8 +14,7 @@ class NetNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("Socket", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Hash);
+        addFunctionMember("Socket", [ObjectType.Hash], function(p) {
             final options = cast(p[0], HashObj);
 
             var host = "localhost";

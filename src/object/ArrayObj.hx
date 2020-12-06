@@ -13,12 +13,12 @@ private class ArrayIterator extends MemberObject {
 
         var index = -1;
 
-        addFunctionMember("next", 0, function(p) {
+        addFunctionMember("next", [], function(p) {
             index++;
             return value[index];
         });
 
-        addFunctionMember("hasNext", 0, function(p) {
+        addFunctionMember("hasNext", [], function(p) {
             return new BooleanObj(index < value.length - 1, evaluator);
         });
     }
@@ -37,36 +37,35 @@ class ArrayObj extends Object {
             return;
         }
 
-        addFunctionMember("Iterator", 0, function(p) {
+        addFunctionMember("Iterator", [], function(p) {
             return new ArrayIterator(evaluator, value).getMembers();
         });
 
-        addFunctionMember("length", 0, function(p) {
+        addFunctionMember("length", [], function(p) {
             return new NumberObj(this.value.length, evaluator);
         });
 
-        addFunctionMember("toString", 0, function(p) {
+        addFunctionMember("toString", [], function(p) {
             return new StringObj(this.value.toString(), evaluator);
         });
 
-        addFunctionMember("push", 1, function(p) {
+        addFunctionMember("push", [null], function(p) {
             this.value.push(p[0]);
 
             return new NumberObj(this.value.length, evaluator);
         });
 
-        addFunctionMember("pop", 0, function(p) {
+        addFunctionMember("pop", [], function(p) {
             return this.value.pop();
         });
 
-        addFunctionMember("join", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("join", [ObjectType.String], function(p) {
             final seperator = cast(p[0], StringObj).value;
 
             return new StringObj(value.join(seperator), evaluator);
         });
 
-        addFunctionMember("contains", 1, function(p) {
+        addFunctionMember("contains", [null], function(p) {
             for (v in value) {
                 if (v.equals(p[0])) {
                     return new BooleanObj(true, evaluator);
@@ -76,8 +75,7 @@ class ArrayObj extends Object {
             return new BooleanObj(false, evaluator);
         });
 
-        addFunctionMember("map", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Closure);
+        addFunctionMember("map", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             final newArray:Array<Object> = [];
 
@@ -88,8 +86,7 @@ class ArrayObj extends Object {
             return new ArrayObj(newArray, evaluator);
         });
 
-        addFunctionMember("filter", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Closure);
+        addFunctionMember("filter", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             final newArray:Array<Object> = [];
             
@@ -107,8 +104,7 @@ class ArrayObj extends Object {
             return new ArrayObj(newArray, evaluator);
         });
 
-        addFunctionMember("forEach", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Closure);
+        addFunctionMember("forEach", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             
             for (v in value) {
@@ -118,8 +114,7 @@ class ArrayObj extends Object {
             return new ArrayObj(value, evaluator);
         });
 
-        addFunctionMember("sort", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Closure);
+        addFunctionMember("sort", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
 
             value.sort(function(v1, v2) {

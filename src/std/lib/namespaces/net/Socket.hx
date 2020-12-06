@@ -16,8 +16,7 @@ class Socket extends MemberObject {
 
         final socket = secure ? new sys.ssl.Socket() : new sys.net.Socket();
 
-        addFunctionMember("write", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("write", [ObjectType.String], function(p) {
             final msg = cast(p[0], StringObj).value;
             
             socket.write(msg);
@@ -25,8 +24,7 @@ class Socket extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeHex", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("writeHex", [ObjectType.String], function(p) {
             final msg = cast(p[0], StringObj).value;
             
             socket.output.write(Bytes.ofHex(msg));
@@ -34,8 +32,7 @@ class Socket extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("read", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("read", [ObjectType.Number], function(p) {
             final length = Std.int(cast(p[0], NumberObj).value);
 
             final msg = socket.input.read(length).toString();
@@ -43,8 +40,7 @@ class Socket extends MemberObject {
             return new StringObj(msg, evaluator);
         });
 
-        addFunctionMember("readHex", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("readHex", [ObjectType.Number], function(p) {
             final length = Std.int(cast(p[0], NumberObj).value);
 
             final msg = socket.input.read(length).toHex();
@@ -52,18 +48,18 @@ class Socket extends MemberObject {
             return new StringObj(msg, evaluator);
         });
 
-        addFunctionMember("readLine", 0, function(p) {
+        addFunctionMember("readLine", [], function(p) {
             return new StringObj(socket.input.readLine(), evaluator);
         });
 
-        addFunctionMember("connect", 0, function(p) {
+        addFunctionMember("connect", [], function(p) {
             socket.connect(new Host(host), port);
             socket.setBlocking(true);
 
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("close", 0, function(p) {
+        addFunctionMember("close", [], function(p) {
             socket.close();
 
             return new NullObj(evaluator);

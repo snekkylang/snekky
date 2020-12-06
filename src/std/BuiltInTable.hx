@@ -63,8 +63,12 @@ class BuiltInTable {
     public function callFunction(func:BuiltInFunctionObj) {
         final parameters:Array<Object> = [];
 
-        for (_ in 0...func.parametersCount) {
+        for (i in 0...func.parametersCount) {
             final parameter = evaluator.stack.pop();
+
+            if (func.parameters[i] != null && parameter.type != func.parameters[i]) {
+                evaluator.error.error('expected ${(func.parameters[i])}, got ${parameter.type}'); 
+            }
 
             parameters.push(parameter);
         }

@@ -10,7 +10,7 @@ class ObjectNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("typeof", 1, function(parameters) {
+        addFunctionMember("typeof", [null], function(parameters) {
             return new StringObj(Std.string(parameters[0].type), evaluator);
         });
     }

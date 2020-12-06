@@ -12,7 +12,7 @@ class NullObj extends Object {
             return;
         }
 
-        addFunctionMember("toString", 0, function(p) {
+        addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), evaluator);
         });
     }

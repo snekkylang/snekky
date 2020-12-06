@@ -12,8 +12,7 @@ class BytesOutput extends MemberObject {
     public function new(evaluator:Evaluator, bytes:haxe.io.BytesOutput) {
         super(evaluator);
 
-        addFunctionMember("setBigEndian", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Boolean);
+        addFunctionMember("setBigEndian", [ObjectType.Boolean], function(p) {
             final bigEndian = cast(p[0], BooleanObj).value;
 
             bytes.bigEndian = bigEndian;
@@ -21,8 +20,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeByte", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeByte", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeByte(Std.int(value));
@@ -30,8 +28,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeInt8", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeInt8", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeInt8(Std.int(value));
@@ -39,8 +36,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeInt16", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeInt16", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeInt16(Std.int(value));
@@ -48,8 +44,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeUInt16", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeUInt16", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeUInt16(Std.int(value));
@@ -57,8 +52,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeInt24", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeInt24", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeInt24(Std.int(value));
@@ -66,8 +60,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeUInt24", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeUInt24", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeUInt24(Std.int(value));
@@ -75,8 +68,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeInt32", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeInt32", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeInt32(Std.int(value));
@@ -84,8 +76,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeFloat32", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeFloat32", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeFloat(value);
@@ -93,8 +84,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
         
-        addFunctionMember("writeFloat64", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("writeFloat64", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             
             bytes.writeDouble(value);
@@ -103,8 +93,7 @@ class BytesOutput extends MemberObject {
         });
 
 
-        addFunctionMember("writeString", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("writeString", [ObjectType.String], function(p) {
             final value = cast(p[0], StringObj).value;
 
             bytes.writeString(value);
@@ -112,8 +101,7 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("writeHex", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("writeHex", [ObjectType.String], function(p) {
             final value = cast(p[0], StringObj).value;
 
             bytes.write(haxe.io.Bytes.ofHex(value));
@@ -121,11 +109,11 @@ class BytesOutput extends MemberObject {
             return new NullObj(evaluator);
         });
         
-        addFunctionMember("length", 0, function(p) {
+        addFunctionMember("length", [], function(p) {
             return new NumberObj(bytes.length, evaluator);
         });
 
-        addFunctionMember("getBytes", 0, function(p) {
+        addFunctionMember("getBytes", [], function(p) {
             return new Bytes(evaluator, bytes.getBytes()).getMembers();
         });
     }  

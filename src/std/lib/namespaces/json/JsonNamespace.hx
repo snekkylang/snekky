@@ -12,7 +12,7 @@ class JsonNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("encode", 1, function(p) {
+        addFunctionMember("encode", [null], function(p) {
             return try {
                 new StringObj(JsonEncoder.encode(p[0]), evaluator);
             } catch (e) {
@@ -21,8 +21,7 @@ class JsonNamespace extends MemberObject {
             }
         });
 
-        addFunctionMember("decode", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("decode", [ObjectType.String], function(p) {
             final json = cast(p[0], StringObj).value;
 
             return try {
