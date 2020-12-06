@@ -13,8 +13,7 @@ class FileNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("read", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("read", [ObjectType.String], function(p) {
             final path = cast(p[0], StringObj).value;
 
             try {
@@ -27,9 +26,7 @@ class FileNamespace extends MemberObject {
             return new NullObj(evaluator);
         });
 
-        addFunctionMember("write", 2, function(p) {
-            assertParameterType(p[0], ObjectType.String);
-            assertParameterType(p[1], ObjectType.String);
+        addFunctionMember("write", [ObjectType.String, ObjectType.String], function(p) {
             final path = cast(p[0], StringObj).value;
             final content = cast(p[1], StringObj).value;
             

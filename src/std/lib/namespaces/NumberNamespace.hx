@@ -12,9 +12,9 @@ class NumberNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("parse", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("parse", [ObjectType.String], function(p) {
             final value = cast(p[0], StringObj).value;
+            
             return new NumberObj(Std.parseFloat(value), evaluator);
         });
     }

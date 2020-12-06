@@ -8,15 +8,13 @@ private typedef BuiltInFunction = Array<Object>->Object;
 class BuiltInFunctionObj extends Function {
 
     public final func:BuiltInFunction;
+    public final parameters:Array<ObjectType>;
 
-    public function new(func:BuiltInFunction, parametersCount:Int, evaluator:Evaluator) {
-        super(ObjectType.BuiltInFunction, parametersCount, evaluator);
+    public function new(func:BuiltInFunction, parameters:Array<ObjectType>, evaluator:Evaluator) {
+        super(ObjectType.BuiltInFunction, parameters.length, evaluator);
 
         this.func = func;
-
-        if (evaluator == null) {
-            return;
-        }
+        this.parameters = parameters;
     }
 
     override function toString():String {

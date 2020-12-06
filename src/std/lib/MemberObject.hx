@@ -21,8 +21,8 @@ class MemberObject {
         return new HashObj(members, evaluator);
     }
 
-    function addFunctionMember(memberName:String, parametersCount:Int, memberFunction:Array<Object>->Object) {
-        members.set(memberName, new ClosureObj(new BuiltInFunctionObj(memberFunction, parametersCount, evaluator), evaluator.currentFrame, evaluator));
+    function addFunctionMember(memberName:String, parameters:Array<ObjectType>, memberFunction:Array<Object>->Object) {
+        members.set(memberName, new ClosureObj(new BuiltInFunctionObj(memberFunction, parameters, evaluator), evaluator.currentFrame, evaluator));
     }
 
     function callFunctionMember(name:String, parameters:Array<Object>):Object {
@@ -36,11 +36,5 @@ class MemberObject {
 
     function error(message:String) {
         evaluator.error.error(message);
-    }
-
-    function assertParameterType(p:Object, expected:ObjectType) {
-        if (p.type != expected) {
-            error('expected $expected, got ${p.type}');
-        }
     }
 }

@@ -10,18 +10,14 @@ class Regex extends MemberObject {
     public function new(evaluator:Evaluator, regex:EReg) {
         super(evaluator);
 
-        addFunctionMember("match", 1, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("match", [ObjectType.String], function(p) {
             final s = cast(p[0], StringObj).value;
 
             return new BooleanObj(regex.match(s), evaluator);
         });
 
-        addFunctionMember("replace", 2, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("replace", [ObjectType.String, ObjectType.String], function(p) {
             final s = cast(p[0], StringObj).value;
-
-            assertParameterType(p[1], ObjectType.String);
             final by = cast(p[1], StringObj).value;
 
             return new StringObj(regex.replace(s, by), evaluator);
@@ -36,11 +32,8 @@ class RegexNamespace extends MemberObject {
     public function new(evaluator:Evaluator) {
         super(evaluator);
 
-        addFunctionMember("compile", 2, function(p) {
-            assertParameterType(p[0], ObjectType.String);
+        addFunctionMember("compile", [ObjectType.String, ObjectType.String], function(p) {
             final pattern = cast(p[0], StringObj).value;
-
-            assertParameterType(p[1], ObjectType.String);
             final flags = cast(p[1], StringObj).value;
             
             return new Regex(evaluator, new EReg(pattern, flags)).getMembers();

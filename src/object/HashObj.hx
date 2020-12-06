@@ -15,12 +15,12 @@ private class HashIterator extends MemberObject {
 
         final iterator = new MapKeyValueIterator(value);
 
-        addFunctionMember("next", 0, function(p) {
+        addFunctionMember("next", [], function(p) {
             final next = iterator.next();
             return new ArrayObj([new StringObj(next.key, evaluator), next.value], evaluator);
         });
 
-        addFunctionMember("hasNext", 0, function(p) {
+        addFunctionMember("hasNext", [], function(p) {
             return new BooleanObj(iterator.hasNext(), evaluator);
         });
     }
@@ -39,15 +39,15 @@ class HashObj extends Object {
             return;
         }
 
-        addFunctionMember("Iterator", 0, function(p) {
+        addFunctionMember("Iterator", [], function(p) {
             return new HashIterator(evaluator, value).getMembers();
         });
 
-        addFunctionMember("toString", 0, function(p) {
+        addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), evaluator);
         });
 
-        addFunctionMember("length", 0, function(p) {
+        addFunctionMember("length", [], function(p) {
             return new NumberObj(Lambda.count(this.value), evaluator);
         });
     }

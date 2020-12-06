@@ -13,36 +13,30 @@ class MathNamespace extends MemberObject {
 
         addObjectMember("PI", new NumberObj(Math.PI, evaluator));
 
-        addFunctionMember("abs", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("abs", [ObjectType.Number], function(p) {
             final value = cast(p[0], NumberObj).value;
 
             return new NumberObj(Math.abs(value), evaluator);
         });
 
-        addFunctionMember("floor", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("floor", [ObjectType.Number], function(p) {
             final value = cast(p[0], NumberObj).value;
 
             return new NumberObj(Math.floor(value), evaluator);
         });
 
-        addFunctionMember("sqrt", 1, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("sqrt", [ObjectType.Number], function(p) {
             final value = cast(p[0], NumberObj).value;
 
             return new NumberObj(Math.sqrt(value), evaluator);
         });
 
-        addFunctionMember("random", 0, function(p) {
+        addFunctionMember("random", [], function(p) {
             return new NumberObj(Math.random(), evaluator);
         });
 
-        addFunctionMember("pow", 2, function(p) {
-            assertParameterType(p[0], ObjectType.Number);
+        addFunctionMember("pow", [ObjectType.Number, ObjectType.Number], function(p) {
             final value = cast(p[0], NumberObj).value;
-
-            assertParameterType(p[1], ObjectType.Number);
             final exponent = cast(p[1], NumberObj).value;
 
             return new NumberObj(Math.pow(value, exponent), evaluator);
