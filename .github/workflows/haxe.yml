@@ -19,6 +19,8 @@ jobs:
         run: haxe build.hxml
       - name: Rename artifact
         run: mv cpp/Snekky cpp/snekky
+      - name: Strip artifact symbols
+        run: strip cpp/snekky
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
@@ -43,6 +45,8 @@ jobs:
           cd cpp
           ren Snekky.exe snekky.exe
           cd ..
+      - name: Strip artifact symbols
+        run: strip cpp/snekky.exe
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
@@ -64,6 +68,8 @@ jobs:
         run: haxe build.hxml
       - name: Rename artifact
         run: mv cpp/snekky cpp/snekky
+      - name: Strip artifact symbols
+        run: strip cpp/snekky
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
