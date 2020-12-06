@@ -22,7 +22,7 @@ class UserFunctionObj extends Function {
     }
 
     override function toString():String {
-        return 'func($position, UserDefined)';
+        return '#func($position, UserDefined)';
     }
 
     override function equals(o:Object):Bool {
