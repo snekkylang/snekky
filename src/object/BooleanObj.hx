@@ -11,6 +11,14 @@ class BooleanObj extends Object {
         super(ObjectType.Boolean, evaluator);
 
         this.value = value;
+
+        if (evaluator == null) {
+            return;
+        }
+
+        addFunctionMember("toString", [], function(p) {
+            return new StringObj(toString(), evaluator);
+        });
     }
 
     override function toString():String {
