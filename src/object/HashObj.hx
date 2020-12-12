@@ -6,8 +6,6 @@ import object.Object.ObjectType;
 import haxe.iterators.MapKeyValueIterator;
 import haxe.ds.StringMap;
 
-using equals.Equal;
-
 private class HashIterator extends MemberObject {
 
     public function new(evaluator:Evaluator, value:StringMap<Object>) {
@@ -74,6 +72,24 @@ class HashObj extends Object {
             return false;
         }
 
-        return value.equals(cast(o, HashObj).value);
+        final other = cast(o, HashObj);
+
+        for (k => v in value) {
+            final oValue = other.value.get(k);
+
+            if (oValue == null || !oValue.equals(v)) {
+                return false;
+            }
+        }
+
+        for (k => v in other.value) {
+            final oValue = value.get(k);
+
+            if (oValue == null || !oValue.equals(v)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

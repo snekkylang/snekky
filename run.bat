@@ -1,1 +1,1 @@
-haxe --main Snekky -cp src -lib console.hx -lib equals --run Snekky input.snek
+haxe --main Snekky -cp src -lib console.hx --run Snekky input.snek

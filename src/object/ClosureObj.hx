@@ -4,8 +4,6 @@ import evaluator.Evaluator;
 import object.Object.ObjectType;
 import evaluator.Frame;
 
-using equals.Equal;
-
 class ClosureObj extends Object {
 
     public final func:Function;

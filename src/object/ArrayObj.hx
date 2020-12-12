@@ -4,8 +4,6 @@ import std.lib.MemberObject;
 import evaluator.Evaluator;
 import object.Object.ObjectType;
 
-using equals.Equal;
-
 private class ArrayIterator extends MemberObject {
 
     public function new(evaluator:Evaluator, value:Array<Object>) {
@@ -140,6 +138,17 @@ class ArrayObj extends Object {
             return false;
         }
 
-        return cast(o, ArrayObj).value.equals(value);
+        final other = cast(o, ArrayObj);
+        if (other.value.length != value.length) {
+            return false;
+        }
+
+        for (i => v in value) {
+            if (!other.value[i].equals(v)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
