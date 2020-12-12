@@ -32,4 +32,8 @@ class BooleanObj extends Object {
 
         return cast(o, BooleanObj).value == value;
     }
+
+    override function clone():Object {
+        return new BooleanObj(value, evaluator);
+    }
 }

@@ -32,4 +32,8 @@ class Object extends MemberObject {
     public function equals(o:Object):Bool {
         return false;
     }
+
+    public function clone():Object {
+        return null;
+    }
 }

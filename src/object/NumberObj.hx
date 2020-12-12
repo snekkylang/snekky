@@ -32,4 +32,8 @@ class NumberObj extends Object {
 
         return cast(o, NumberObj).value == value;
     }
+
+    override function clone():Object {
+        return new NumberObj(value, evaluator);
+    }
 }

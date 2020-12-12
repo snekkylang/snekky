@@ -127,6 +127,10 @@ class ArrayObj extends Object {
 
             return new NullObj(evaluator);
         });
+
+        addFunctionMember("clone", [], function(p) {
+            return clone(); 
+        });
     }
 
     override function toString():String {
@@ -150,5 +154,15 @@ class ArrayObj extends Object {
         }
 
         return true;
+    }
+
+    override function clone():Object {
+        final clone = new ArrayObj([], evaluator);
+
+        for (i => v in value) {
+            clone.value[i] = v.clone();
+        }
+
+        return clone;
     }
 }
