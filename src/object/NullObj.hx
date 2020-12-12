@@ -24,4 +24,8 @@ class NullObj extends Object {
     override function equals(o:Object):Bool {
         return o.type == ObjectType.Null;
     }
+
+    override function clone():Object {
+        return new NullObj(evaluator);
+    }
 }

@@ -100,4 +100,8 @@ class StringObj extends Object {
 
         return cast(o, StringObj).value == value;
     }
+
+    override function clone():Object {
+        return new StringObj(value, evaluator);
+    }
 }

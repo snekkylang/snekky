@@ -31,4 +31,8 @@ class ClosureObj extends Object {
 
         return cast(o, ClosureObj).func == func;
     }
+
+    override function clone():Object {
+        return new ClosureObj(func, context, evaluator);
+    }
 }

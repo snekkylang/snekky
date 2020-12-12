@@ -48,6 +48,10 @@ class HashObj extends Object {
         addFunctionMember("length", [], function(p) {
             return new NumberObj(Lambda.count(this.value), evaluator);
         });
+
+        addFunctionMember("clone", [], function(p) {
+            return clone(); 
+        });
     }
 
     override function toString():String {
@@ -91,5 +95,15 @@ class HashObj extends Object {
         }
 
         return true;
+    }
+
+    override function clone():Object {
+        final clone = new HashObj(new StringMap(), evaluator);
+
+        for (k => v in value) {
+            clone.value.set(k, v.clone());
+        }
+
+        return clone;
     }
 }
