@@ -229,9 +229,9 @@ class ExpressionParser {
 
         while (true) {
             left = switch (parser.currentToken.type) {
-                case LParen: parser.parseCall(left);
-                case LBracket: parser.parseIndex(left);
-                case Dot: parser.parseIndex(left);
+                case TokenType.LParen: parser.parseCall(left);
+                case TokenType.LBracket: parser.parseIndex(left);
+                case TokenType.Dot: parser.parseIndex(left);
 
                 default: break;
             }
@@ -286,10 +286,7 @@ class ExpressionParser {
                 parser.parseArray();
             case TokenType.LBrace:
                 if (parser.resolveHashBlockAmbiguity() == NodeType.Block) {
-                    final block = parser.parseBlock();
-                    parser.nextToken();
-
-                    block;
+                    parser.parseBlock();
                 } else {
                     parser.parseHash();
                 }
@@ -300,7 +297,7 @@ class ExpressionParser {
                 nullN;
             case TokenType.Regex:
                 parser.parseRegex();
-            default: 
+            default:
                 parser.error.unexpectedToken(parser.currentToken, "expression");
                 null;
         }

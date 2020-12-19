@@ -88,6 +88,8 @@ class Parser {
             parseToken(block);
         }
 
+        nextToken();
+
         return block;
     }
 
@@ -120,8 +122,6 @@ class Parser {
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
-
-        nextToken();
 
         return new FunctionNode(nodePos, block, parameters);
     }
@@ -349,8 +349,7 @@ class Parser {
         final consequence = parseBlock();
         var alternative:Node = null;
 
-        if (lexer.peekToken().type == TokenType.Else) {
-            nextToken();
+        if (currentToken.type == TokenType.Else) {
             nextToken();
 
             alternative = if (currentToken.type == TokenType.If) {
@@ -358,13 +357,8 @@ class Parser {
             } else {
                 assertToken(TokenType.LBrace, "`{`");
 
-                final block = parseBlock();
-                nextToken();
-
-                block;
+                parseBlock();
             }
-        } else {
-            nextToken();
         }
 
         return new IfNode(nodePos, condition, consequence, alternative);
@@ -380,8 +374,6 @@ class Parser {
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
-
-        nextToken();
 
         return new WhileNode(nodePos, condition, block);
     }
@@ -406,7 +398,11 @@ class Parser {
                 nextToken();
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
-                final consequence = expressionParser.parseExpression();
+                final consequence = if (currentToken.type == TokenType.LBrace) {
+                    new ExpressionNode(currentToken.position, parseBlock());
+                } else { 
+                    expressionParser.parseExpression();
+                }
 
                 elseCase = if (currentToken.type == TokenType.Semicolon) {
                     nextToken();
@@ -418,7 +414,11 @@ class Parser {
                 final condition = expressionParser.parseExpression();
                 assertToken(TokenType.Arrow, "`=>`");
                 nextToken();
-                final consequence = expressionParser.parseExpression();
+                final consequence = if (currentToken.type == TokenType.LBrace) {
+                    new ExpressionNode(currentToken.position, parseBlock());
+                } else { 
+                    expressionParser.parseExpression();
+                }
 
                 if (currentToken.type == TokenType.Semicolon) {
                     nextToken();
@@ -457,8 +457,6 @@ class Parser {
         assertToken(TokenType.LBrace, "`{`");
 
         final block = parseBlock();
-
-        nextToken();
 
         return new ForNode(nodePos, variable, iterator, block);
     }
@@ -591,7 +589,6 @@ class Parser {
             case TokenType.LBrace:
                 if (resolveHashBlockAmbiguity() == NodeType.Block) {
                     block.addNode(parseBlock());
-                    nextToken();
                 } else {
                     block.addNode(parseStatement());
                 }
