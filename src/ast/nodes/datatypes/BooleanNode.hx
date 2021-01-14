@@ -1,4 +1,4 @@
-package ast.nodes;
+package ast.nodes.datatypes;
 
 class BooleanNode extends Node {
 
