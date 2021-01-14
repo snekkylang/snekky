@@ -7,12 +7,12 @@ import sys.net.Host;
 import object.Object.ObjectType;
 import object.StringObj;
 import object.NullObj;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class Socket extends MemberObject {
 
-    public function new(evaluator:Evaluator, host:String, port:Int, secure:Bool) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, host:String, port:Int, secure:Bool) {
+        super(vm);
 
         final socket = secure ? new sys.ssl.Socket() : new sys.net.Socket();
 
@@ -21,7 +21,7 @@ class Socket extends MemberObject {
             
             socket.write(msg);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeHex", [ObjectType.String], function(p) {
@@ -29,7 +29,7 @@ class Socket extends MemberObject {
             
             socket.output.write(Bytes.ofHex(msg));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("read", [ObjectType.Number], function(p) {
@@ -37,7 +37,7 @@ class Socket extends MemberObject {
 
             final msg = socket.input.read(length).toString();
 
-            return new StringObj(msg, evaluator);
+            return new StringObj(msg, vm);
         });
 
         addFunctionMember("readHex", [ObjectType.Number], function(p) {
@@ -45,24 +45,24 @@ class Socket extends MemberObject {
 
             final msg = socket.input.read(length).toHex();
 
-            return new StringObj(msg, evaluator);
+            return new StringObj(msg, vm);
         });
 
         addFunctionMember("readLine", [], function(p) {
-            return new StringObj(socket.input.readLine(), evaluator);
+            return new StringObj(socket.input.readLine(), vm);
         });
 
         addFunctionMember("connect", [], function(p) {
             socket.connect(new Host(host), port);
             socket.setBlocking(true);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("close", [], function(p) {
             socket.close();
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
     }
 }

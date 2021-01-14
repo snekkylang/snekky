@@ -1,25 +1,25 @@
 package object;
 
 import std.lib.MemberObject;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 import haxe.iterators.MapKeyValueIterator;
 import haxe.ds.StringMap;
 
 private class HashIterator extends MemberObject {
 
-    public function new(evaluator:Evaluator, value:StringMap<Object>) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, value:StringMap<Object>) {
+        super(vm);
 
         final iterator = new MapKeyValueIterator(value);
 
         addFunctionMember("next", [], function(p) {
             final next = iterator.next();
-            return new ArrayObj([new StringObj(next.key, evaluator), next.value], evaluator);
+            return new ArrayObj([new StringObj(next.key, vm), next.value], vm);
         });
 
         addFunctionMember("hasNext", [], function(p) {
-            return new BooleanObj(iterator.hasNext(), evaluator);
+            return new BooleanObj(iterator.hasNext(), vm);
         });
     }
 }
@@ -28,25 +28,25 @@ class HashObj extends Object {
     
     public final value:StringMap<Object>;
 
-    public function new(value:StringMap<Object>, evaluator:Evaluator) {
-        super(ObjectType.Hash, evaluator);
+    public function new(value:StringMap<Object>, vm:VirtualMachine) {
+        super(ObjectType.Hash, vm);
 
         this.value = value;
 
-        if (evaluator == null) {
+        if (vm == null) {
             return;
         }
 
         addFunctionMember("Iterator", [], function(p) {
-            return new HashIterator(evaluator, value).getMembers();
+            return new HashIterator(vm, value).getMembers();
         });
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(toString(), evaluator);
+            return new StringObj(toString(), vm);
         });
 
         addFunctionMember("length", [], function(p) {
-            return new NumberObj(Lambda.count(this.value), evaluator);
+            return new NumberObj(Lambda.count(this.value), vm);
         });
 
         addFunctionMember("clone", [], function(p) {
@@ -98,7 +98,7 @@ class HashObj extends Object {
     }
 
     override function clone():Object {
-        final clone = new HashObj(new StringMap(), evaluator);
+        final clone = new HashObj(new StringMap(), vm);
 
         for (k => v in value) {
             clone.value.set(k, v.clone());

@@ -1,7 +1,7 @@
 package compiler.constant;
 
+import vm.VirtualMachine;
 import object.BooleanObj;
-import evaluator.Evaluator;
 import object.NullObj;
 import object.UserFunctionObj;
 import object.StringObj;
@@ -71,7 +71,7 @@ class ConstantPool {
         return output.getBytes();
     }
 
-    public static function fromByteCode(byteCode:BytesInput, evaluator:Evaluator):Array<Object> {
+    public static function fromByteCode(byteCode:BytesInput, vm:VirtualMachine):Array<Object> {
         final pool:Array<Object> = [];
         final poolSize = byteCode.readInt32();
         final startPosition = byteCode.position;
@@ -82,20 +82,20 @@ class ConstantPool {
             switch (type) {
                 case ConstantType.Float:
                     final value = byteCode.readDouble();
-                    pool.push(new NumberObj(value, evaluator));
+                    pool.push(new NumberObj(value, vm));
                 case ConstantType.String:
                     final length = byteCode.readInt32();
                     final value = byteCode.readString(length);
-                    pool.push(new StringObj(value, evaluator));
+                    pool.push(new StringObj(value, vm));
                 case ConstantType.UserFunction:
                     final position = byteCode.readInt32();
                     final parametersCount = byteCode.readInt16();
-                    pool.push(new UserFunctionObj(position, parametersCount, evaluator));
+                    pool.push(new UserFunctionObj(position, parametersCount, vm));
                 case ConstantType.Null:
-                    pool.push(new NullObj(evaluator));
+                    pool.push(new NullObj(vm));
                 case ConstantType.Boolean:
                     final value = byteCode.readByte();
-                    pool.push(new BooleanObj(value != 0, evaluator));
+                    pool.push(new BooleanObj(value != 0, vm));
                 default:
             }    
         }

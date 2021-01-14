@@ -7,7 +7,7 @@ import object.StringObj;
 import object.NumberObj;
 import haxe.ds.StringMap;
 import lexer.TokenType;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.HashObj;
 import lexer.Token;
 import object.Object;
@@ -15,12 +15,12 @@ import lexer.Lexer;
 
 class JsonDecoder {
 
-    final evaluator:Evaluator;
+    final vm:VirtualMachine;
     final lexer:Lexer;
     var currentToken:Token;
     
-    public function new(json:String, evaluator:Evaluator) {
-        this.evaluator = evaluator;
+    public function new(json:String, vm:VirtualMachine) {
+        this.vm = vm;
 
         lexer = new Lexer("json_decoder", json);
         currentToken = lexer.readToken();
@@ -55,7 +55,7 @@ class JsonDecoder {
 
         nextToken();
 
-        return new HashObj(map, evaluator);
+        return new HashObj(map, vm);
     }
 
     function parseArray():ArrayObj {
@@ -77,7 +77,7 @@ class JsonDecoder {
 
         nextToken();
 
-        return new ArrayObj(array, evaluator);
+        return new ArrayObj(array, vm);
     }
 
     function assertToken(type:TokenType, expected:String) {
@@ -91,27 +91,27 @@ class JsonDecoder {
             case TokenType.LBrace: parseHash();
             case TokenType.LBracket: parseArray();
             case TokenType.Number: 
-                final n = new NumberObj(Std.parseFloat(currentToken.literal), evaluator);
+                final n = new NumberObj(Std.parseFloat(currentToken.literal), vm);
                 nextToken();
 
                 n;
             case TokenType.String:
-                final s = new StringObj(currentToken.literal, evaluator);
+                final s = new StringObj(currentToken.literal, vm);
                 nextToken();
 
                 s;
             case TokenType.Null:
                 nextToken();
-                new NullObj(evaluator);
+                new NullObj(vm);
             case TokenType.True:
                 nextToken();
-                new BooleanObj(true, evaluator);
+                new BooleanObj(true, vm);
             case TokenType.False:
                 nextToken();
-                new BooleanObj(false, evaluator);
+                new BooleanObj(false, vm);
             case TokenType.Minus:
                 nextToken();
-                final n = new NumberObj(-Std.parseFloat(currentToken.literal), evaluator);
+                final n = new NumberObj(-Std.parseFloat(currentToken.literal), vm);
                 nextToken();
 
                 n;

@@ -1,6 +1,6 @@
 package object;
 
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import std.lib.MemberObject;
 
 enum ObjectType {
@@ -19,8 +19,8 @@ class Object extends MemberObject {
 
     public final type:ObjectType;
 
-    public function new(type:ObjectType, evaluator:Evaluator) {
-        super(evaluator);
+    public function new(type:ObjectType, vm:VirtualMachine) {
+        super(vm);
 
         this.type = type;
     }

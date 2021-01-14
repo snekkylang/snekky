@@ -1,23 +1,23 @@
 package object;
 
 import object.Object.ObjectType;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class BooleanObj extends Object {
 
     public final value:Bool;
 
-    public function new(value:Bool, evaluator:Evaluator) {
-        super(ObjectType.Boolean, evaluator);
+    public function new(value:Bool, vm:VirtualMachine) {
+        super(ObjectType.Boolean, vm);
 
         this.value = value;
 
-        if (evaluator == null) {
+        if (vm == null) {
             return;
         }
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(toString(), evaluator);
+            return new StringObj(toString(), vm);
         });
     }
 
@@ -34,6 +34,6 @@ class BooleanObj extends Object {
     }
 
     override function clone():Object {
-        return new BooleanObj(value, evaluator);
+        return new BooleanObj(value, vm);
     }
 }

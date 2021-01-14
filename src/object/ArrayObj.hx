@@ -1,13 +1,13 @@
 package object;
 
 import std.lib.MemberObject;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 
 private class ArrayIterator extends MemberObject {
 
-    public function new(evaluator:Evaluator, value:Array<Object>) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, value:Array<Object>) {
+        super(vm);
 
         var index = -1;
 
@@ -17,7 +17,7 @@ private class ArrayIterator extends MemberObject {
         });
 
         addFunctionMember("hasNext", [], function(p) {
-            return new BooleanObj(index < value.length - 1, evaluator);
+            return new BooleanObj(index < value.length - 1, vm);
         });
     }
 }
@@ -26,31 +26,31 @@ class ArrayObj extends Object {
 
     public final value:Array<Object>;
 
-    public function new(value:Array<Object>, evaluator:Evaluator) {
-        super(ObjectType.Array, evaluator);
+    public function new(value:Array<Object>, vm:VirtualMachine) {
+        super(ObjectType.Array, vm);
 
         this.value = value;
 
-        if (evaluator == null) {
+        if (vm == null) {
             return;
         }
 
         addFunctionMember("Iterator", [], function(p) {
-            return new ArrayIterator(evaluator, value).getMembers();
+            return new ArrayIterator(vm, value).getMembers();
         });
 
         addFunctionMember("length", [], function(p) {
-            return new NumberObj(this.value.length, evaluator);
+            return new NumberObj(this.value.length, vm);
         });
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(this.value.toString(), evaluator);
+            return new StringObj(this.value.toString(), vm);
         });
 
         addFunctionMember("push", [null], function(p) {
             this.value.push(p[0]);
 
-            return new NumberObj(this.value.length, evaluator);
+            return new NumberObj(this.value.length, vm);
         });
 
         addFunctionMember("pop", [], function(p) {
@@ -60,17 +60,17 @@ class ArrayObj extends Object {
         addFunctionMember("join", [ObjectType.String], function(p) {
             final seperator = cast(p[0], StringObj).value;
 
-            return new StringObj(value.join(seperator), evaluator);
+            return new StringObj(value.join(seperator), vm);
         });
 
         addFunctionMember("contains", [null], function(p) {
             for (v in value) {
                 if (v.equals(p[0])) {
-                    return new BooleanObj(true, evaluator);
+                    return new BooleanObj(true, vm);
                 }
             }
 
-            return new BooleanObj(false, evaluator);
+            return new BooleanObj(false, vm);
         });
 
         addFunctionMember("map", [ObjectType.Closure], function(p) {
@@ -78,10 +78,10 @@ class ArrayObj extends Object {
             final newArray:Array<Object> = [];
 
             for (v in value) {
-                newArray.push(evaluator.callFunction(callback, [v]));
+                newArray.push(vm.callFunction(callback, [v]));
             }
 
-            return new ArrayObj(newArray, evaluator);
+            return new ArrayObj(newArray, vm);
         });
 
         addFunctionMember("filter", [ObjectType.Closure], function(p) {
@@ -89,7 +89,7 @@ class ArrayObj extends Object {
             final newArray:Array<Object> = [];
             
             for (v in value) {
-                final cbResult = evaluator.callFunction(callback, [v]);
+                final cbResult = vm.callFunction(callback, [v]);
                 if (cbResult.type != ObjectType.Boolean) {
                     error("expected callback to return boolean");
                 }
@@ -99,24 +99,24 @@ class ArrayObj extends Object {
                 }
             }
 
-            return new ArrayObj(newArray, evaluator);
+            return new ArrayObj(newArray, vm);
         });
 
         addFunctionMember("forEach", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             
             for (v in value) {
-                evaluator.callFunction(callback, [v]);
+                vm.callFunction(callback, [v]);
             }
 
-            return new ArrayObj(value, evaluator);
+            return new ArrayObj(value, vm);
         });
 
         addFunctionMember("sort", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
 
             value.sort(function(v1, v2) {
-                final cbResult = evaluator.callFunction(callback, [v1, v2]);
+                final cbResult = vm.callFunction(callback, [v1, v2]);
                 if (cbResult.type != ObjectType.Number) {
                     error("expected callback to return number");
                 }
@@ -125,7 +125,7 @@ class ArrayObj extends Object {
                 return pos;
             });
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("clone", [], function(p) {
@@ -157,7 +157,7 @@ class ArrayObj extends Object {
     }
 
     override function clone():Object {
-        final clone = new ArrayObj([], evaluator);
+        final clone = new ArrayObj([], vm);
 
         for (i => v in value) {
             clone.value[i] = v.clone();

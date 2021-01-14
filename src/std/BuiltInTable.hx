@@ -6,7 +6,7 @@ import std.lib.namespaces.net.*;
 import object.BuiltInFunctionObj;
 import std.lib.MemberObject;
 import std.lib.namespaces.*;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object;
 
 typedef MemberFunction = {parametersCount:Int, memberFunction:Array<Object>->Object};
@@ -14,25 +14,25 @@ typedef MemberFunction = {parametersCount:Int, memberFunction:Array<Object>->Obj
 class BuiltInTable {
 
     final namespaces:Array<MemberObject>;
-    final evaluator:Evaluator;
+    final vm:VirtualMachine;
 
-    public function new(evaluator:Evaluator) {
-        this.evaluator = evaluator;
+    public function new(vm:VirtualMachine) {
+        this.vm = vm;
 
         namespaces = [
-            new SysNamespace(evaluator),
-            new MathNamespace(evaluator),
-            new NumberNamespace(evaluator),
-            new ObjectNamespace(evaluator),
-            new RangeNamespace(evaluator),
-            new RegexNamespace(evaluator),
-            new JsonNamespace(evaluator),
-            new IoNamespace(evaluator),
+            new SysNamespace(vm),
+            new MathNamespace(vm),
+            new NumberNamespace(vm),
+            new ObjectNamespace(vm),
+            new RangeNamespace(vm),
+            new RegexNamespace(vm),
+            new JsonNamespace(vm),
+            new IoNamespace(vm),
             #if target.sys
-            new FileNamespace(evaluator), 
-            new HttpNamespace(evaluator),
-            new ThreadNamespace(evaluator),
-            new NetNamespace(evaluator)
+            new FileNamespace(vm), 
+            new HttpNamespace(vm),
+            new ThreadNamespace(vm),
+            new NetNamespace(vm)
             #end
         ];
     }
@@ -64,18 +64,18 @@ class BuiltInTable {
         final parameters:Array<Object> = [];
 
         for (i in 0...func.parametersCount) {
-            final parameter = evaluator.stack.pop();
+            final parameter = vm.stack.pop();
 
             if (func.parameters[i] != null && parameter.type != func.parameters[i]) {
-                evaluator.error.error('expected ${(func.parameters[i])}, got ${parameter.type}'); 
+                vm.error.error('expected ${(func.parameters[i])}, got ${parameter.type}'); 
             }
 
             parameters.push(parameter);
         }
 
         final returnValue = func.func(parameters);
-        evaluator.stack.add(returnValue);
-        evaluator.frames.pop();
-        evaluator.currentFrame = evaluator.frames.first();
+        vm.stack.add(returnValue);
+        vm.frames.pop();
+        vm.currentFrame = vm.frames.first();
     }
 }

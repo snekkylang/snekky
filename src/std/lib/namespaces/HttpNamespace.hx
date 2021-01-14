@@ -7,35 +7,35 @@ import object.StringObj;
 import object.NullObj;
 import sys.Http;
 import object.Object;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 private class HttpClient extends MemberObject {
 
-    public function new(evaluator:Evaluator, url:String) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, url:String) {
+        super(vm);
 
         final client = new Http(url);
 
         client.onData = function(data) {
-            final newEvaluator = new Evaluator(evaluator.fileData);
+            final newVirtualMachine = new VirtualMachine(vm.fileData);
         
             final func = cast(members.get("onData"), ClosureObj);
-            newEvaluator.callFunction(func, [new StringObj(data, evaluator)]);
+            newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
         };
 
         client.onStatus = function(status) {
-            final newEvaluator = new Evaluator(evaluator.fileData);
+            final newVirtualMachine = new VirtualMachine(vm.fileData);
         
             final func = cast(members.get("onStatus"), ClosureObj);
-            newEvaluator.callFunction(func, [new NumberObj(status, evaluator)]);
+            newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
         };
         
         addFunctionMember("onData", [ObjectType.String], function(parameters) {
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("onStatus", [ObjectType.Number], function(parameters) {
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("request", [ObjectType.Boolean], function(p) {
@@ -43,7 +43,7 @@ private class HttpClient extends MemberObject {
             
             client.request(post);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("addHeader", [ObjectType.String, ObjectType.String], function(p) {
@@ -52,7 +52,7 @@ private class HttpClient extends MemberObject {
 
             client.addHeader(header, value);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("addParameter", [ObjectType.String, ObjectType.String], function(p) {
@@ -61,7 +61,7 @@ private class HttpClient extends MemberObject {
 
             client.addParameter(name, value);
 
-            return new NullObj(evaluator); 
+            return new NullObj(vm); 
         });
 
         addFunctionMember("setPostData", [ObjectType.String], function(p) {
@@ -69,7 +69,7 @@ private class HttpClient extends MemberObject {
 
             client.setPostData(data);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
     }
 }
@@ -78,13 +78,13 @@ class HttpNamespace extends MemberObject {
 
     public static final name = "Http";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("Client", [ObjectType.String], function(p) {
             final url = cast(p[0], StringObj).value;
 
-            return new HttpClient(evaluator, url).getMembers();
+            return new HttpClient(vm, url).getMembers();
         });
     }
 }

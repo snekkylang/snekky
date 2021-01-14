@@ -3,14 +3,14 @@ package repl;
 import sys.thread.Lock;
 import error.ErrorHelper;
 import sys.thread.Thread;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
 
 class Repl {
     var compiler = new Compiler(true);
-    var evaluator:Evaluator = null;
+    var vm:VirtualMachine = null;
     var thread:Thread;
 
     public function new() {
@@ -76,7 +76,7 @@ class Repl {
                 Sys.print("\033c");
             case "reset":
                 compiler = new Compiler(true);
-                evaluator = null;
+                vm = null;
                 Console.log("Environment reset");
             case "help":
                 Console.log("help - Shows this dialogue.");
@@ -112,16 +112,16 @@ class Repl {
                 compiler.compile(parser.ast);
                 final byteCode = compiler.getByteCode(false);
 
-                if (evaluator == null) {
-                    evaluator = new Evaluator(byteCode);
+                if (vm == null) {
+                    vm = new VirtualMachine(byteCode);
                 } else {
-                    evaluator.newWithState(byteCode);
+                    vm.newWithState(byteCode);
                 }
 
-                evaluator.eval();
+                vm.eval();
 
-                if (!evaluator.stack.isEmpty()) {
-                    Sys.println('==> ${evaluator.stack.pop()}');
+                if (!vm.stack.isEmpty()) {
+                    Sys.println('==> ${vm.stack.pop()}');
                 }
             } catch (e) {}
 

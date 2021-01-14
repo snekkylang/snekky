@@ -1,17 +1,17 @@
 package std.lib.namespaces;
 
 import object.StringObj;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class ObjectNamespace extends MemberObject {
 
     public static final name = "Object";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("typeof", [null], function(parameters) {
-            return new StringObj(Std.string(parameters[0].type), evaluator);
+            return new StringObj(Std.string(parameters[0].type), vm);
         });
     }
 }

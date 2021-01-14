@@ -3,24 +3,24 @@ package std.lib.namespaces;
 import object.BooleanObj;
 import object.Object.ObjectType;
 import object.StringObj;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class Regex extends MemberObject {
 
-    public function new(evaluator:Evaluator, regex:EReg) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, regex:EReg) {
+        super(vm);
 
         addFunctionMember("match", [ObjectType.String], function(p) {
             final s = cast(p[0], StringObj).value;
 
-            return new BooleanObj(regex.match(s), evaluator);
+            return new BooleanObj(regex.match(s), vm);
         });
 
         addFunctionMember("replace", [ObjectType.String, ObjectType.String], function(p) {
             final s = cast(p[0], StringObj).value;
             final by = cast(p[1], StringObj).value;
 
-            return new StringObj(regex.replace(s, by), evaluator);
+            return new StringObj(regex.replace(s, by), vm);
         });
     }
 }
@@ -29,14 +29,14 @@ class RegexNamespace extends MemberObject {
 
     public static final name = "Regex";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("compile", [ObjectType.String, ObjectType.String], function(p) {
             final pattern = cast(p[0], StringObj).value;
             final flags = cast(p[1], StringObj).value;
             
-            return new Regex(evaluator, new EReg(pattern, flags)).getMembers();
+            return new Regex(vm, new EReg(pattern, flags)).getMembers();
         });
     }
 }
