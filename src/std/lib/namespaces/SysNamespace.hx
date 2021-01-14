@@ -4,14 +4,14 @@ import object.Object.ObjectType;
 import object.NumberObj;
 import object.StringObj;
 import object.NullObj;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class SysNamespace extends MemberObject {
 
     public static final name = "Sys";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("println", [null], function(p) {
             #if target.sys
@@ -20,7 +20,7 @@ class SysNamespace extends MemberObject {
             js.Browser.console.log(p[0].toString());
             #end
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("print", [null], function(p) {
@@ -30,7 +30,7 @@ class SysNamespace extends MemberObject {
             js.Browser.console.log(p[0].toString());
             #end
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("readLine", [], function(p) {
@@ -41,7 +41,7 @@ class SysNamespace extends MemberObject {
             throw "Read line not supported on this target";
             #end
 
-            return new StringObj(input, evaluator);
+            return new StringObj(input, vm);
         });
 
         addFunctionMember("sleep", [ObjectType.Number], function(p) {
@@ -53,7 +53,7 @@ class SysNamespace extends MemberObject {
             throw "unsupported";
             #end
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("exit", [ObjectType.Number], function(p) {
@@ -65,7 +65,7 @@ class SysNamespace extends MemberObject {
             throw "unsupported";
             #end
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
     }
 }

@@ -8,12 +8,12 @@ import sys.thread.Thread;
 import object.NullObj;
 import object.ClosureObj;
 import object.Object.ObjectType;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class Channel extends MemberObject {
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         var message:Object = null;
         var lock:Lock = null;
@@ -25,7 +25,7 @@ class Channel extends MemberObject {
                 lock.release();
             }
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("receive", [ObjectType.Boolean], function(p) {
@@ -35,7 +35,7 @@ class Channel extends MemberObject {
                 lock.wait();
             }
 
-            return message == null ? new NullObj(evaluator) : message;
+            return message == null ? new NullObj(vm) : message;
         });
     }
 }
@@ -44,24 +44,24 @@ class ThreadNamespace extends MemberObject {
 
     public static final name = "Thread";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("run", [ObjectType.Closure], function(p) {
             final callback = cast(p[0], ClosureObj);
             final lock = new Lock();
 
-            final newEvaluator = new Evaluator(evaluator.fileData);
+            final newVirtualMachine = new VirtualMachine(vm.fileData);
 
             Thread.create(function() {
-                newEvaluator.callFunction(callback, []);
+                newVirtualMachine.callFunction(callback, []);
 
                 lock.release();
             });
 
-            evaluator.addThreadLock(lock);
+            vm.addThreadLock(lock);
 
-            return new Channel(evaluator).getMembers();
+            return new Channel(vm).getMembers();
         });
     }
 }

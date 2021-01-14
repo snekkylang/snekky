@@ -5,14 +5,14 @@ import object.NumberObj;
 import object.StringObj;
 import object.HashObj;
 import object.Object.ObjectType;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 
 class NetNamespace extends MemberObject {
 
     public static final name = "Net";
 
-    public function new(evaluator:Evaluator) {
-        super(evaluator);
+    public function new(vm:VirtualMachine) {
+        super(vm);
 
         addFunctionMember("Socket", [ObjectType.Hash], function(p) {
             final options = cast(p[0], HashObj);
@@ -29,7 +29,7 @@ class NetNamespace extends MemberObject {
             }
 
             try {
-                return new Socket(evaluator, host, port, secure).getMembers();
+                return new Socket(vm, host, port, secure).getMembers();
             } catch (e) {
                 error("failed to open socket");
                 return null;

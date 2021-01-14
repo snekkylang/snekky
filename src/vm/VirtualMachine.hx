@@ -1,4 +1,4 @@
-package evaluator;
+package vm;
 
 import object.*;
 import haxe.zip.Uncompress;
@@ -15,7 +15,7 @@ import std.BuiltInTable;
 import code.OpCode;
 import haxe.ds.GenericStack;
 
-class Evaluator {
+class VirtualMachine {
 
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();

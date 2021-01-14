@@ -1,6 +1,6 @@
 import haxe.io.Bytes;
 import haxe.io.Path;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
@@ -24,8 +24,8 @@ class Snekky {
     }
 
     public static function evaluateBytes(byteCode:Bytes) {
-        final evaluator = new Evaluator(byteCode);
-        evaluator.eval();
+        final vm = new VirtualMachine(byteCode);
+        vm.eval();
     }
     
     public static function main() {

@@ -4,20 +4,20 @@ import object.BooleanObj;
 import object.NullObj;
 import object.StringObj;
 import object.NumberObj;
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 
 class BytesOutput extends MemberObject {
 
-    public function new(evaluator:Evaluator, bytes:haxe.io.BytesOutput) {
-        super(evaluator);
+    public function new(vm:VirtualMachine, bytes:haxe.io.BytesOutput) {
+        super(vm);
 
         addFunctionMember("setBigEndian", [ObjectType.Boolean], function(p) {
             final bigEndian = cast(p[0], BooleanObj).value;
 
             bytes.bigEndian = bigEndian;
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeByte", [ObjectType.Number], function(p) {
@@ -25,7 +25,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeByte(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeInt8", [ObjectType.Number], function(p) {
@@ -33,7 +33,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeInt8(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeInt16", [ObjectType.Number], function(p) {
@@ -41,7 +41,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeInt16(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeUInt16", [ObjectType.Number], function(p) {
@@ -49,7 +49,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeUInt16(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeInt24", [ObjectType.Number], function(p) {
@@ -57,7 +57,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeInt24(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeUInt24", [ObjectType.Number], function(p) {
@@ -65,7 +65,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeUInt24(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeInt32", [ObjectType.Number], function(p) {
@@ -73,7 +73,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeInt32(Std.int(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeFloat32", [ObjectType.Number], function(p) {
@@ -81,7 +81,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeFloat(value);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
         
         addFunctionMember("writeFloat64", [ObjectType.Number], function(p) {
@@ -89,7 +89,7 @@ class BytesOutput extends MemberObject {
             
             bytes.writeDouble(value);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
 
@@ -98,7 +98,7 @@ class BytesOutput extends MemberObject {
 
             bytes.writeString(value);
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
 
         addFunctionMember("writeHex", [ObjectType.String], function(p) {
@@ -106,15 +106,15 @@ class BytesOutput extends MemberObject {
 
             bytes.write(haxe.io.Bytes.ofHex(value));
 
-            return new NullObj(evaluator);
+            return new NullObj(vm);
         });
         
         addFunctionMember("length", [], function(p) {
-            return new NumberObj(bytes.length, evaluator);
+            return new NumberObj(bytes.length, vm);
         });
 
         addFunctionMember("getBytes", [], function(p) {
-            return new Bytes(evaluator, bytes.getBytes()).getMembers();
+            return new Bytes(vm, bytes.getBytes()).getMembers();
         });
     }  
 }

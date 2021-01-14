@@ -1,19 +1,19 @@
 package object;
 
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 
 class NullObj extends Object {
 
-    public function new(evaluator:Evaluator) {
-        super(ObjectType.Null, evaluator);
+    public function new(vm:VirtualMachine) {
+        super(ObjectType.Null, vm);
 
-        if (evaluator == null) {
+        if (vm == null) {
             return;
         }
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(toString(), evaluator);
+            return new StringObj(toString(), vm);
         });
     }
 
@@ -26,6 +26,6 @@ class NullObj extends Object {
     }
 
     override function clone():Object {
-        return new NullObj(evaluator);
+        return new NullObj(vm);
     }
 }

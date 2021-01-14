@@ -1,6 +1,6 @@
 package object;
 
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 
 private typedef BuiltInFunction = Array<Object>->Object;
@@ -10,8 +10,8 @@ class BuiltInFunctionObj extends Function {
     public final func:BuiltInFunction;
     public final parameters:Array<ObjectType>;
 
-    public function new(func:BuiltInFunction, parameters:Array<ObjectType>, evaluator:Evaluator) {
-        super(ObjectType.BuiltInFunction, parameters.length, evaluator);
+    public function new(func:BuiltInFunction, parameters:Array<ObjectType>, vm:VirtualMachine) {
+        super(ObjectType.BuiltInFunction, parameters.length, vm);
 
         this.func = func;
         this.parameters = parameters;

@@ -1,4 +1,4 @@
-package evaluator;
+package vm;
 
 import object.Object;
 

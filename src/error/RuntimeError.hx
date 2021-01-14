@@ -4,7 +4,7 @@ import object.UserFunctionObj;
 import compiler.debug.FilenameTable;
 import haxe.io.BytesInput;
 import object.Object;
-import evaluator.Frame;
+import vm.Frame;
 import compiler.debug.VariableTable;
 import compiler.debug.LineNumberTable;
 import haxe.ds.GenericStack;

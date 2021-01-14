@@ -1,23 +1,23 @@
 package object;
 
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
 
 class UserFunctionObj extends Function {
 
     public final position:Int;
 
-    public function new(position:Int, parametersCount:Int, evaluator:Evaluator) {
-        super(ObjectType.UserFunction, parametersCount, evaluator);
+    public function new(position:Int, parametersCount:Int, vm:VirtualMachine) {
+        super(ObjectType.UserFunction, parametersCount, vm);
 
         this.position = position;
 
-        if (evaluator == null) {
+        if (vm == null) {
             return;
         }
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(toString(), evaluator);
+            return new StringObj(toString(), vm);
         });
     }
 

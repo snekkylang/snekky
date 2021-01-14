@@ -1,16 +1,16 @@
 package object;
 
-import evaluator.Evaluator;
+import vm.VirtualMachine;
 import object.Object.ObjectType;
-import evaluator.Frame;
+import vm.Frame;
 
 class ClosureObj extends Object {
 
     public final func:Function;
     public var context:Frame;
 
-    public function new(func:Function, context:Frame, evaluator:Evaluator) {
-        super(ObjectType.Closure, evaluator);
+    public function new(func:Function, context:Frame, vm:VirtualMachine) {
+        super(ObjectType.Closure, vm);
 
         this.func = func;
         this.context = context;
@@ -33,6 +33,6 @@ class ClosureObj extends Object {
     }
 
     override function clone():Object {
-        return new ClosureObj(func, context, evaluator);
+        return new ClosureObj(func, context, vm);
     }
 }
