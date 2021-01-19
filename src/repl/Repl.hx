@@ -113,7 +113,8 @@ class Repl {
                 Console.log("help - Shows this dialogue.");
                 Console.log("exit - Exits the REPL environment.");
                 Console.log("clear - Clears the screen.");
-                Console.log("reset - Resets the environment.");
+                Console.log("reset/r - Resets the environment.");
+                Console.log("disassemble/d - Prints the disassembled bytecode.");
             default:
                 Console.log("Unknown command");
         }
