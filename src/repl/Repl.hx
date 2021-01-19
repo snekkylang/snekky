@@ -1,5 +1,10 @@
 package repl;
 
+import sys.io.FileSeek;
+import sys.io.Process;
+import haxe.io.Path;
+import sys.FileSystem;
+import sys.io.File;
 import sys.thread.Lock;
 import error.ErrorHelper;
 import sys.thread.Thread;
@@ -74,10 +79,36 @@ class Repl {
                 Sys.exit(0);
             case "clear":
                 Sys.print("\033c");
-            case "reset":
+            case "reset" | "r":
                 compiler = new Compiler(true);
                 vm = null;
                 Console.log("Environment reset");
+            case "disassemble" | "d":
+                final byteCode = compiler.getByteCode(false);
+                final tempDir = if (Sys.systemName() == "Windows") {
+                    Sys.getEnv("temp");
+                } else {
+                    "/tmp";
+                }
+                final file = '$tempDir/snekky/repl/dump/${Sys.time()}.bite';
+                FileSystem.createDirectory(Path.directory(file));
+                File.saveBytes(file, byteCode);
+
+                final process = new Process('snekkyd $file');
+                if (process.stderr.readAll().length > 0) {
+                    Console.log("Snekkyd not found!");
+                    return true;
+                }
+
+                for (row in ~/\r\n|\n/g.split(process.stdout.readAll().toString())) {
+                    if (row.length == 0) {
+                        continue;
+                    }
+
+                    Console.log(row);
+                }
+
+                process.close();
             case "help":
                 Console.log("help - Shows this dialogue.");
                 Console.log("exit - Exits the REPL environment.");
