@@ -20,11 +20,11 @@ class VirtualMachine {
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
     public var currentFrame:Frame;
-    var constantPool:Array<Object>;
-    var instructions:BytesInput;
-    var filenameTable:FilenameTable;
-    var lineNumberTable:LineNumberTable;
-    var variableTable:VariableTable;
+    public var constantPool:Array<Object>;
+    public var instructions:BytesInput;
+    public var filenameTable:FilenameTable;
+    public var lineNumberTable:LineNumberTable;
+    public var variableTable:VariableTable;
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
     public final fileData:Bytes;
@@ -38,9 +38,8 @@ class VirtualMachine {
         newWithState(fileData);
         builtInTable = new BuiltInTable(this);
 
-        error = new RuntimeError(frames, lineNumberTable, variableTable, filenameTable, instructions);
-        frames.add(new Frame(null, 0, null));
-        currentFrame = frames.first();
+        error = new RuntimeError(this);
+        pushFrame(null, 0, null);
     }
 
     public function newWithState(fileData:Bytes) {
@@ -61,6 +60,18 @@ class VirtualMachine {
         }
     }
 
+    public function pushFrame(context:Frame, returnAddress:Int, calledFunction:Function) {
+        frames.add(new Frame(context, returnAddress, calledFunction));
+        currentFrame = frames.first();
+    }
+
+    public function popFrame():Frame {
+        final frame = frames.pop();
+        currentFrame = frames.first();
+
+        return frame;
+    }
+
     public function callFunction(closure:ClosureObj, parameters:Array<Object>):Object {
         parameters.reverse();
 
@@ -76,8 +87,7 @@ class VirtualMachine {
                     error.error("wrong number of arguments to function");
                 }
                 final oPosition = instructions.position;
-                frames.add(new Frame(closure.context, instructions.length, cUserFunction));
-                currentFrame = frames.first();
+                pushFrame(closure.context, instructions.length, cUserFunction);
                 instructions.position = cUserFunction.position;
                 eval();
                 instructions.position = oPosition;
@@ -292,8 +302,7 @@ class VirtualMachine {
                 switch (object.type) {
                     case ObjectType.Closure:
                         final cClosure = cast(object, ClosureObj);
-                        frames.add(new Frame(cClosure.context, instructions.position, cClosure.func));
-                        currentFrame = frames.first();
+                        pushFrame(cClosure.context, instructions.position, cClosure.func);
 
                         if (cClosure.func.parametersCount != callParametersCount) {
                             error.error('wrong number of arguments to function. expected ${cClosure.func.parametersCount}, got $callParametersCount');   
@@ -311,8 +320,7 @@ class VirtualMachine {
                     default: error.error("object is not a function");
                 }
             case OpCode.Return:
-                instructions.position = frames.pop().returnAddress;
-                currentFrame = frames.first();
+                instructions.position = popFrame().returnAddress;
                 if (stack.isEmpty()) {
                     stack.add(new NullObj(this));
                 }

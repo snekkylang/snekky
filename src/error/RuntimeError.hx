@@ -1,28 +1,15 @@
 package error;
 
+import vm.VirtualMachine;
 import object.UserFunctionObj;
-import compiler.debug.FilenameTable;
-import haxe.io.BytesInput;
 import object.Object;
-import vm.Frame;
-import compiler.debug.VariableTable;
-import compiler.debug.LineNumberTable;
-import haxe.ds.GenericStack;
 
 class RuntimeError {
 
-    final frames:GenericStack<Frame>;
-    final lineNumberTable:LineNumberTable;
-    final variableTable:VariableTable;
-    final filenameTable:FilenameTable;
-    final byteCode:BytesInput;
+    final vm:VirtualMachine;
 
-    public function new(frames:GenericStack<Frame>, lineNumberTable:LineNumberTable, variableTable:VariableTable, filenameTable:FilenameTable, byteCode:BytesInput) {
-        this.frames = frames;
-        this.lineNumberTable = lineNumberTable;
-        this.variableTable = variableTable;
-        this.filenameTable = filenameTable;
-        this.byteCode = byteCode;
+    public function new(vm:VirtualMachine) {
+        this.vm = vm;
     }
 
     function printHead(message:String) {
@@ -30,22 +17,22 @@ class RuntimeError {
     }
 
     function printStackTrace() {
-        var position = lineNumberTable.resolve(byteCode.position);
-        var filename = filenameTable.resolve(byteCode.position);
+        var position = vm.lineNumberTable.resolve(vm.instructions.position);
+        var filename = vm.filenameTable.resolve(vm.instructions.position);
 
-        while (!frames.isEmpty()) {
-            final frame = frames.pop();
+        while (!vm.frames.isEmpty()) {
+            final frame = vm.popFrame();
             final functionPosition:Int = if (frame.calledFunction != null && frame.calledFunction.type == ObjectType.UserFunction) {
                 final cUserFunction = cast(frame.calledFunction, UserFunctionObj);
                 cUserFunction.position;
             } else {
                 -1;
             }
-            final functionName = variableTable.resolve(functionPosition);
+            final functionName = vm.variableTable.resolve(functionPosition);
             Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
 
-            position = lineNumberTable.resolve(frame.returnAddress);
-            filename = filenameTable.resolve(frame.returnAddress);
+            position = vm.lineNumberTable.resolve(frame.returnAddress);
+            filename = vm.filenameTable.resolve(frame.returnAddress);
         }
     }
 
