@@ -104,22 +104,26 @@ class ExpressionParser {
     }
 
     function comparison():Node {
-        final left = range();
+        var left = range();
 
-        final type = switch (parser.currentToken.type) {
-            case TokenType.LessThan: NodeType.LessThan;
-            case TokenType.GreaterThan: NodeType.GreaterThan;
-            case TokenType.LessThanOrEqual: NodeType.LessThanOrEqual;
-            case TokenType.GreaterThanOrEqual: NodeType.GreaterThanOrEqual;
-            case TokenType.Equals: NodeType.Equals;
-            case TokenType.NotEquals: NodeType.NotEquals;
-            default: return left;
+        while (true) {
+            final type = switch (parser.currentToken.type) {
+                case TokenType.LessThan: NodeType.LessThan;
+                case TokenType.GreaterThan: NodeType.GreaterThan;
+                case TokenType.LessThanOrEqual: NodeType.LessThanOrEqual;
+                case TokenType.GreaterThanOrEqual: NodeType.GreaterThanOrEqual;
+                case TokenType.Equals: NodeType.Equals;
+                case TokenType.NotEquals: NodeType.NotEquals;
+                default: break;
+            }
+    
+            parser.nextToken();
+            final nodePos = parser.currentToken.position;
+            final right = range();
+            left = new OperatorNode(nodePos, type, left, right);
         }
 
-        parser.nextToken();
-        final nodePos = parser.currentToken.position;
-        final right = range();
-        return new OperatorNode(nodePos, type, left, right);
+        return left;
     }
 
     function range():Node {
