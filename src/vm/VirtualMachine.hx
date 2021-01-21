@@ -196,8 +196,7 @@ class VirtualMachine {
                         final cIndex = cast(index, StringObj);
     
                         target.getMembers().value.set(cIndex.value, value);
-                    default: 
-                        error.error("index operator cannot be used on this datatype");      
+                    default: error.error("index operator cannot be used on this datatype");      
                 }
             case OpCode.ConcatString:
                 final right = stack.pop().toString();
@@ -211,7 +210,7 @@ class VirtualMachine {
                 final left = stack.pop();
 
                 if (left.type != ObjectType.Number || right.type != ObjectType.Number) {
-                    error.error("cannot perform operation");  
+                    error.error('cannot perform operation (left: ${left.type}, right: ${right.type})');  
                 }
 
                 final cLeft = cast(left, NumberObj).value;
@@ -245,7 +244,7 @@ class VirtualMachine {
                 final constantIndex = instructions.readInt32();
 
                 final constant = switch (constantPool[constantIndex].type) {
-                    case ObjectType.UserFunction: new ClosureObj(cast(constantPool[constantIndex], UserFunctionObj), currentFrame,this);
+                    case ObjectType.UserFunction: new ClosureObj(cast(constantPool[constantIndex], UserFunctionObj), currentFrame, this);
                     default: constantPool[constantIndex];
                 }
 
@@ -254,12 +253,7 @@ class VirtualMachine {
                 final localIndex = instructions.readInt32();
 
                 final value = stack.pop();
-
-                if (value == null) {
-                    currentFrame.setVariable(localIndex, new NullObj(this));
-                } else {
-                    currentFrame.setVariable(localIndex, value);
-                }
+                currentFrame.setVariable(localIndex, value);
             case OpCode.Load:
                 final localIndex = instructions.readInt32();
                 final value = currentFrame.getVariable(localIndex);
