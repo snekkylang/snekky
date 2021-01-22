@@ -22,25 +22,6 @@ class ErrorHelper {
         }
     }
 
-    public static function resolvePosition(code:String, position:Int):{line:Int, linePos:Int} {
-        var line = 1;
-        var linePos = 0;
-
-        for (i in 0...position) {
-            if (~/\r\n|\n/.match(code.charAt(i))) {
-                line++;
-                linePos = 0;
-            } else {
-                linePos++; 
-            }
-        }
-        
-        return {
-            line: line,
-            linePos: linePos
-        }
-    }
-
     public static dynamic function exit() {
         #if target.sys
         Sys.exit(0);

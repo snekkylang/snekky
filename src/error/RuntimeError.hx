@@ -29,7 +29,7 @@ class RuntimeError {
                 -1;
             }
             final functionName = vm.variableTable.resolve(functionPosition);
-            Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.linePos + 1})');
+            Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.lineOffset + 1})');
 
             position = vm.lineNumberTable.resolve(frame.returnAddress);
             filename = vm.filenameTable.resolve(frame.returnAddress);

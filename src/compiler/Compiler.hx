@@ -1,5 +1,6 @@
 package compiler;
 
+import lexer.Position;
 import haxe.ds.GenericStack;
 import object.BooleanObj;
 import compiler.symbol.Symbol;
@@ -713,9 +714,9 @@ class Compiler {
         instructions.write(currentBytes);
     }
 
-    function emit(op:Int, position:Int, operands:Array<Int>) {
+    function emit(op:Int, position:Position, operands:Array<Int>) {
         if (debug) {
-            lineNumberTable.define(instructions.length, ErrorHelper.resolvePosition(error.code, position));
+            lineNumberTable.define(instructions.length, position);
         }
         final instruction = Code.make(op, operands);
         

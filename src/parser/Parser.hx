@@ -1,5 +1,6 @@
 package parser;
 
+import lexer.Position;
 import ast.NodeType;
 import error.CompileError;
 import ast.nodes.datatypes.*;
@@ -23,7 +24,7 @@ class Parser {
         this.lexer = lexer;
         this.isRepl = isRepl;
 
-        ast = new FileNode(1, lexer.filename, lexer.code);
+        ast = new FileNode(new Position(1, 1, 0), lexer.filename, lexer.code);
         error = new CompileError(lexer.filename, lexer.code);
 
         expressionParser = new ExpressionParser(this, lexer);
