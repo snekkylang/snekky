@@ -1,5 +1,7 @@
 package ast.nodes;
 
+import lexer.Position;
+
 typedef Case = {condition:ExpressionNode, consequence:Node}
 
 class WhenNode extends Node {
@@ -9,7 +11,7 @@ class WhenNode extends Node {
     public final elseCase:Node;
 
 
-    public function new(position:Int, condition:ExpressionNode, cases:Array<Case>, elseCase:Node) {
+    public function new(position:Position, condition:ExpressionNode, cases:Array<Case>, elseCase:Node) {
         super(position, NodeType.When);
 
         this.condition = condition;

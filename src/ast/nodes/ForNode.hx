@@ -1,12 +1,14 @@
 package ast.nodes;
 
+import lexer.Position;
+
 class ForNode extends Node {
 
     public final variable:VariableNode;
     public final iterator:ExpressionNode;
     public final block:BlockNode;
 
-    public function new(position:Int, variable:VariableNode, iterator:ExpressionNode, block:BlockNode) {
+    public function new(position:Position, variable:VariableNode, iterator:ExpressionNode, block:BlockNode) {
         super(position, NodeType.For);
 
         this.variable = variable;

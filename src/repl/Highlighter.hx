@@ -25,7 +25,7 @@ class Highlighter {
         final highlightedCode = new StringBuf();
 
         inline function highlightToken(token:Token, color:TokenColor):String {
-            return '<#$color>${code.substr(token.position, token.literal.length)}${code.substring(token.position + token.literal.length, lexer.peekToken().position)}</>';
+            return '<#$color>${code.substr(token.position.position, token.literal.length)}${code.substring(token.position.position + token.literal.length, lexer.peekToken().position.position)}</>';
         }
 
         while (true) {

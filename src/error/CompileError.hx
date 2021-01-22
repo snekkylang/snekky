@@ -1,5 +1,6 @@
 package error;
 
+import lexer.Position;
 import lexer.Helper;
 import lexer.Token;
 
@@ -43,24 +44,24 @@ class CompileError {
         return min;
     }
 
-    function printCode(errorLine:Int, errorLinePosStart:Int, errorLinePosEnd:Int, message:String = null) {
+    function printCode(position:Position, errorLinePosEnd:Int, message:String = null) {
         final codePreviewFull = code.split("\n");
-        final previewStart = ErrorHelper.clamp(1, errorLine - 2, errorLine - 2);
-        final previewEnd = ErrorHelper.clamp(1, codePreviewFull.length + 1, errorLine + 3) ;
+        final previewStart = ErrorHelper.clamp(1, position.line - 2, position.line - 2);
+        final previewEnd = ErrorHelper.clamp(1, codePreviewFull.length + 1, position.line + 3) ;
 
         final codePreview = codePreviewFull.slice(previewStart - 1, previewEnd);
         final minIndentation = getMinIndentation(codePreview);
 
-        final lineCountWidth = Std.string(errorLine + 3).length;
+        final lineCountWidth = Std.string(position.line + 3).length;
 
         for (i in previewStart...previewEnd) {
             final lineCount = StringTools.rpad(Std.string(i), " ", lineCountWidth);
             final codeLine = codePreviewFull[i - 1].substring(minIndentation);
 
-            if (i == errorLine) {
+            if (i == position.line) {
                 if (errorLinePosEnd == -1) {
                     final highlightPosition = new StringBuf();
-                    highlightPosition.add('${ErrorHelper.repeatString(errorLinePosStart - minIndentation, " ")}^ ');
+                    highlightPosition.add('${ErrorHelper.repeatString(position.lineOffset - minIndentation, " ")}^ ');
                     if (message != null) {
                         highlightPosition.add(message);
                     }
@@ -68,18 +69,18 @@ class CompileError {
                     Console.log('   $lineCount | $codeLine');
                     Console.log('   ${ErrorHelper.repeatString(lineCountWidth, " ")} | <#DE4A3F>$highlightPosition</>');
                 } else {
-                    final literalLength = errorLinePosEnd - errorLinePosStart;
+                    final literalLength = errorLinePosEnd - position.lineOffset;
 
                     final codeLineHighlighted = new StringBuf();
-                    codeLineHighlighted.add(codeLine.substring(0, errorLinePosStart - minIndentation));
+                    codeLineHighlighted.add(codeLine.substring(0, position.lineOffset - minIndentation));
                     codeLineHighlighted.add("<#DE4A3F>");
-                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation, literalLength));
+                    codeLineHighlighted.add(codeLine.substr(position.lineOffset - minIndentation, literalLength));
                     codeLineHighlighted.add("</>");
-                    codeLineHighlighted.add(codeLine.substr(errorLinePosStart - minIndentation + literalLength));
+                    codeLineHighlighted.add(codeLine.substr(position.lineOffset - minIndentation + literalLength));
     
                     Console.log('   $lineCount | ${codeLineHighlighted.toString()}');
     
-                    final underline = '${ErrorHelper.repeatString(errorLinePosStart - minIndentation, " ")}${ErrorHelper.repeatString(literalLength, "~")}';
+                    final underline = '${ErrorHelper.repeatString(position.lineOffset - minIndentation, " ")}${ErrorHelper.repeatString(literalLength, "~")}';
     
                     Console.log('   ${ErrorHelper.repeatString(lineCountWidth, " ")} | <#DE4A3F>$underline</>');
                 }
@@ -89,95 +90,84 @@ class CompileError {
         } 
     }
 
-    function printHead(line:Int, linePos:Int, message:String) {
-        Console.log('<b>${filename}:$line:${linePos + 1}</> <#DE4A3F>error:</> $message.');
+    function printHead(position:Position, message:String) {
+        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#DE4A3F>error:</> $message.');
     }
 
     public function unexpectedToken(token:Token, expected:String) {
-        final position = ErrorHelper.resolvePosition(code, token.position);
-        printHead(position.line, position.linePos, 'unexpected token `${token.literal}` (${token.type})');
+        printHead(token.position, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
-        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+        printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function missingSemicolon(token:Token) {
-        final position = ErrorHelper.resolvePosition(code, token.position);
-        printHead(position.line, position.linePos, "missing semicolon");
-        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+        printHead(token.position, "missing semicolon");
+        printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function unexpectedEof(token:Token) {
-        final position = ErrorHelper.resolvePosition(code, token.position);
-        printHead(position.line, position.linePos, 'unexpcted end of file');
-        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+        printHead(token.position, 'unexpcted end of file');
+        printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
     
     public function illegalToken(token:Token) {
-        final position = ErrorHelper.resolvePosition(code, token.position);
-        printHead(position.line, position.linePos, 'illegal token `${token.literal}` (${token.type})');
-        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+        printHead(token.position, 'illegal token `${token.literal}` (${token.type})');
+        printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function importFailed(token:Token, fileName:String) {
-        final position = ErrorHelper.resolvePosition(code, token.position);
-        printHead(position.line, position.linePos, 'failed to import file `$filename`');
-        printCode(position.line, position.linePos, position.linePos + token.literal.length);
+        printHead(token.position, 'failed to import file `$filename`');
+        printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
-    public function illegalContinue(cPosition:Int) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'illegal continue statement');
-        printCode(position.line, position.linePos, -1, "may only be used inside loops");
+    public function illegalContinue(position:Position) {
+        printHead(position, 'illegal continue statement');
+        printCode(position, -1, "may only be used inside loops");
 
         ErrorHelper.exit();
     }
     
-    public function illegalBreak(cPosition:Int) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'illegal break statement');
-        printCode(position.line, position.linePos, -1, "may only be used inside loops");
+    public function illegalBreak(position:Position) {
+        printHead(position, 'illegal break statement');
+        printCode(position, -1, "may only be used inside loops");
 
         ErrorHelper.exit();
     }
 
-    public function illegalReturn(cPosition:Int) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'illegal return statement');
-        printCode(position.line, position.linePos, -1, "may only be used inside functions");
+    public function illegalReturn(position:Position) {
+        printHead(position, 'illegal return statement');
+        printCode(position, -1, "may only be used inside functions");
 
         ErrorHelper.exit();
     }
 
-    public function symbolUndefined(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'cannot find symbol `$symbol` in this scope');
-        printCode(position.line, position.linePos, -1, "not found in this scope");
+    public function symbolUndefined(position:Position, symbol:String) {
+        printHead(position, 'cannot find symbol `$symbol` in this scope');
+        printCode(position, -1, "not found in this scope");
 
         ErrorHelper.exit();
     }
 
-    public function symbolImmutable(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'cannot re-assign to immutable variable `$symbol`');
-        printCode(position.line, position.linePos, -1, "cannot be re-assgined");
+    public function symbolImmutable(position:Position, symbol:String) {
+        printHead(position, 'cannot re-assign to immutable variable `$symbol`');
+        printCode(position, -1, "cannot be re-assgined");
 
         ErrorHelper.exit();
     }
 
-    public function redeclareVariable(cPosition:Int, symbol:String) {
-        final position = ErrorHelper.resolvePosition(code, cPosition);
-        printHead(position.line, position.linePos, 'cannot re-declare immutable variable `$symbol`');
-        printCode(position.line, position.linePos, -1, "has already been declared in this scope");
+    public function redeclareVariable(position:Position, symbol:String) {
+        printHead(position, 'cannot re-declare immutable variable `$symbol`');
+        printCode(position, -1, "has already been declared in this scope");
 
         ErrorHelper.exit();
     }

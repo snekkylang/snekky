@@ -1,10 +1,9 @@
 package compiler.debug;
 
+import lexer.Position;
 import haxe.io.BytesInput;
 import haxe.io.Bytes;
-import haxe.io.BytesOutput;
-
-private typedef Position = {line:Int, linePos:Int}; 
+import haxe.io.BytesOutput; 
 
 class LineNumberTable {
 
@@ -12,7 +11,7 @@ class LineNumberTable {
 
     public function new() {}
 
-    public function define(byteIndex:Int, sourcePosition:{line:Int, linePos:Int}) {
+    public function define(byteIndex:Int, sourcePosition:Position) {
         table.set(byteIndex, sourcePosition);
     }
 
@@ -36,7 +35,7 @@ class LineNumberTable {
         for (byteIndex => position in table) {
             tableBytes.writeInt32(byteIndex);
             tableBytes.writeInt32(position.line);
-            tableBytes.writeInt32(position.linePos);
+            tableBytes.writeInt32(position.lineOffset);
         }
 
         final output = new BytesOutput();
@@ -53,9 +52,9 @@ class LineNumberTable {
         while (byteCode.position < startPosition + tableSize) {
             final byteIndex = byteCode.readInt32();
             final line = byteCode.readInt32();
-            final linePos = byteCode.readInt32();
+            final lineOffset = byteCode.readInt32();
 
-            table.set(byteIndex, {line:line, linePos: linePos});
+            table.set(byteIndex, new Position(1, line, lineOffset));
         }
 
         return this;
