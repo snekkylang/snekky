@@ -23,3 +23,8 @@ let myHash = {
 for let [key, value] in myHash {
     Sys.println(key >< " " >< value);
 }
+
+// For loop - String
+for let char in "My String" {
+    Sys.println(char);
+}
