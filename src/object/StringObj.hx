@@ -1,8 +1,27 @@
 package object;
 
+import std.lib.MemberObject;
 import std.lib.namespaces.io.Bytes;
 import vm.VirtualMachine;
 import object.Object.ObjectType;
+
+private class StringIterator extends MemberObject {
+
+    public function new(vm:VirtualMachine, value:String) {
+        super(vm);
+
+        var index = -1;
+
+        addFunctionMember("next", [], function(p) {
+            index++;
+            return new StringObj(value.charAt(index), vm);
+        });
+
+        addFunctionMember("hasNext", [], function(p) {
+            return new BooleanObj(index < value.length - 1, vm);
+        });
+    }
+}
 
 class StringObj extends Object {
 
@@ -23,6 +42,10 @@ class StringObj extends Object {
 
         addFunctionMember("length", [], function(p) {
             return new NumberObj(this.value.length, vm);
+        });
+
+        addFunctionMember("Iterator", [], function(p) {
+            return new StringIterator(vm, value).getMembers();
         });
 
         addFunctionMember("charAt", [ObjectType.Number], function(p) {
