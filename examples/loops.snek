@@ -24,6 +24,8 @@ for let [key, value] in myHash {
     Sys.println(key >< " " >< value);
 }
 
+Sys.println(" ");
+
 // For loop - String
 for let char in "My String" {
     Sys.println(char);
