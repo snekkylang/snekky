@@ -1,17 +1,8 @@
 for let i in 0..100 {
-    mut out = "";
-
-    if i % 3 == 0 {
-        out = out >< "Fizz";
-    }
-
-    if i % 5 == 0 {
-        out = out >< "Buzz";
-    }
-
-    if out.length() == 0 {
-        out = out >< i;
-    }
-
-    Sys.println(out);
+    Sys.println(when {
+        i % 3 == 0 && i % 5 == 0 => "FizzBuzz"
+        i % 3 == 0 => "Fizz"
+        i % 5 == 0 => "Buzz"
+        else => i
+    });
 }
