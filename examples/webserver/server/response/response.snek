@@ -1,0 +1,27 @@
+import "server/response/response_encoder";
+
+let Response = func(client) {
+
+    mut status = "200 OK";
+
+    let setStatus = func(s) {
+        status = s;
+    };
+
+    let send = func(content) {
+        let headers = {
+            "Server": "snekky",
+            "Content-Type": "text/html; charset=utf-8",
+            "Content-Length": content.length() + 2
+        };
+
+        let response = ResponseEncoder.encode(status, headers, content);
+
+        client.write(response);
+    };
+
+    return {
+        setStatus: setStatus,
+        send: send
+    };
+};

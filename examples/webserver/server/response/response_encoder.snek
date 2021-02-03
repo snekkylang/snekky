@@ -1,0 +1,13 @@
+let ResponseEncoder = {
+    encode: func(status, headers, content) {
+        let out = [];
+        out.push("HTTP/1.1" >< status);
+        for let [name, value] in headers {
+            out.push(name >< ": " >< value);
+        }
+        out.push("\r\n");
+        out.push(content);
+
+        return out.join("\r\n");
+    }
+};
