@@ -163,20 +163,32 @@ class Lexer {
     }
 
     public function peekToken():Token {
-        final lastPostion = position;
+        final lastPosition = position;
+        final lastChar = currentChar;
+        final lastLine = line;
+        final lastLineOffset = lineOffset;
         final token = readToken();
-        position = lastPostion;
+        position = lastPosition;
+        currentChar = lastChar;
+        line = lastLine;
+        lineOffset = lastLineOffset;
 
         return token;
     }
 
     public function peekTokenN(n:Int) {
-        final lastPostion = position;
+        final lastPosition = position;
+        final lastChar = currentChar;
+        final lastLine = line;
+        final lastLineOffset = lineOffset;
         final tokens:Array<Token> = [];
         for (_ in 0...n) {
             tokens.push(readToken());
         }
-        position = lastPostion;
+        position = lastPosition;
+        currentChar = lastChar;
+        line = lastLine;
+        lineOffset = lastLineOffset;
         
         return tokens;
     }
