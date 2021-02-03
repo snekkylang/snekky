@@ -3,11 +3,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
     let key = "YXhvbG90bHMgYXJlIGNvb2w=";
     mut ready = false;
 
-    mut socket = Net.Socket({
-        host: host,
-        port: port,
-        secure: secure
-    });
+    mut socket = Net.Socket(secure);
 
     let random = func(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
@@ -33,7 +29,7 @@ let WebSocket = func(host, port, path, protocols, secure) {
     };
 
     let connect = func() {
-        socket.connect();
+        socket.connect(host, port);
 
         socket.write(generateHandshake());
         

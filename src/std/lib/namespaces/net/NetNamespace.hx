@@ -1,9 +1,6 @@
 package std.lib.namespaces.net;
 
 import object.BooleanObj;
-import object.NumberObj;
-import object.StringObj;
-import object.HashObj;
 import object.Object.ObjectType;
 import vm.VirtualMachine;
 
@@ -14,22 +11,13 @@ class NetNamespace extends MemberObject {
     public function new(vm:VirtualMachine) {
         super(vm);
 
-        addFunctionMember("Socket", [ObjectType.Hash], function(p) {
-            final options = cast(p[0], HashObj);
+        addFunctionMember("Socket", [ObjectType.Boolean], function(p) {
+            final secure = cast(p[0], BooleanObj).value;
 
-            var host = "localhost";
-            var port = 21;
-            var secure = false;
-            try {
-                host = cast(options.value.get("host"), StringObj).value;
-                port = Std.int(cast(options.value.get("port"), NumberObj).value);
-                secure = cast(options.value.get("secure"), BooleanObj).value;
-            } catch (e) {
-                error("missing option keys");
-            }
+            final socket = secure ? new sys.ssl.Socket() : new sys.net.Socket();
 
             try {
-                return new Socket(vm, host, port, secure).getMembers();
+                return new Socket(vm, socket).getMembers();
             } catch (e) {
                 error("failed to open socket");
                 return null;
