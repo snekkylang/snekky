@@ -1,0 +1,72 @@
+import "server/request/request_parser";
+import "server/request/request";
+import "server/response/response";
+
+let Server = func() {
+
+    let socket = Net.Socket(false);
+    let routes = {
+        GET: {}
+    };
+
+    let readMessage = func(client) {
+        let lines = [];
+        while true {
+            let line = client.readLine();
+
+            if line == null {
+                return null;
+            }
+
+            if line.length() == 0 {
+                break;
+            }
+
+            lines.push(line);
+        }
+
+        return lines;
+    };
+
+    let get = func(route, cb) {
+        routes.GET[route] = cb;
+    };
+
+    let listen = func(host, port, cb) {
+        socket.bind(host, port);
+        socket.listen(1337);
+        cb();
+
+        while true {
+            let client = socket.accept();
+
+            Thread.run(func() {
+                while true {
+                    let message = readMessage(client);
+                    if message == null {
+                        break;
+                    }
+                    
+                    let parsedRequest = RequestParser.parse(message);
+                    let method = parsedRequest.method;
+                    if routes[method][parsedRequest.path] == null {
+                        let res = Response(client);
+                        res.setStatus("404 Not Found");
+                        res.send("");
+                        continue;
+                    }
+                    let req = Request(parsedRequest);
+                    let res = Response(client);
+                    routes[method][parsedRequest.path](req, res);
+                }
+            });
+        }
+
+        socket.close();
+    };
+
+    return {
+        listen: listen,
+        get: get
+    };
+};

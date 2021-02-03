@@ -1,0 +1,11 @@
+import "server/server";
+
+let app = Server();
+
+app.get("/", func(req, res) {
+    res.send("Hello World!");
+});
+
+app.listen("localhost", 3000, func() {
+    Sys.println("Server running on port 3000");
+});

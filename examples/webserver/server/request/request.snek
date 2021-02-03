@@ -1,0 +1,10 @@
+let Request = func(parsedRequest) {
+    let {method, path, version, headers} = parsedRequest;
+
+    return {
+        method: method,
+        path: path,
+        version: version,
+        headers: headers
+    };
+};
