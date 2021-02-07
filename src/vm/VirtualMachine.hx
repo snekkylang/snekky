@@ -205,7 +205,7 @@ class VirtualMachine {
                 stack.add(new StringObj('$left$right', this));
             case OpCode.Add | OpCode.Multiply | OpCode.LessThan | OpCode.GreaterThan | OpCode.Subtract 
                 | OpCode.Divide | OpCode.Modulo | OpCode.BitAnd | OpCode.BitOr | OpCode.BitShiftLeft
-                | OpCode.BitShiftRight | OpCode.BitXor:
+                | OpCode.BitShiftRight | OpCode.BitXor | OpCode.LessThanOrEqual | OpCode.GreaterThanOrEqual:
                 final right = stack.pop();
                 final left = stack.pop();
 
@@ -223,7 +223,9 @@ class VirtualMachine {
                     case OpCode.Divide: new NumberObj(cLeft / cRight, this);
                     case OpCode.Modulo: new NumberObj(cLeft % cRight, this);
                     case OpCode.LessThan: new BooleanObj(cLeft < cRight, this);
+                    case OpCode.LessThanOrEqual: new BooleanObj(cLeft <= cRight, this);
                     case OpCode.GreaterThan: new BooleanObj(cLeft > cRight, this);
+                    case OpCode.GreaterThanOrEqual: new BooleanObj(cLeft >= cRight, this);
                     case OpCode.BitAnd: new NumberObj(Std.int(cLeft) & Std.int(cRight), this);
                     case OpCode.BitOr: new NumberObj(Std.int(cLeft) | Std.int(cRight), this);
                     case OpCode.BitShiftLeft: new NumberObj(Std.int(cLeft) << Std.int(cRight), this);
