@@ -176,16 +176,7 @@ class Parser {
                 null;
         }
 
-        final indexNode = new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
-
-        return if (currentToken.type == TokenType.Assign) {
-            nextToken();
-            final value = expressionParser.parseExpression();
-
-            new ExpressionNode(nodePos, new IndexAssignNode(nodePos, indexNode, value));
-        } else {
-            indexNode;
-        }
+        return new ExpressionNode(nodePos, new IndexNode(nodePos, target, index));
     }
 
     public function parseArray():ArrayNode {
@@ -513,7 +504,13 @@ class Parser {
     function parseStatement():Node {
         final nodePos = currentToken.position;
         final expression = expressionParser.parseExpression();
-        final statement = if (currentToken.type == TokenType.RBrace || (isRepl && currentToken.type == TokenType.Eof)) {
+        final statement = if (currentToken.type == TokenType.Assign) {
+            nextToken();
+            final value = expressionParser.parseExpression();
+            assertSemicolon();
+            nextToken();
+            new IndexAssignNode(nodePos, expression, value);
+        } else if (currentToken.type == TokenType.RBrace || (isRepl && currentToken.type == TokenType.Eof)) {
             expression;
         } else {
             assertSemicolon();
