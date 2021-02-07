@@ -94,6 +94,7 @@ The VariableTable maps the position where a variable is declared in bytecode (th
 VariableTable {
     i32 table_size
     [
+        i32 variable_index
         i32 start_byte_index
         i32 end_byte_index
         i32 variable_name_length
@@ -103,6 +104,7 @@ VariableTable {
 ```
 | Field name           | Data type | Description                                                  |
 |----------------------|-----------|--------------------------------------------------------------|
+| variable_index       | i32       | Index of this variable.                                      | 
 | table_size           | i32       | The length of the table in bytes.                            |
 | start_byte_index     | i32       | Start position of this variable in bytecode.                 |
 | end_byte_index       | i32       | End position of this variable in bytecode.                   |

@@ -4,7 +4,7 @@ import haxe.io.BytesInput;
 import haxe.io.Bytes;
 import haxe.io.BytesOutput;
 
-private typedef VariableEntry = {start:Int, end:Int, name:String};
+private typedef VariableEntry = {index:Int, start:Int, end:Int, name:String};
 
 class VariableTable {
 
@@ -12,8 +12,8 @@ class VariableTable {
 
     public function new() {}
 
-    public function define(start:Int, end:Int, name:String) {
-        table.push({start: start, end: end, name: name});
+    public function define(index: Int, start:Int, end:Int, name:String) {
+        table.push({index: index, start: start, end: end, name: name});
     }
 
     public function resolve(byteIndex:Int) {
@@ -39,6 +39,7 @@ class VariableTable {
         final tableBytes = new BytesOutput();
 
         for (entry in table) {
+            tableBytes.writeInt32(entry.index);
             tableBytes.writeInt32(entry.start);
             tableBytes.writeInt32(entry.end);
             tableBytes.writeInt32(Bytes.ofString(entry.name).length);
@@ -57,12 +58,13 @@ class VariableTable {
         final startPosition = byteCode.position;
 
         while (byteCode.position < startPosition + tableSize) {
+            final index = byteCode.readInt32();
             final start = byteCode.readInt32();
             final end = byteCode.readInt32();
             final nameLength = byteCode.readInt32();
             final name = byteCode.readString(nameLength);
 
-            table.push({start: start, end: end, name: name});
+            table.push({index: index, start: start, end: end, name: name});
         }
 
         return this;

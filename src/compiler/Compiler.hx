@@ -371,7 +371,7 @@ class Compiler {
             emit(OpCode.Store, node.position, [symbol.index]);
 
             if (debug) {
-                variableTable.define(variableStart, instructions.length, cVariableName);
+                variableTable.define(symbol.index, variableStart, instructions.length, cVariableName);
             }
         } else if (node.name.type == NodeType.DestructureArray) {
             final cVariableName = cast(node.name, DestructureArrayNode);
@@ -394,7 +394,7 @@ class Compiler {
                 emit(OpCode.Store, node.position, [symbol.index]);  
 
                 if (debug) {
-                    variableTable.define(variableStart, instructions.length, varName);
+                    variableTable.define(symbol.index, variableStart, instructions.length, varName);
                 }
             }
         } else {
@@ -418,7 +418,7 @@ class Compiler {
                 emit(OpCode.Store, node.position, [symbol.index]);
                 
                 if (debug) {
-                    variableTable.define(variableStart, instructions.length, varName);
+                    variableTable.define(symbol.index, variableStart, instructions.length, varName);
                 }
             } 
         }
@@ -438,7 +438,7 @@ class Compiler {
         emit(OpCode.Store, node.position, [symbol.index]);
 
         if (debug) {
-            variableTable.define(variableStart, instructions.length, node.name.value);
+            variableTable.define(symbol.index, variableStart, instructions.length, node.name.value);
         }
     }
 
@@ -456,7 +456,7 @@ class Compiler {
         emit(OpCode.Store, node.position, [symbol.index]);
 
         if (debug) {
-            variableTable.define(variableStart, instructions.length, node.name.value);
+            variableTable.define(symbol.index, variableStart, instructions.length, node.name.value);
         }
     }
 
@@ -490,7 +490,7 @@ class Compiler {
             final variableStart = instructions.length;
             final symbol = symbolTable.define(parameter.value, false);
             emit(OpCode.Store, node.position, [symbol.index]);
-            variableTable.define(variableStart, instructions.length, parameter.value);
+            variableTable.define(symbol.index, variableStart, instructions.length, parameter.value);
         }
 
         compile(node.block);
