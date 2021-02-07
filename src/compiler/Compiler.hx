@@ -264,40 +264,14 @@ class Compiler {
 
     function compileLessThanOrEqual(node:OperatorNode) {
         compile(node.left);
-        final left = symbolTable.defineInternal();
-        emit(OpCode.Store, node.position, [left]);
         compile(node.right);
-        final right = symbolTable.defineInternal();
-        emit(OpCode.Store, node.position, [right]);
-        emit(OpCode.Load, node.position, [left]);
-        emit(OpCode.Load, node.position, [right]);
-        emit(OpCode.LessThan, node.position, []);
-        final jumpPeekInstructionPos = instructions.length;
-        emit(OpCode.JumpPeek, node.position, [0]);
-        emit(OpCode.Pop, node.position, []);
-        emit(OpCode.Load, node.position, [left]);
-        emit(OpCode.Load, node.position, [right]);
-        emit(OpCode.Equals, node.position, []);
-        overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
+        emit(OpCode.LessThanOrEqual, node.position, []);
     }
 
     function compileGreaterThanOrEqual(node:OperatorNode) {
         compile(node.left);
-        final left = symbolTable.defineInternal();
-        emit(OpCode.Store, node.position, [left]);
         compile(node.right);
-        final right = symbolTable.defineInternal();
-        emit(OpCode.Store, node.position, [right]);
-        emit(OpCode.Load, node.position, [left]);
-        emit(OpCode.Load, node.position, [right]);
-        emit(OpCode.GreaterThan, node.position, []);
-        final jumpPeekInstructionPos = instructions.length;
-        emit(OpCode.JumpPeek, node.position, [0]);
-        emit(OpCode.Pop, node.position, []);
-        emit(OpCode.Load, node.position, [left]);
-        emit(OpCode.Load, node.position, [right]);
-        emit(OpCode.Equals, node.position, []);
-        overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
+        emit(OpCode.GreaterThanOrEqual, node.position, []);
     }
 
     function compileConcatString(node:OperatorNode) {
