@@ -94,9 +94,9 @@ class Repl {
                 FileSystem.createDirectory(Path.directory(file));
                 File.saveBytes(file, byteCode);
 
-                final process = new Process('snekkyd $file');
+                final process = new Process('snekkyp $file');
                 if (process.stderr.readAll().length > 0) {
-                    Console.log("Snekkyd not found!");
+                    Console.log("Snekkyp not found!");
                     return true;
                 }
 
