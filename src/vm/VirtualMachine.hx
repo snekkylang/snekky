@@ -126,8 +126,10 @@ class VirtualMachine {
             case OpCode.Duplicate:
                 stack.add(stack.first());
             case OpCode.Array:
+                instructions.readInt32();
                 stack.add(new ArrayObj([], this));
             case OpCode.Hash:
+                instructions.readInt32();
                 stack.add(new HashObj(new StringMap(), this));
             case OpCode.LoadIndex:
                 final index = stack.pop();

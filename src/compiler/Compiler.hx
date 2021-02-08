@@ -101,7 +101,7 @@ class Compiler {
     }
 
     function compileHash(node:HashNode) {
-        emit(OpCode.Hash, node.position, []);
+        emit(OpCode.Hash, node.position, [Lambda.count(node.values)]);
 
         for (key => value in node.values) {
             emit(OpCode.Duplicate, node.position, []);
@@ -112,7 +112,7 @@ class Compiler {
     }
 
     function compileArray(node:ArrayNode) {
-        emit(OpCode.Array, node.position, []);
+        emit(OpCode.Array, node.position, [node.values.length]);
 
         for (i => value in node.values) {
             emit(OpCode.Duplicate, node.position, []);
