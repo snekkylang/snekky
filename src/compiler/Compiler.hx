@@ -16,7 +16,6 @@ import compiler.constant.ConstantPool;
 import haxe.io.BytesOutput;
 import compiler.debug.VariableTable;
 import compiler.debug.LineNumberTable;
-import error.ErrorHelper;
 import ast.NodeType;
 import error.CompileError;
 import compiler.symbol.SymbolTable;
@@ -466,7 +465,9 @@ class Compiler {
             final variableStart = instructions.length;
             final symbol = symbolTable.define(parameter.value, false);
             emit(OpCode.Store, node.position, [symbol.index]);
-            variableTable.define(symbol.index, variableStart, instructions.length, parameter.value);
+            if (debug) {
+                variableTable.define(symbol.index, variableStart, instructions.length, parameter.value);
+            }
         }
 
         compile(node.block);
