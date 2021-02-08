@@ -123,31 +123,12 @@ class VirtualMachine {
         final opCode = instructions.readByte();
         
         switch (opCode) {
+            case OpCode.Duplicate:
+                stack.add(stack.first());
             case OpCode.Array:
-                final arrayLength = instructions.readInt32();
-                final arrayValues:Array<Object> = [];
-
-                for (_ in 0...arrayLength) {
-                    arrayValues.unshift(stack.pop());
-                }
-
-                stack.add(new ArrayObj(arrayValues, this));
+                stack.add(new ArrayObj([], this));
             case OpCode.Hash:
-                final hashLength = instructions.readInt32();
-                final hashValues:StringMap<Object> = new StringMap();
-
-                for (_ in 0...hashLength) {
-                    final value = stack.pop();
-                    final key = stack.pop();
-
-                    if (key.type == ObjectType.String) {
-                        hashValues.set(cast(key, StringObj).value, value);
-                    } else {
-                        error.error("hash key must be a string");   
-                    }
-                }
-
-                stack.add(new HashObj(hashValues, this));
+                stack.add(new HashObj(new StringMap(), this));
             case OpCode.LoadIndex:
                 final index = stack.pop();
                 final target = stack.pop();
