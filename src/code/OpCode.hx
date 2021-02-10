@@ -39,6 +39,4 @@ class OpCode {
     public static inline final Hash = 0x1e;
     public static inline final LoadIndex = 0x1f;
     public static inline final StoreIndex = 0x20;
-
-    public static inline final Duplicate = 0x21;
 }

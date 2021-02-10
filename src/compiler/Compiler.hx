@@ -100,25 +100,23 @@ class Compiler {
     }
 
     function compileHash(node:HashNode) {
-        emit(OpCode.Hash, node.position, [Lambda.count(node.values)]);
+        var length = 0;
 
         for (key => value in node.values) {
-            emit(OpCode.Duplicate, node.position, []);
             compile(key);
             compile(value);
-            emit(OpCode.StoreIndex, node.position, []);
+            length++;
         }
+
+        emit(OpCode.Hash, node.position, [length]);
     }
 
     function compileArray(node:ArrayNode) {
-        emit(OpCode.Array, node.position, [node.values.length]);
-
-        for (i => value in node.values) {
-            emit(OpCode.Duplicate, node.position, []);
-            emit(OpCode.Constant, node.position, [constantPool.addConstant(new NumberObj(i, null))]);
+        for (value in node.values) {
             compile(value);
-            emit(OpCode.StoreIndex, node.position, []);
         }
+
+        emit(OpCode.Array, node.position, [node.values.length]);
     }
 
     function compileRange(node:RangeNode) {
