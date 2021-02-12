@@ -40,7 +40,7 @@ class ExpressionParser {
         while (parser.currentToken.type == TokenType.And) {
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = comparison();
+            final right = bitOr();
 
             left = new OperatorNode(nodePos, NodeType.And, left, right);
         }
@@ -59,7 +59,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = term();
+            final right = bitXor();
             left = new OperatorNode(nodePos, type, left, right);
         }
 
@@ -78,7 +78,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = term();
+            final right = bitAnd();
             left = new OperatorNode(nodePos, type, left, right);
         }
 
@@ -96,7 +96,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = term();
+            final right = comparison();
             left = new OperatorNode(nodePos, type, left, right);
         }
 
@@ -138,7 +138,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final end = new ExpressionNode(nodePos, numeric());
+            final end = new ExpressionNode(nodePos, bitShift());
             start = new ExpressionNode(nodePos, new RangeNode(nodePos, start, end, inclusive));
         }
 
@@ -157,7 +157,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = term();
+            final right = numeric();
             left = new OperatorNode(nodePos, type, left, right);
         }
 
@@ -197,7 +197,7 @@ class ExpressionParser {
 
             parser.nextToken();
             final nodePos = parser.currentToken.position;
-            final right = term();
+            final right = signedFactor();
             left = new OperatorNode(nodePos, type, left, right);
         }
 
