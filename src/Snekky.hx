@@ -10,6 +10,10 @@ class Snekky {
 
     public static inline final Version = "0.9.0";
 
+    public static function tokenizeString(filename:String, code:String) {
+        return new Lexer(filename, code);
+    }
+
     public static function compileString(filename:String, code:String, debug:Bool, compress:Bool):Bytes {
         final lexer = new Lexer(filename, code);
 
