@@ -20,6 +20,13 @@ private class ExclusiveRange extends MemberObject {
         addFunctionMember("hasNext", [], function(p) {
             return new BooleanObj(current + 1 < end, vm);
         });
+    }
+}
+
+private class Iterator extends MemberObject {
+
+    public function new(vm:VirtualMachine, start:Int, end:Int) {
+        super(vm);
 
         addFunctionMember("Iterator", [], function(p) {
             return new ExclusiveRange(vm, start, end).getMembers();
@@ -34,18 +41,18 @@ class RangeNamespace extends MemberObject {
     public function new(vm:VirtualMachine) {
         super(vm);
 
-        addFunctionMember("Exclusive", [ObjectType.Number, ObjectType.Number], function(p) {
-            final start = cast(p[0], NumberObj).value;
-            final end = cast(p[1], NumberObj).value;
+        addFunctionMember("exclusive", [ObjectType.Number, ObjectType.Number], function(p) {
+            final start = Std.int(cast(p[0], NumberObj).value);
+            final end = Std.int(cast(p[1], NumberObj).value);
 
-            return new ExclusiveRange(vm, start, end).getMembers();
+            return new Iterator(vm, start, end).getMembers();
         });
 
-        addFunctionMember("Inclusive", [ObjectType.Number, ObjectType.Number], function(p) {
-            final start = cast(p[0], NumberObj).value;
-            final end = cast(p[1], NumberObj).value + 1;
+        addFunctionMember("inclusive", [ObjectType.Number, ObjectType.Number], function(p) {
+            final start = Std.int(cast(p[0], NumberObj).value);
+            final end = Std.int(cast(p[1], NumberObj).value + 1);
 
-            return new ExclusiveRange(vm, start, end).getMembers();
+            return new Iterator(vm, start, end).getMembers();
         });
     }
 }
