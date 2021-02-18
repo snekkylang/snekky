@@ -124,9 +124,9 @@ class Compiler {
         compile(node.start);
         emit(OpCode.LoadBuiltIn, node.position, [BuiltInTable.resolveName("Range")]);
         final constantIndex = if (node.inclusive) {
-            constantPool.addConstant(new StringObj("Inclusive", null));
+            constantPool.addConstant(new StringObj("inclusive", null));
         } else {
-            constantPool.addConstant(new StringObj("Exclusive", null));
+            constantPool.addConstant(new StringObj("exclusive", null));
         }
         emit(OpCode.Constant, node.position, [constantIndex]);
         emit(OpCode.LoadIndex, node.position, []);
