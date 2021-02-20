@@ -7,7 +7,6 @@ enum NodeType {
     Statement;
     Variable;
     VariableAssign;
-    VariableAssignOp;
     DestructureArray;
     DestructureHash;
     Ident;

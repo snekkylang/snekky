@@ -205,9 +205,6 @@ class Lexer {
                     case "/":
                         final regex = readRegex();
                         new Token(TokenType.Regex, tokenPosition, regex);
-                    case "=":
-                        readChar();
-                        new Token(TokenType.BitNotAssign, tokenPosition, "~=");
                     default: new Token(TokenType.BitNot, tokenPosition, "~");
                 }
             case ".":

@@ -18,7 +18,6 @@ enum TokenType {
     BitShiftLeftAssign;
     BitShiftRightAssign;
     BitXorAssign;
-    BitNotAssign;
     Plus;
     Minus;
     Asterisk;

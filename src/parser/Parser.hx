@@ -458,11 +458,28 @@ class Parser {
         final name = new IdentNode(nodePos, currentToken.literal);
 
         nextToken();
-        assertToken(TokenType.Assign, "`=`");
 
-        nextToken();
+        inline function readValue():ExpressionNode {
+            nextToken();
+            return expressionParser.parseExpression();
+        }
 
-        final value = expressionParser.parseExpression();
+        final value = switch (currentToken.type) {
+            case TokenType.Assign: readValue();
+            case TokenType.PlusAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Add, name, readValue()));
+            case TokenType.MinusAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Subtract, name, readValue()));
+            case TokenType.AsteriskAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Multiply, name, readValue()));
+            case TokenType.SlashAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Divide, name, readValue()));
+            case TokenType.PercentAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Modulo, name, readValue()));
+            case TokenType.BitAndAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitAnd, name, readValue()));
+            case TokenType.BitOrAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitOr, name, readValue()));
+            case TokenType.BitXorAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitXor, name, readValue()));
+            case TokenType.BitShiftLeftAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitShiftLeft, name, readValue()));
+            case TokenType.BitShiftRightAssign: new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitShiftRight, name, readValue()));
+            default: 
+                assertToken(TokenType.Assign, "`=`");
+                null;
+        }
 
         assertSemicolon();
         nextToken();
@@ -470,52 +487,39 @@ class Parser {
         return new VariableAssignNode(nodePos, name, value);
     }
 
-    public function parseVariableAssignOp():VariableAssignOpNode {
-        final nodePos = currentToken.position;
-        final name = new IdentNode(nodePos, currentToken.literal);
-
-        nextToken();
-        final op = currentToken;
-
-        nextToken();
-
-        final value = expressionParser.parseExpression();
-
-        assertSemicolon();
-        nextToken();
-
-        return new VariableAssignOpNode(nodePos, name, switch (op.type) {
-            case TokenType.PlusAssign: new OperatorNode(nodePos, NodeType.Add, name, value);
-            case TokenType.MinusAssign: new OperatorNode(nodePos, NodeType.Subtract, name, value);
-            case TokenType.AsteriskAssign: new OperatorNode(nodePos, NodeType.Multiply, name, value);
-            case TokenType.SlashAssign: new OperatorNode(nodePos, NodeType.Divide, name, value);
-            case TokenType.PercentAssign: new OperatorNode(nodePos, NodeType.Modulo, name, value);
-            case TokenType.BitAndAssign: new OperatorNode(nodePos, NodeType.BitAnd, name, value);
-            case TokenType.BitOrAssign: new OperatorNode(nodePos, NodeType.BitOr, name, value);
-            case TokenType.BitShiftLeftAssign: new OperatorNode(nodePos, NodeType.BitShiftLeft, name, value);
-            case TokenType.BitShiftRightAssign: new OperatorNode(nodePos, NodeType.BitShiftRight, name, value);
-            case TokenType.BitXorAssign: new OperatorNode(nodePos, NodeType.BitOr, name, value);
-            default:
-                error.unexpectedToken(op, "operator assign");
-                null;
-        });
-    }
-
     function parseStatement():Node {
         final nodePos = currentToken.position;
         final expression = expressionParser.parseExpression();
-        final statement = if (currentToken.type == TokenType.Assign) {
+
+        inline function readValue():ExpressionNode {
             nextToken();
             final value = expressionParser.parseExpression();
             assertSemicolon();
             nextToken();
-            new IndexAssignNode(nodePos, expression, value);
-        } else if (currentToken.type == TokenType.RBrace || (isRepl && currentToken.type == TokenType.Eof)) {
-            expression;
-        } else {
-            assertSemicolon();
-            nextToken();
-            new StatementNode(nodePos, expression);
+
+            return value;
+        }
+
+        final statement = switch (currentToken.type) {
+            case TokenType.Assign: new IndexAssignNode(nodePos, expression, readValue());
+            case TokenType.PlusAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Add, expression, readValue())));
+            case TokenType.MinusAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Subtract, expression, readValue())));
+            case TokenType.AsteriskAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Multiply, expression, readValue())));
+            case TokenType.SlashAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Divide, expression, readValue())));
+            case TokenType.PercentAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.Modulo, expression, readValue())));
+            case TokenType.BitAndAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitAnd, expression, readValue())));
+            case TokenType.BitOrAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitOr, expression, readValue())));
+            case TokenType.BitShiftLeftAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitShiftLeft, expression, readValue())));
+            case TokenType.BitShiftRightAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitShiftRight, expression, readValue())));
+            case TokenType.BitXorAssign: new IndexAssignNode(nodePos, expression, new ExpressionNode(nodePos, new OperatorNode(nodePos, NodeType.BitXor, expression, readValue())));
+            default:
+                if (currentToken.type == TokenType.RBrace || (isRepl && currentToken.type == TokenType.Eof)) {
+                    expression;
+                } else {
+                    assertSemicolon();
+                    nextToken();
+                    new StatementNode(nodePos, expression);
+                }  
         }
 
         return statement;
@@ -564,25 +568,16 @@ class Parser {
 
     function parseToken(block:BlockNode) {
         switch (currentToken.type) {
-            case TokenType.Let | TokenType.Mut:
-                block.addNode(parseVariable());
-            case TokenType.Return:
-                block.addNode(parseReturn());
-            case TokenType.If:
-                block.addNode(parseIf());
-            case TokenType.While:
-                block.addNode(parseWhile());
-            case TokenType.For:
-                block.addNode(parseFor());
-            case TokenType.When:
-                block.addNode(parseWhen());
-            case TokenType.Break:
-                block.addNode(parseBreak());
-            case TokenType.Continue:
-                block.addNode(parseContinue());
+            case TokenType.Let | TokenType.Mut: block.addNode(parseVariable());
+            case TokenType.Return: block.addNode(parseReturn());
+            case TokenType.If: block.addNode(parseIf());
+            case TokenType.While: block.addNode(parseWhile());
+            case TokenType.For: block.addNode(parseFor());
+            case TokenType.When: block.addNode(parseWhen());
+            case TokenType.Break: block.addNode(parseBreak());
+            case TokenType.Continue: block.addNode(parseContinue());
             #if target.sys
-            case TokenType.Import:
-                block.addNode(parseImport());
+            case TokenType.Import: block.addNode(parseImport());
             #end
             case TokenType.LBrace:
                 if (resolveHashBlockAmbiguity() == NodeType.Block) {
@@ -592,18 +587,14 @@ class Parser {
                 }
             case TokenType.Ident:
                 switch (lexer.peekToken().type) {
-                    case TokenType.PlusAssign | TokenType.MinusAssign | TokenType.AsteriskAssign 
-                        | TokenType.SlashAssign | TokenType.PercentAssign | TokenType.BitAndAssign
-                        | TokenType.BitOrAssign | TokenType.BitShiftLeftAssign | TokenType.BitShiftRightAssign
-                        | TokenType.BitXorAssign:
-                        block.addNode(parseVariableAssignOp());
-                    case TokenType.Assign: block.addNode(parseVariableAssign());
+                    case TokenType.Assign | TokenType.PlusAssign | TokenType.MinusAssign | TokenType.SlashAssign
+                        | TokenType.AsteriskAssign | TokenType.BitAndAssign | TokenType.BitOrAssign | TokenType.BitShiftLeftAssign
+                        | TokenType.BitShiftRightAssign | TokenType.BitXorAssign | TokenType.PercentAssign:
+                        block.addNode(parseVariableAssign());
                     default: block.addNode(parseStatement());
                 }
-            case TokenType.Illegal:
-                error.illegalToken(currentToken);
-            default:
-                block.addNode(parseStatement());
+            case TokenType.Illegal: error.illegalToken(currentToken);
+            default: block.addNode(parseStatement());
         }
     }
 }
