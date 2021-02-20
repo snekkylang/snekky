@@ -415,24 +415,6 @@ class Compiler {
         }
     }
 
-    function compileVariableAssignOp(node:VariableAssignOpNode) {
-        final variableStart = instructions.length;
-        final symbol = symbolTable.resolve(node.name.value);
-        if (symbol == null) {
-            error.symbolUndefined(node.position, node.name.value);
-        } else if (!symbol.mutable) {
-            error.symbolImmutable(node.position, node.name.value);
-        }
-        
-        compile(node.value);
-
-        emit(OpCode.Store, node.position, [symbol.index]);
-
-        if (debug) {
-            variableTable.define(symbol.index, variableStart, instructions.length, node.name.value);
-        }
-    }
-
     function compileIdent(node:IdentNode) {
         final symbol = symbolTable.resolve(node.value);
 
@@ -649,7 +631,6 @@ class Compiler {
             case NodeType.BitNot: compileBitNot(cast(node, OperatorNode));
             case NodeType.Variable: compileVariable(cast(node, VariableNode));
             case NodeType.VariableAssign: compileVariableAssign(cast(node, VariableAssignNode));
-            case NodeType.VariableAssignOp: compileVariableAssignOp(cast(node, VariableAssignOpNode));
             case NodeType.Ident: compileIdent(cast(node, IdentNode));
             case NodeType.Function: compileFunction(cast(node, FunctionNode));
             case NodeType.FunctionCall: compileFunctionCall(cast(node, CallNode));
