@@ -1,8 +1,16 @@
-# Snekky Language 🐍
+<div align="center">
+<p>
+    <img width="90" src="assets/logo.png">
+</p>
+<h1>The Snekky Programming Language</h1>
 
-The Snekky Programming Language
+[snekky-lang.org](https://snekky-lang.org) |
+[Releases](https://github.com/snekkylang/snekky/releases) |
+[Previews](https://github.com/snekkylang/snekky/actions) |
+[Examples](https://github.com/snekkylang/snekky/tree/master/examples) |
+[Report an issue](https://github.com/snekkylang/snekky/issues)
 
-<a href="https://snekky-lang.org">Playground</a>
+</div>
 
 ### Disclaimer!
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
@@ -33,7 +41,7 @@ Binaries of the latest unreleased version can be found on the [actions tab](http
 ## Usage
 
 1. Create a file called `input.snek`
-2. Run it using `Snekky.exe input.snek`
+2. Run it using `snekky input.snek`
 
 ## Example
 ```
