@@ -1,17 +1,17 @@
 package std.lib.namespaces.json;
 
+import std.lib.namespaces.json.lexer.TokenType;
+import std.lib.namespaces.json.lexer.Token;
+import std.lib.namespaces.json.lexer.Lexer;
 import object.ArrayObj;
 import object.BooleanObj;
 import object.NullObj;
 import object.StringObj;
 import object.NumberObj;
 import haxe.ds.StringMap;
-import lexer.TokenType;
 import vm.VirtualMachine;
 import object.HashObj;
-import lexer.Token;
 import object.Object;
-import lexer.Lexer;
 
 class JsonDecoder {
 
@@ -22,7 +22,7 @@ class JsonDecoder {
     public function new(json:String, vm:VirtualMachine) {
         this.vm = vm;
 
-        lexer = new Lexer("json_decoder", json);
+        lexer = new Lexer(json);
         currentToken = lexer.readToken();
     }
 
