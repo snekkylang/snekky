@@ -1,5 +1,6 @@
 package vm;
 
+import compiler.error.ErrorTable;
 import object.*;
 import haxe.zip.Uncompress;
 import compiler.debug.FilenameTable;
@@ -25,6 +26,7 @@ class VirtualMachine {
     public var filenameTable:FilenameTable;
     public var lineNumberTable:LineNumberTable;
     public var variableTable:VariableTable;
+    public var errorTable:ErrorTable;
     final builtInTable:BuiltInTable;
     public final error:RuntimeError;
     public final fileData:Bytes;
@@ -53,6 +55,7 @@ class VirtualMachine {
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         variableTable = new VariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode, this);
+        errorTable = new ErrorTable().fromByteCode(byteCode);
         final oPosition = instructions != null ? instructions.position : -1;
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
         if (oPosition != -1) {
@@ -85,6 +88,7 @@ class VirtualMachine {
 
                 if (parameters.length != cUserFunction.parametersCount) {
                     error.error("wrong number of arguments to function");
+                    throw "wrong number of arguments to function";
                 }
                 final oPosition = instructions.position;
                 pushFrame(closure.context, instructions.length, cUserFunction);
@@ -117,6 +121,8 @@ class VirtualMachine {
             lock.wait();
         }
         #end
+
+        trace(stack);
     }
 
     function evalInstruction() {
@@ -143,7 +149,8 @@ class VirtualMachine {
                     if (key.type == ObjectType.String) {
                         hashValues.set(cast(key, StringObj).value, value);
                     } else {
-                        error.error("hash key must be a string");   
+                        error.error("hash key must be a string");
+                        return;  
                     }
                 }
 
@@ -196,7 +203,9 @@ class VirtualMachine {
                         final cIndex = cast(index, StringObj);
     
                         target.getMembers().value.set(cIndex.value, value);
-                    default: error.error("index operator cannot be used on this datatype");      
+                    default: 
+                        error.error("index operator cannot be used on this datatype");
+                        return;     
                 }
             case OpCode.ConcatString:
                 final right = stack.pop().toString();
@@ -210,7 +219,8 @@ class VirtualMachine {
                 final left = stack.pop();
 
                 if (left.type != ObjectType.Number || right.type != ObjectType.Number) {
-                    error.error('cannot perform operation (left: ${left.type}, right: ${right.type})');  
+                    error.error('cannot perform operation (left: ${left.type}, right: ${right.type})');
+                    return;
                 }
 
                 final cLeft = cast(left, NumberObj).value;
@@ -275,6 +285,7 @@ class VirtualMachine {
                     }
                 } catch (e) {
                     error.error("expected condition to evaluate to boolean");
+                    return;
                 }
             case OpCode.JumpPeek:
                 final jumpIndex = instructions.readInt32();
@@ -286,6 +297,7 @@ class VirtualMachine {
                     }
                 } catch (e) {
                     error.error("expected condition to evaluate to boolean");
+                    return;
                 }
             case OpCode.Jump:
                 final jumpIndex = instructions.readInt32();
@@ -301,7 +313,8 @@ class VirtualMachine {
                         pushFrame(cClosure.context, instructions.position, cClosure.func);
 
                         if (cClosure.func.parametersCount != callParametersCount) {
-                            error.error('wrong number of arguments to function. expected ${cClosure.func.parametersCount}, got $callParametersCount');   
+                            error.error('wrong number of arguments to function. expected ${cClosure.func.parametersCount}, got $callParametersCount');
+                            return;
                         }
 
                         switch (cClosure.func.type) {
@@ -313,7 +326,9 @@ class VirtualMachine {
                                 builtInTable.callFunction(cBuiltInFunction);
                             default:
                         }
-                    default: error.error("object is not a function");
+                    default: 
+                        error.error("object is not a function");
+                        return;
                 }
             case OpCode.Return:
                 instructions.position = popFrame().returnAddress;
@@ -327,7 +342,8 @@ class VirtualMachine {
                     final value = cast(negValue, NumberObj).value;
                     stack.add(new NumberObj(-value, this));      
                 } else {
-                    error.error("only numbers can be negated");   
+                    error.error("only numbers can be negated");
+                    return;   
                 }
             case OpCode.BitNot:
                 final notValue = stack.pop();
@@ -337,6 +353,7 @@ class VirtualMachine {
                     stack.add(new NumberObj(~Std.int(value), this));
                 } else {
                     error.error("cannot perform operation");
+                    return;
                 }
             case OpCode.Not:
                 final invValue = stack.pop();
@@ -345,7 +362,8 @@ class VirtualMachine {
                     final value = cast(invValue, BooleanObj).value;
                     stack.add(new BooleanObj(!value, this));      
                 } else {
-                    error.error("only booleans can be inverted");   
+                    error.error("only booleans can be inverted");
+                    return;   
                 }
             case OpCode.Pop:
                 stack.pop();

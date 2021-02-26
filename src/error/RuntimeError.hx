@@ -1,5 +1,7 @@
 package error;
 
+import vm.Frame;
+import object.StringObj;
 import vm.VirtualMachine;
 import object.UserFunctionObj;
 import object.Object;
@@ -16,12 +18,27 @@ class RuntimeError {
         Console.log('<#DE4A3F>error:</> $message.');
     }
 
-    function printStackTrace() {
-        var position = vm.lineNumberTable.resolve(vm.instructions.position);
-        var filename = vm.filenameTable.resolve(vm.instructions.position);
+    public function error(message:String) {
+        final frames:Array<Frame> = [];
 
         while (!vm.frames.isEmpty()) {
             final frame = vm.popFrame();
+            frames.push(frame);
+
+            final target = vm.errorTable.resolve(frame.returnAddress);
+
+            if (target != -1) {
+                vm.stack.add(new StringObj(message, vm));
+                vm.instructions.position = target;  
+                return;
+            }
+        }
+
+        printHead(message);
+        var position = vm.lineNumberTable.resolve(vm.instructions.position);
+        var filename = vm.filenameTable.resolve(vm.instructions.position);
+
+        for (frame in frames) {
             final functionPosition:Int = if (frame.calledFunction != null && frame.calledFunction.type == ObjectType.UserFunction) {
                 final cUserFunction = cast(frame.calledFunction, UserFunctionObj);
                 cUserFunction.position;
@@ -34,11 +51,6 @@ class RuntimeError {
             position = vm.lineNumberTable.resolve(frame.returnAddress);
             filename = vm.filenameTable.resolve(frame.returnAddress);
         }
-    }
-
-    public function error(message:String) {
-        printHead(message);
-        printStackTrace();
 
         ErrorHelper.exit();
     }

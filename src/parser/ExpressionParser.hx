@@ -284,6 +284,8 @@ class ExpressionParser {
                 boolean;
             case TokenType.If:
                 parser.parseIf();
+            case TokenType.Try:
+                parser.parseTryCatch();
             case TokenType.When:
                 parser.parseWhen();
             case TokenType.LBracket:

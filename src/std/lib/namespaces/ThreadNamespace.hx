@@ -54,7 +54,9 @@ class ThreadNamespace extends MemberObject {
             final newVirtualMachine = new VirtualMachine(vm.fileData);
 
             Thread.create(function() {
-                newVirtualMachine.callFunction(callback, []);
+                try {
+                    newVirtualMachine.callFunction(callback, []);
+                } catch (err) {}
 
                 lock.release();
             });

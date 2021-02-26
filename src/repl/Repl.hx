@@ -1,6 +1,5 @@
 package repl;
 
-import sys.io.FileSeek;
 import sys.io.Process;
 import haxe.io.Path;
 import sys.FileSystem;

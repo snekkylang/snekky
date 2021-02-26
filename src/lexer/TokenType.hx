@@ -73,4 +73,6 @@ enum TokenType {
     For;
     In;
     When;
+    Try;
+    Catch;
 }

@@ -52,6 +52,7 @@ enum NodeType {
     When;
     Range;
     Regex;
+    TryCatch;
 
     Index;
     IndexAssign;

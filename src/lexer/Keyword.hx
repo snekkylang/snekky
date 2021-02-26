@@ -18,7 +18,9 @@ class Keyword {
         "null" => TokenType.Null,
         "for" => TokenType.For,
         "in" => TokenType.In,
-        "when" => TokenType.When
+        "when" => TokenType.When,
+        "try" => TokenType.Try,
+        "catch" => TokenType.Catch
     ];
 
     public static function isKeyword(ident:String):Bool {

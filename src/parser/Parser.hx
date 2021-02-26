@@ -554,6 +554,29 @@ class Parser {
         return parser.ast;
     }
 
+    public function parseTryCatch() {
+        final nodePos = currentToken.position;
+
+        nextToken();
+
+        assertToken(TokenType.LBrace, "`{`");
+
+        final body = parseBlock();
+
+        assertToken(TokenType.Catch, "`catch`");
+        nextToken();
+
+        assertToken(TokenType.Ident, "identifier");
+        final catchVariable = new IdentNode(nodePos, currentToken.literal);
+        nextToken();
+
+        assertToken(TokenType.LBrace, "`{`");
+
+        final catchBody = parseBlock();
+
+        return new TryCatchNode(nodePos, body, catchBody, catchVariable);
+    }
+
     function assertToken(type:TokenType, expected:String) {
         if (currentToken.type != type) {
             error.unexpectedToken(currentToken, expected);
@@ -576,6 +599,7 @@ class Parser {
             case TokenType.When: block.addNode(parseWhen());
             case TokenType.Break: block.addNode(parseBreak());
             case TokenType.Continue: block.addNode(parseContinue());
+            case TokenType.Try: block.addNode(parseTryCatch());
             #if target.sys
             case TokenType.Import: block.addNode(parseImport());
             #end

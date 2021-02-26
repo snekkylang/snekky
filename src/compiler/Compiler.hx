@@ -1,5 +1,6 @@
 package compiler;
 
+import compiler.error.ErrorTable;
 import lexer.Position;
 import haxe.ds.GenericStack;
 import object.BooleanObj;
@@ -32,6 +33,7 @@ class Compiler {
     final variableTable = new VariableTable();
     final symbolTable = new SymbolTable();
     final filenameTable = new FilenameTable();
+    final errorTable = new ErrorTable();
     var error:CompileError = new CompileError("", "");
 
     final debug:Bool;
@@ -50,6 +52,7 @@ class Compiler {
         program.write(lineNumberTable.toByteCode());
         program.write(variableTable.toByteCode());
         program.write(constantPool.toByteCode());
+        program.write(errorTable.toByteCode());
 
         final instructionsByteCode = instructions.getBytes();
         instructions = new BytesOutput();
@@ -593,6 +596,26 @@ class Compiler {
         overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
     }
 
+    function compileTryCatch(node:TryCatchNode) {
+        symbolTable.newScope();
+
+        final startIndex = instructions.length;
+
+        compile(node.body);
+        final jumpPos = instructions.length;
+        emit(OpCode.Jump, node.position, [0]);
+
+        errorTable.define(startIndex, instructions.length, instructions.length);
+
+        emit(OpCode.Store, node.position, [symbolTable.define(node.catchVariable.value, false).index]);
+
+        compile(node.catchBody);
+
+        overwriteInstruction(jumpPos, [instructions.length]);
+
+        symbolTable.setParent();
+    }
+
     public function compile(node:Node) {
         switch(node.type) {
             case NodeType.File: compileFile(cast(node, FileNode));
@@ -639,6 +662,7 @@ class Compiler {
             case NodeType.When: compileWhen(cast(node, WhenNode));
             case NodeType.For: compileFor(cast(node, ForNode));
             case NodeType.While: compileWhile(cast(node, WhileNode));
+            case NodeType.TryCatch: compileTryCatch(cast(node, TryCatchNode));
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 final constantIndex = switch (node.type) {
                     case NodeType.Float:
