@@ -29,7 +29,9 @@ class RuntimeError {
 
             if (target != -1) {
                 vm.stack.add(new StringObj(message, vm));
-                vm.instructions.position = target;  
+                vm.instructions.position = target;
+                vm.frames.add(frames.pop());
+                vm.currentFrame = vm.frames.first();
                 return;
             }
         }
