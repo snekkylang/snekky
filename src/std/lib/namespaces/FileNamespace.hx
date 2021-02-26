@@ -1,7 +1,9 @@
 package std.lib.namespaces;
 
+import sys.FileSystem;
 import object.NullObj;
 import object.StringObj;
+import object.BooleanObj;
 import sys.io.File;
 import object.Object;
 import vm.VirtualMachine;
@@ -37,6 +39,12 @@ class FileNamespace extends MemberObject {
             }
 
             return new NullObj(vm);
+        });
+
+        addFunctionMember("exists", [ObjectType.String], function(p) {
+            final path = cast(p[0], StringObj).value;
+
+            return new BooleanObj(FileSystem.exists(path), vm);
         });
     }
 }
