@@ -19,18 +19,18 @@ class RuntimeError {
     }
 
     public function error(message:String) {
-        final frames:Array<Frame> = [];
+        final poppedFrames:Array<Frame> = [];
 
         while (!vm.frames.isEmpty()) {
             final frame = vm.popFrame();
-            frames.push(frame);
+            poppedFrames.push(frame);
 
             final target = vm.errorTable.resolve(frame.returnAddress);
 
             if (target != -1) {
                 vm.stack.add(new StringObj(message, vm));
                 vm.instructions.position = target;
-                vm.frames.add(frames.pop());
+                vm.frames.add(poppedFrames.pop());
                 vm.currentFrame = vm.frames.first();
                 return;
             }
@@ -40,7 +40,7 @@ class RuntimeError {
         var position = vm.lineNumberTable.resolve(vm.instructions.position);
         var filename = vm.filenameTable.resolve(vm.instructions.position);
 
-        for (frame in frames) {
+        for (frame in poppedFrames) {
             final functionPosition:Int = if (frame.calledFunction != null && frame.calledFunction.type == ObjectType.UserFunction) {
                 final cUserFunction = cast(frame.calledFunction, UserFunctionObj);
                 cUserFunction.position;
