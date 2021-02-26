@@ -19,28 +19,24 @@ private class HttpClient extends MemberObject {
         client.onData = function(data) {
             final newVirtualMachine = new VirtualMachine(vm.fileData);
         
-            final func = cast(members.get("onData"), ClosureObj);
-            try {
-                newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
-            } catch (err) {}
+            if (members.exists("onData")) {
+                final func = cast(members.get("onData"), ClosureObj);
+                try {
+                    newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
+                } catch (err) {}
+            }
         };
 
         client.onStatus = function(status) {
             final newVirtualMachine = new VirtualMachine(vm.fileData);
         
-            final func = cast(members.get("onStatus"), ClosureObj);
-            try {
-                newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
-            } catch (err) {}
+            if (members.exists("onStatus")) {
+                final func = cast(members.get("onStatus"), ClosureObj);
+                try {
+                    newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
+                } catch (err) {}
+            }
         };
-        
-        addFunctionMember("onData", [ObjectType.String], function(parameters) {
-            return new NullObj(vm);
-        });
-
-        addFunctionMember("onStatus", [ObjectType.Number], function(parameters) {
-            return new NullObj(vm);
-        });
 
         addFunctionMember("request", [ObjectType.Boolean], function(p) {
             final post = cast(p[0], BooleanObj).value;
