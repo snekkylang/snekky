@@ -38,6 +38,17 @@ private class HttpClient extends MemberObject {
             }
         };
 
+        client.onError = function(err) {
+            final newVirtualMachine = new VirtualMachine(vm.fileData);
+        
+            if (members.exists("onError")) {
+                final func = cast(members.get("onError"), ClosureObj);
+                try {
+                    newVirtualMachine.callFunction(func, [new StringObj(err, vm)]);
+                } catch (err) {}
+            }    
+        };
+
         addFunctionMember("request", [ObjectType.Boolean], function(p) {
             final post = cast(p[0], BooleanObj).value;
             

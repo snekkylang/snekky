@@ -14,36 +14,67 @@ class Bytes extends MemberObject {
         addFunctionMember("getByte", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 
+            final value = bytes.get(pos);
+            if (value == null) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
+
             return new NumberObj(bytes.get(pos), vm);
         });
 
         addFunctionMember("getUInt16", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 
-            return new NumberObj(bytes.getUInt16(pos), vm);
+            return try {
+                new NumberObj(bytes.getUInt16(pos), vm);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                null;
+            }
         });
 
         addFunctionMember("getInt32", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 
-            return new NumberObj(bytes.getInt32(pos), vm);
+            return try {
+                new NumberObj(bytes.getInt32(pos), vm);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                null;
+            }
         });
 
         addFunctionMember("getFloat32", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 
-            return new NumberObj(bytes.getFloat(pos), vm);
+            return try {
+                new NumberObj(bytes.getFloat(pos), vm);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                null;
+            }
         });
 
         addFunctionMember("getFloat64", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 
-            return new NumberObj(bytes.getDouble(pos), vm);
+            return try {
+                new NumberObj(bytes.getDouble(pos), vm);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                null;
+            }
         });
 
         addFunctionMember("setByte", [ObjectType.Number, ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final value = cast(p[1], NumberObj).value;
+
+            if (pos >= bytes.length) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
 
             bytes.set(pos, Std.int(value));
 
@@ -54,7 +85,12 @@ class Bytes extends MemberObject {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final value = cast(p[1], NumberObj).value;
 
-            bytes.setUInt16(pos, Std.int(value));
+            try {
+                bytes.setUInt16(pos, Std.int(value));
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
 
             return new NullObj(vm);
         });
@@ -63,7 +99,12 @@ class Bytes extends MemberObject {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final value = cast(p[1], NumberObj).value;
 
-            bytes.setInt32(pos, Std.int(value));
+            try {
+                bytes.setInt32(pos, Std.int(value));
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
 
             return new NullObj(vm);
         });
@@ -72,7 +113,13 @@ class Bytes extends MemberObject {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final value = cast(p[1], NumberObj).value;
 
-            bytes.setFloat(pos, value);
+            try {
+                bytes.setFloat(pos, value);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
+
 
             return new NullObj(vm);
         });
@@ -81,7 +128,12 @@ class Bytes extends MemberObject {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final value = cast(p[1], NumberObj).value;
 
-            bytes.setDouble(pos, value);
+            try {
+                bytes.setDouble(pos, value);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                return null;
+            }
 
             return new NullObj(vm);
         });
@@ -90,7 +142,12 @@ class Bytes extends MemberObject {
             final pos = Std.int(cast(p[0], NumberObj).value);
             final len = Std.int(cast(p[1], NumberObj).value);
 
-            return new StringObj(new UnicodeString(bytes.getString(pos, len)), vm);
+            return try {
+                new StringObj(new UnicodeString(bytes.getString(pos, len)), vm);
+            } catch (err) {
+                error('index $pos out of bounds (length: ${bytes.length})');
+                null; 
+            }
         });
 
         addFunctionMember("length", [], function(p) {

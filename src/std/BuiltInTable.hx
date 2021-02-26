@@ -75,7 +75,9 @@ class BuiltInTable {
         }
 
         final returnValue = func.func(parameters);
-        vm.pushStack(returnValue);
-        vm.popFrame();
+        if (returnValue != null) {
+            vm.pushStack(returnValue);
+            vm.popFrame();
+        }
     }
 }

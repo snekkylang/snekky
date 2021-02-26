@@ -16,11 +16,11 @@ class NetNamespace extends MemberObject {
 
             final socket = secure ? new sys.ssl.Socket() : new sys.net.Socket();
 
-            try {
-                return new Socket(vm, socket).getMembers();
+            return try {
+                new Socket(vm, socket).getMembers();
             } catch (e) {
                 error("failed to open socket");
-                return null;
+                null;
             }
         });
     }

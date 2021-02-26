@@ -17,15 +17,27 @@ class Socket extends MemberObject {
         addFunctionMember("write", [ObjectType.String], function(p) {
             final msg = cast(p[0], StringObj).value;
             
-            socket.write(msg);
+            try {
+                socket.peer();
+                socket.write(msg);
+            } catch (err) {
+                error("failed to write to socket. connection closed");
+                null;
+            }
 
             return new NullObj(vm);
         });
 
         addFunctionMember("writeHex", [ObjectType.String], function(p) {
             final msg = cast(p[0], StringObj).value;
-            
-            socket.output.write(Bytes.ofHex(msg));
+
+            try {
+                socket.peer();
+                socket.output.write(Bytes.ofHex(msg));
+            } catch (err) {
+                error("failed to write to socket. connection closed");
+                null;
+            }
 
             return new NullObj(vm);
         });
@@ -33,12 +45,12 @@ class Socket extends MemberObject {
         addFunctionMember("read", [ObjectType.Number], function(p) {
             final length = Std.int(cast(p[0], NumberObj).value);
 
-            final msg = socket.input.read(length).toString();
-
             return try {
-                new StringObj(msg, vm);
+                socket.peer();
+                new StringObj(socket.input.read(length).toString(), vm);
             } catch (err) {
-                new NullObj(vm);
+                error("failed to read from socket. connection closed");
+                null;
             }
         });
 
@@ -46,26 +58,35 @@ class Socket extends MemberObject {
             final length = Std.int(cast(p[0], NumberObj).value);
 
             return try {
+                socket.peer();
                 new StringObj(socket.input.read(length).toHex(), vm);
             } catch (err) {
-                new NullObj(vm);
+                error("failed to read from socket. connection closed");
+                null;
             }
         });
 
         addFunctionMember("readLine", [], function(p) {
             return try {
+                socket.peer();
                 new StringObj(socket.input.readLine(), vm);
             } catch (err) {
-                new NullObj(vm);
-            };
+                error("failed to read from socket. connection closed");
+                null;
+            }
         });
 
         addFunctionMember("connect", [ObjectType.String, ObjectType.Number], function(p) {
             final host = cast(p[0], StringObj).value;
             final port = Std.int(cast(p[1], NumberObj).value);
 
-            socket.connect(new Host(host), port);
-            socket.setBlocking(true);
+            try {
+                socket.connect(new Host(host), port);
+                socket.setBlocking(true);
+            } catch (err) {
+                error('failed to establishment connection to $host:$port');
+                null;
+            }
 
             return new NullObj(vm);
         });
@@ -84,7 +105,12 @@ class Socket extends MemberObject {
             final host = cast(p[0], StringObj).value;
             final port = Std.int(cast(p[1], NumberObj).value);
 
-            socket.bind(new Host(host), port);
+            try {
+                socket.bind(new Host(host), port);
+            } catch (err) {
+                error('failed to bind socket to $host:$port. address already in use');
+                null;
+            }
 
             return new NullObj(vm);
         });
@@ -92,7 +118,12 @@ class Socket extends MemberObject {
         addFunctionMember("listen", [ObjectType.Number], function(p) {
             final connections = Std.int(cast(p[0], NumberObj).value);
 
-            socket.listen(connections);
+            try {
+                socket.listen(connections);
+            } catch (err) {
+                error("failed to listen");
+                null;
+            }
 
             return new NullObj(vm);
         });
