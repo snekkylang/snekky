@@ -18,7 +18,7 @@ import haxe.ds.GenericStack;
 
 class VirtualMachine {
 
-    public final stack:GenericStack<Object> = new GenericStack();
+    public var stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
     public var currentFrame:Frame;
     public var constantPool:Array<Object>;
@@ -75,11 +75,21 @@ class VirtualMachine {
         return frame;
     }
 
+    public function pushStack(o:Object) {
+        currentFrame.stackSize++;
+        stack.add(o);
+    }
+
+    public function popStack():Object {
+        currentFrame.stackSize--;
+        return stack.pop();
+    }
+
     public function callFunction(closure:ClosureObj, parameters:Array<Object>):Object {
         parameters.reverse();
 
         for (p in parameters) {
-            stack.add(p);
+            pushStack(p);
         }
 
         switch (closure.func.type) {
@@ -102,7 +112,7 @@ class VirtualMachine {
             default:
         }
 
-        return stack.pop();
+        return popStack();
     }
 
     #if target.sys
@@ -134,17 +144,17 @@ class VirtualMachine {
                 final arrayValues:Array<Object> = [];
 
                 for (_ in 0...arrayLength) {
-                    arrayValues.unshift(stack.pop());
+                    arrayValues.unshift(popStack());
                 }
 
-                stack.add(new ArrayObj(arrayValues, this));
+                pushStack(new ArrayObj(arrayValues, this));
             case OpCode.Hash:
                 final hashLength = instructions.readInt32();
                 final hashValues:StringMap<Object> = new StringMap();
 
                 for (_ in 0...hashLength) {
-                    final value = stack.pop();
-                    final key = stack.pop();
+                    final value = popStack();
+                    final key = popStack();
 
                     if (key.type == ObjectType.String) {
                         hashValues.set(cast(key, StringObj).value, value);
@@ -154,10 +164,10 @@ class VirtualMachine {
                     }
                 }
 
-                stack.add(new HashObj(hashValues, this));
+                pushStack(new HashObj(hashValues, this));
             case OpCode.LoadIndex:
-                final index = stack.pop();
-                final target = stack.pop();
+                final index = popStack();
+                final target = popStack();
 
                 final value = switch [target.type, index.type] {
                     case [ObjectType.Array, ObjectType.Number]:
@@ -182,11 +192,11 @@ class VirtualMachine {
                     default: new NullObj(this);
                 }
 
-                stack.add(value == null ? new NullObj(this) : value);
+                pushStack(value == null ? new NullObj(this) : value);
             case OpCode.StoreIndex:
-                final value = stack.pop();
-                final index = stack.pop();
-                final target = stack.pop();
+                final value = popStack();
+                final index = popStack();
+                final target = popStack();
 
                 switch [target.type, index.type] {
                     case [ObjectType.Array, ObjectType.Number]:
@@ -208,15 +218,15 @@ class VirtualMachine {
                         return;     
                 }
             case OpCode.ConcatString:
-                final right = stack.pop().toString();
-                final left = stack.pop().toString();
+                final right = popStack().toString();
+                final left = popStack().toString();
 
-                stack.add(new StringObj('$left$right', this));
+                pushStack(new StringObj('$left$right', this));
             case OpCode.Add | OpCode.Multiply | OpCode.LessThan | OpCode.GreaterThan | OpCode.Subtract 
                 | OpCode.Divide | OpCode.Modulo | OpCode.BitAnd | OpCode.BitOr | OpCode.BitShiftLeft
                 | OpCode.BitShiftRight | OpCode.BitXor | OpCode.LessThanOrEqual | OpCode.GreaterThanOrEqual:
-                final right = stack.pop();
-                final left = stack.pop();
+                final right = popStack();
+                final left = popStack();
 
                 if (left.type != ObjectType.Number || right.type != ObjectType.Number) {
                     error.error('cannot perform operation (left: ${left.type}, right: ${right.type})');
@@ -244,14 +254,14 @@ class VirtualMachine {
                     default: new NullObj(this);
                 };
 
-                stack.add(o);
+                pushStack(o);
             case OpCode.Equals:
-                final right = stack.pop();
-                final left = stack.pop();
+                final right = popStack();
+                final left = popStack();
                 
                 final equals = left.equals(right);
 
-                stack.add(new BooleanObj(equals, this));
+                pushStack(new BooleanObj(equals, this));
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
@@ -260,25 +270,25 @@ class VirtualMachine {
                     default: constantPool[constantIndex];
                 }
 
-                stack.add(constant);
+                pushStack(constant);
             case OpCode.Store:
                 final localIndex = instructions.readInt32();
 
-                final value = stack.pop();
+                final value = popStack();
                 currentFrame.setVariable(localIndex, value);
             case OpCode.Load:
                 final localIndex = instructions.readInt32();
                 final value = currentFrame.getVariable(localIndex);
 
-                stack.add(value);
+                pushStack(value);
             case OpCode.LoadBuiltIn:
                 final builtInIndex = instructions.readInt32();
 
-                stack.add(builtInTable.resolveIndex(builtInIndex));
+                pushStack(builtInTable.resolveIndex(builtInIndex));
             case OpCode.JumpNot:
                 final jumpIndex = instructions.readInt32();
                 try {
-                    final conditionValue = cast(stack.pop(), BooleanObj).value;
+                    final conditionValue = cast(popStack(), BooleanObj).value;
 
                     if (!conditionValue) {
                         instructions.position = jumpIndex;
@@ -305,7 +315,7 @@ class VirtualMachine {
                 instructions.position = jumpIndex;
             case OpCode.Call:
                 final callParametersCount = instructions.readInt32();
-                final object = stack.pop();
+                final object = popStack();
 
                 switch (object.type) {
                     case ObjectType.Closure:
@@ -333,40 +343,40 @@ class VirtualMachine {
             case OpCode.Return:
                 instructions.position = popFrame().returnAddress;
                 if (stack.isEmpty()) {
-                    stack.add(new NullObj(this));
+                    pushStack(new NullObj(this));
                 }
             case OpCode.Negate:
-                final negValue = stack.pop();
+                final negValue = popStack();
 
                 if (negValue.type == ObjectType.Number) {
                     final value = cast(negValue, NumberObj).value;
-                    stack.add(new NumberObj(-value, this));      
+                    pushStack(new NumberObj(-value, this));      
                 } else {
                     error.error("only numbers can be negated");
                     return;   
                 }
             case OpCode.BitNot:
-                final notValue = stack.pop();
+                final notValue = popStack();
 
                 if (notValue.type == ObjectType.Number) {
                     final value = cast(notValue, NumberObj).value;
-                    stack.add(new NumberObj(~Std.int(value), this));
+                    pushStack(new NumberObj(~Std.int(value), this));
                 } else {
                     error.error("cannot perform operation");
                     return;
                 }
             case OpCode.Not:
-                final invValue = stack.pop();
+                final invValue = popStack();
 
                 if (invValue.type == ObjectType.Boolean) {
                     final value = cast(invValue, BooleanObj).value;
-                    stack.add(new BooleanObj(!value, this));      
+                    pushStack(new BooleanObj(!value, this));      
                 } else {
                     error.error("only booleans can be inverted");
                     return;   
                 }
             case OpCode.Pop:
-                stack.pop();
+                popStack();
 
             default:
 

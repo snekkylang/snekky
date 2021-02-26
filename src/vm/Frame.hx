@@ -9,6 +9,7 @@ class Frame {
     public final parent:Frame;
     public final returnAddress:Int;
     public final calledFunction:Function;
+    public var stackSize = 0;
 
     public function new(parent:Frame, returnAddress:Int, calledFunction:Function) {
         this.parent = parent;

@@ -1,5 +1,6 @@
 package error;
 
+import haxe.ds.GenericStack;
 import vm.Frame;
 import object.StringObj;
 import vm.VirtualMachine;
@@ -21,19 +22,26 @@ class RuntimeError {
     public function error(message:String) {
         final poppedFrames:Array<Frame> = [];
 
+        var target = vm.errorTable.resolve(vm.instructions.position);
         while (!vm.frames.isEmpty()) {
+            for (_ in 0...vm.currentFrame.stackSize) {
+                vm.popStack();
+            }
+
+            if (target != -1) {
+                vm.pushStack(new StringObj(message, vm));
+                vm.instructions.position = target;
+                if (poppedFrames.length > 0) {
+                    vm.frames.add(poppedFrames.pop());
+                    vm.currentFrame = vm.frames.first();
+                }
+                return;
+            }
+
             final frame = vm.popFrame();
             poppedFrames.push(frame);
 
-            final target = vm.errorTable.resolve(frame.returnAddress);
-
-            if (target != -1) {
-                vm.stack.add(new StringObj(message, vm));
-                vm.instructions.position = target;
-                vm.frames.add(poppedFrames.pop());
-                vm.currentFrame = vm.frames.first();
-                return;
-            }
+            target = vm.errorTable.resolve(frame.returnAddress);
         }
 
         printHead(message);
