@@ -46,5 +46,17 @@ class FileNamespace extends MemberObject {
 
             return new BooleanObj(FileSystem.exists(path), vm);
         });
+
+        addFunctionMember("delete", [ObjectType.String], function(p) {
+            final path = cast(p[0], StringObj).value;
+
+            try {
+                FileSystem.deleteFile(path);
+            } catch (e) {
+                error("failed to delete file");
+            }
+
+            return new NullObj(vm);
+        });
     }
 }
