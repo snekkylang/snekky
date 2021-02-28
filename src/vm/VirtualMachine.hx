@@ -98,7 +98,7 @@ class VirtualMachine {
 
                 if (parameters.length != cUserFunction.parametersCount) {
                     error.error("wrong number of arguments to function");
-                    throw "wrong number of arguments to function";
+                    return null;
                 }
                 final oPosition = instructions.position;
                 pushFrame(closure.context, instructions.length, cUserFunction);

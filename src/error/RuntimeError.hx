@@ -24,9 +24,6 @@ class RuntimeError {
 
         var target = vm.errorTable.resolve(vm.instructions.position);
         while (!vm.frames.isEmpty()) {
-            for (_ in 0...vm.currentFrame.stackSize) {
-                vm.popStack();
-            }
 
             if (target != -1) {
                 vm.pushStack(new StringObj(message, vm));
@@ -38,6 +35,7 @@ class RuntimeError {
                 return;
             }
 
+            trace("ok");
             final frame = vm.popFrame();
             poppedFrames.push(frame);
 

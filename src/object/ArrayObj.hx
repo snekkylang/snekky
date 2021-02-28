@@ -78,9 +78,11 @@ class ArrayObj extends Object {
             final newArray:Array<Object> = [];
 
             for (v in value) {
-                try {
-                    newArray.push(vm.callFunction(callback, [v]));
-                } catch (err) {}
+                final o = vm.callFunction(callback, [v]);
+                if (o == null) {
+                    break;
+                }
+                newArray.push(o);
             }
 
             return new ArrayObj(newArray, vm);
@@ -91,9 +93,8 @@ class ArrayObj extends Object {
             final newArray:Array<Object> = [];
             
             for (v in value) {
-                final cbResult = try {
-                    vm.callFunction(callback, [v]);
-                } catch (err) {
+                final cbResult = vm.callFunction(callback, [v]);
+                if (cbResult == null) {
                     break;
                 }
                 if (cbResult.type != ObjectType.Boolean) {
@@ -112,9 +113,9 @@ class ArrayObj extends Object {
             final callback = cast(p[0], ClosureObj);
             
             for (v in value) {
-                try {
-                    vm.callFunction(callback, [v]);
-                } catch (err) {
+                final o = vm.callFunction(callback, [v]);
+
+                if (o == null) {
                     break;
                 }
             }

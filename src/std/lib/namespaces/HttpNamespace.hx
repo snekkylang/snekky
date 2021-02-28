@@ -21,9 +21,7 @@ private class HttpClient extends MemberObject {
         
             if (members.exists("onData")) {
                 final func = cast(members.get("onData"), ClosureObj);
-                try {
-                    newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
-                } catch (err) {}
+                newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
             }
         };
 
@@ -32,9 +30,7 @@ private class HttpClient extends MemberObject {
         
             if (members.exists("onStatus")) {
                 final func = cast(members.get("onStatus"), ClosureObj);
-                try {
-                    newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
-                } catch (err) {}
+                newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
             }
         };
 
@@ -43,9 +39,7 @@ private class HttpClient extends MemberObject {
         
             if (members.exists("onError")) {
                 final func = cast(members.get("onError"), ClosureObj);
-                try {
-                    newVirtualMachine.callFunction(func, [new StringObj(err, vm)]);
-                } catch (err) {}
+                newVirtualMachine.callFunction(func, [new StringObj(err, vm)]);
             }    
         };
 
