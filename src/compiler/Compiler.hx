@@ -443,7 +443,7 @@ class Compiler {
         symbolTable.newScope();
         for (parameter in node.parameters) {
             final variableStart = instructions.length;
-            final symbol = symbolTable.define(parameter.value, false);
+            final symbol = symbolTable.define(parameter.value, true);
             emit(OpCode.Store, node.position, [symbol.index]);
             if (debug) {
                 variableTable.define(symbol.index, variableStart, instructions.length, parameter.value);
