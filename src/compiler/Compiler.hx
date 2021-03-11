@@ -336,11 +336,11 @@ class Compiler {
         if (node.name.type == NodeType.Ident) {
             final cVariableName = cast(node.name, IdentNode).value;
             final variableStart = instructions.length;
-            final symbol = declareVariable(cVariableName, node.mutable);
             if (node.value != null) {
                 compile(node.value);
             }
 
+            final symbol = declareVariable(cVariableName, node.mutable);
             emit(OpCode.Store, node.position, [symbol.index]);
 
             if (debug) {
