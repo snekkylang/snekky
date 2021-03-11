@@ -1,6 +1,4 @@
-// Every thread has a channel which should be used for any communication
-mut channel = null;
-channel = Thread.run(func() {
+Thread.run(func() {
     mut fib = null;
     fib = func(n) {
         return if n < 2 {
@@ -10,12 +8,8 @@ channel = Thread.run(func() {
         };
     };
 
-    // Blocking if `true`
-    let b = channel.receive(true);
 
-    Sys.println(fib(b));
+    Sys.println(fib(20));
 });
 
 Sys.println("before");
-channel.send(15);
-Sys.println("after");

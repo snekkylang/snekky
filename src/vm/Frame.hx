@@ -9,12 +9,14 @@ class Frame {
     public final parent:Frame;
     public final returnAddress:Int;
     public final calledFunction:Function;
+    public final expectedStackSize:Int;
 
-    public function new(parent:Frame, returnAddress:Int, calledFunction:Function) {
+    public function new(parent:Frame, returnAddress:Int, calledFunction:Function, expectedStackSize) {
         this.parent = parent;
         this.returnAddress = returnAddress;
         this.calledFunction = calledFunction;
         this.env = new Environment();
+        this.expectedStackSize = expectedStackSize;
     }
 
     public function getVariable(index:Int) {

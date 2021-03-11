@@ -113,9 +113,9 @@ let WebSocket = func(host, port, path, protocols, secure) {
             }
 
             let mask = if masked {
-                socket.readHex(4).toBytes();
+                socket.readHex(4).toBytes()
             } else {
-                Io.Bytes(4);
+                Io.Bytes(4)
             };
 
             let payload = Io.BytesOutput();

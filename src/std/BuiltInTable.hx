@@ -64,7 +64,7 @@ class BuiltInTable {
         final parameters:Array<Object> = [];
 
         for (i in 0...func.parametersCount) {
-            final parameter = vm.stack.pop();
+            final parameter = vm.popStack();
 
             if (func.parameters[i] != null && parameter.type != func.parameters[i]) {
                 vm.error.error('expected ${(func.parameters[i])}, got ${parameter.type}'); 

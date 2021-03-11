@@ -153,7 +153,7 @@ class Repl {
                 vm.eval();
 
                 if (!vm.stack.isEmpty()) {
-                    Sys.println('==> ${vm.stack.pop()}');
+                    Sys.println('==> ${vm.popStack()}');
                 }
             } catch (e) {}
 

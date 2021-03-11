@@ -1,8 +1,5 @@
 package std.lib.namespaces;
 
-import object.NumberObj;
-import object.BooleanObj;
-import object.Object;
 import sys.thread.Lock;
 import sys.thread.Thread;
 import object.NullObj;
