@@ -1,4 +1,5 @@
-let Discord = {
+mut Discord = null;
+Discord = {
     Client: {
         import "discord/client/client";
 

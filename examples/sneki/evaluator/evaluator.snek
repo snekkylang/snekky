@@ -3,7 +3,8 @@ let Evaluator = func(ast) {
     mut executeBlock = null;
     mut currentBlock = null;
 
-    let getVariableScope = func(name, block) {
+    mut getVariableScope = null;
+    getVariableScope = func(name, block) {
         return if block.getVariable(name) != null {
             block
         } else if block.parent != null {
@@ -13,7 +14,8 @@ let Evaluator = func(ast) {
         };
     };
 
-    let evalExpression = func(expr) {
+    mut evalExpression = null;
+    evalExpression = func(expr) {
         return when expr.type {
             NodeType.Add => evalExpression(expr.left) + evalExpression(expr.right)
             NodeType.Subtract => evalExpression(expr.left) - evalExpression(expr.right)
