@@ -10,36 +10,6 @@ import object.ClosureObj;
 import object.Object.ObjectType;
 import vm.VirtualMachine;
 
-class Channel extends MemberObject {
-
-    public function new(vm:VirtualMachine) {
-        super(vm);
-
-        var message:Object = null;
-        var lock:Lock = null;
-
-        addFunctionMember("send", [null], function(p) {
-            message = p[0];
-
-            if (lock != null) {
-                lock.release();
-            }
-
-            return new NullObj(vm);
-        });
-
-        addFunctionMember("receive", [ObjectType.Boolean], function(p) {
-            final blocking = cast(p[0], BooleanObj).value;
-            if (blocking && message == null) {
-                lock = new Lock();
-                lock.wait();
-            }
-
-            return message == null ? new NullObj(vm) : message;
-        });
-    }
-}
-
 class ThreadNamespace extends MemberObject {
 
     public static final name = "Thread";
@@ -61,7 +31,7 @@ class ThreadNamespace extends MemberObject {
 
             vm.addThreadLock(lock);
 
-            return new Channel(vm).getMembers();
+            return new NullObj(vm);
         });
     }
 }
