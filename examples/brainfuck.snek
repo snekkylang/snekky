@@ -1,0 +1,77 @@
+let Brainfuck = func(program, input) {
+
+    let input = input.split("");
+    let mem = [].fill(0, 0, 30000);
+    mut ip = 0;
+    mut dp = 0;
+    mut out = "";
+
+    let execute = func() {
+        while ip < program.length() {
+            when program.charAt(ip) {
+                ">" => {
+                    dp += 1;
+                }
+                "<" => {
+                    dp -= 1;
+                }
+                "+" => {
+                    mem[dp] += 1;
+                }
+                "-" => {
+                    mem[dp] -= 1;
+                }
+                "." => {
+                    out = out >< String.fromCharCode(mem[dp]);
+                }
+                "," => {
+                    mem[dp] = input.shift().charCodeAt(0);
+                }
+                "[" => {
+                    if mem[dp] == 0 {
+                        mut nc = 1;
+                        while nc > 0 {
+                            ip += 1;
+                            if program.charAt(ip) == "[" {
+                                nc += 1;
+                            } else if program.charAt(ip) == "]" {
+                                nc -= 1;
+                            }
+                        }
+                    }
+                }
+                "]" => {
+                    if mem[dp] != 0 {
+                        mut nc = 1;
+                        while nc > 0 {
+                            ip -= 1;
+                            if program.charAt(ip) == "]" {
+                                nc += 1;
+                            } else if program.charAt(ip) == "[" {
+                                nc -= 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            ip += 1;
+        }
+
+        if out.length() > 0 {
+            Sys.println(out);
+        }
+    };
+
+    return {
+        execute: execute
+    };
+};
+
+// Prints Hello World!
+let bfHelloWorld = Brainfuck("++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.", "");
+bfHelloWorld.execute();
+
+// Calculates the sum of two numbers
+let bfSum = Brainfuck(",>,[<+>-]<------------------------------------------------.", "23");
+bfSum.execute();
