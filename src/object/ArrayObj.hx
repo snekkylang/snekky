@@ -57,6 +57,47 @@ class ArrayObj extends Object {
             return this.value.pop();
         });
 
+        addFunctionMember("concat", [ObjectType.Array], function(p) {
+            final o = cast(p[0], ArrayObj).value;
+
+            return new ArrayObj(value.concat(o), vm);
+        });
+
+        addFunctionMember("every", [ObjectType.Closure], function(p) {
+            final callback = cast(p[0], ClosureObj);
+            
+            var allPassed = true;
+            for (v in value) {
+                final cbResult = vm.callFunction(callback, [v]);
+                if (cbResult.type != ObjectType.Boolean) {
+                    error("expected callback to return boolean");
+                }
+                final passed = cast(cbResult, BooleanObj).value;
+                if (!passed) {
+                    allPassed = false;
+                    break;
+                }
+            }
+
+            return new BooleanObj(allPassed, vm);
+        });
+
+        addFunctionMember("fill", [null, ObjectType.Number, ObjectType.Number], function(p) {
+            final v = p[0];
+            final startIndex = Std.int(cast(p[1], NumberObj).value);
+            final endIndex = Std.int(cast(p[2], NumberObj).value);
+
+            for (i in 0...endIndex) {
+                if (i >= startIndex) {
+                    value[i] = v;
+                } else if (value[i] == null) {
+                    value[i] = new NullObj(vm);
+                }
+            }
+
+            return this;
+        });
+
         addFunctionMember("join", [ObjectType.String], function(p) {
             final seperator = cast(p[0], StringObj).value;
 
