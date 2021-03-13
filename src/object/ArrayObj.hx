@@ -57,6 +57,18 @@ class ArrayObj extends Object {
             return this.value.pop();
         });
 
+        addFunctionMember("unshift", [null], function(p) {
+            final v = p[0];
+
+            value.unshift(v);
+
+            return new NumberObj(value.length, vm);
+        });
+
+        addFunctionMember("shift", [], function(p) {
+            return value.shift();
+        });
+
         addFunctionMember("concat", [ObjectType.Array], function(p) {
             final o = cast(p[0], ArrayObj).value;
 
