@@ -28,6 +28,7 @@ class BuiltInTable {
             new RegexNamespace(vm),
             new JsonNamespace(vm),
             new IoNamespace(vm),
+            new StringNamespace(vm),
             #if target.sys
             new FileNamespace(vm), 
             new HttpNamespace(vm),
@@ -47,6 +48,7 @@ class BuiltInTable {
             RegexNamespace.name,
             JsonNamespace.name,
             IoNamespace.name,
+            StringNamespace.name,
             #if target.sys
             FileNamespace.name, 
             HttpNamespace.name,
