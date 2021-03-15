@@ -1,0 +1,29 @@
+let Response = func(client) {
+
+    mut status = Status.OK;
+    let headers = {
+        "Server": "snekky",
+        "Content-Type": "text/html; charset=utf-8"
+    };
+
+    let setHeader = func(name, value) {
+        headers[name] = value;
+    };
+
+    let setStatus = func(s) {
+        status = s;
+    };
+
+    let send = func(content) {
+        setHeader("Content-Length", content.toHex().toBytes().length());
+
+        let response = Encoder.encode(status, headers, content);
+        client.writeHex(response);
+    };
+
+    return {
+        setStatus: setStatus,
+        setHeader: setHeader,
+        send: send
+    };
+};

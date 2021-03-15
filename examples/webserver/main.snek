@@ -1,11 +1,12 @@
 import "server/server";
 
 let app = Server();
+app.serveStatic("static");
 
 app.get("/", func(req, res) {
-    res.send("Hello World!");
+    res.send(File.read("static/index.html"));
 });
 
-app.listen("localhost", 3000, func() {
-    Sys.println("Server running on port 3000");
+app.listen("localhost", 5555, func() {
+    Sys.println("Server running on port 5555");
 });

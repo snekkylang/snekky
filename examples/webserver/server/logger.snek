@@ -1,0 +1,5 @@
+let Logger = {
+    log: func(m) {
+        Sys.println("[Server] " >< m);
+    }
+};

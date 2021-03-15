@@ -1,12 +1,25 @@
-import "server/request/request_parser";
-import "server/request/request";
-import "server/response/response";
+import "server/message/status";
+import "server/mime/mime";
+import "server/util";
+import "server/message/encoder";
+import "server/message/request";
+import "server/message/response";
+import "server/logger";
 
 let Server = func() {
 
     let socket = Net.Socket(false);
     let routes = {
         GET: {}
+    };
+    mut staticPath = null;
+
+    let get = func(route, cb) {
+        routes.GET[route] = cb;
+    };
+
+    let serveStatic = func(path) {
+        staticPath = path;
     };
 
     let readMessage = func(client) {
@@ -28,10 +41,6 @@ let Server = func() {
         return lines;
     };
 
-    let get = func(route, cb) {
-        routes.GET[route] = cb;
-    };
-
     let listen = func(host, port, cb) {
         socket.bind(host, port);
         socket.listen(1337);
@@ -39,34 +48,39 @@ let Server = func() {
 
         while true {
             let client = socket.accept();
+            let message = readMessage(client);
+            if message == null {
+                continue;
+            }
+            let parsedRequest = Encoder.decode(message);
+            let method = parsedRequest.method;
+            Logger.log(method >< ": " >< parsedRequest.path);
 
-            Thread.run(func() {
-                while true {
-                    let message = readMessage(client);
-                    if message == null {
-                        break;
-                    }
-                    
-                    let parsedRequest = RequestParser.parse(message);
-                    let method = parsedRequest.method;
-                    if routes[method][parsedRequest.path] == null {
-                        let res = Response(client);
-                        res.setStatus("404 Not Found");
-                        res.send("");
-                        continue;
-                    }
+            let res = Response(client);
+            when {
+                routes[method][parsedRequest.path] != null => {
                     let req = Request(parsedRequest);
-                    let res = Response(client);
-                    routes[method][parsedRequest.path](req, res);
+                    routes[method][parsedRequest.path](req, res);   
                 }
-            });
-        }
+                staticPath != null && File.exists(Util.sanitizePath(staticPath >< parsedRequest.path)) => {
+                    let content = File.readBytes(Util.sanitizePath(staticPath >< parsedRequest.path));
+                    let ext = parsedRequest.path.split(".").pop();
+                    res.setHeader("Content-Type", Mime.resolveMime(ext));
+                    res.send(content);
+                }
+                else => {
+                    res.setStatus(Status.NotFound);
+                    res.send(Status.NotFound);      
+                }
+            }
 
-        socket.close();
+            client.close();
+        }
     };
 
     return {
         listen: listen,
-        get: get
+        get: get,
+        serveStatic: serveStatic
     };
 };

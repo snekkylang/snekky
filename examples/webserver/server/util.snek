@@ -1,0 +1,5 @@
+let Util = {
+    sanitizePath: func(path) {
+        return path.replace("..", "");
+    }
+};

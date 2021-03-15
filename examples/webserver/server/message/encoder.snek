@@ -1,0 +1,34 @@
+let Encoder = {
+    encode: func(status, headers, content) {
+        let out = [];
+        let push = func(s) {
+            out.push(s.toHex());
+        };
+
+        push("HTTP/1.1 " >< status);
+        for let [name, value] in headers {
+            push(name >< ": " >< value);
+        }
+        push("");
+        push(content);
+        push("\r\n");
+
+        return out.join("\r\n".toHex());
+    },
+    decode: func(lines) {
+        let [method, path, version] = lines[0].split(" ");
+        let headers = {};
+
+        for let i in 1...lines.length() {
+            let [name, value] = lines[i].split(": ");
+            headers[name] = value;
+        }
+
+        return {
+            method: method,
+            path: path,
+            version: version,
+            headers: headers
+        };
+    }
+};
