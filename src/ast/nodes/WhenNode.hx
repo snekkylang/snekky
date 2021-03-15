@@ -10,7 +10,6 @@ class WhenNode extends Node {
     public final cases:Array<Case>;
     public final elseCase:Node;
 
-
     public function new(position:Position, condition:ExpressionNode, cases:Array<Case>, elseCase:Node) {
         super(position, NodeType.When);
 

@@ -5,11 +5,16 @@ import object.StringObj;
 import object.Object.ObjectType;
 import object.NumberObj;
 import vm.VirtualMachine;
+import haxe.io.Bytes as HaxeBytes;
 
 class Bytes extends MemberObject {
 
-    public function new(vm:VirtualMachine, bytes:haxe.io.Bytes) {
+    public final bytes:HaxeBytes;
+
+    public function new(vm:VirtualMachine, bytes:HaxeBytes) {
         super(vm);
+
+        this.bytes = bytes;
 
         addFunctionMember("getByte", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);

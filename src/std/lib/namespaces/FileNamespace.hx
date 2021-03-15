@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import object.HashObj;
+import std.lib.namespaces.io.Bytes;
 import sys.FileSystem;
 import object.NullObj;
 import object.StringObj;
@@ -14,6 +16,19 @@ class FileNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+
+        addFunctionMember("readBytes", [ObjectType.String], function(p) {
+            final path = cast(p[0], StringObj).value;
+
+            try {
+                final content = File.getBytes(path);
+                return new Bytes(vm, content).getMembers();
+            } catch (e) {
+                error("failed to open file");
+            }
+
+            return new NullObj(vm);
+        });
 
         addFunctionMember("read", [ObjectType.String], function(p) {
             final path = cast(p[0], StringObj).value;
