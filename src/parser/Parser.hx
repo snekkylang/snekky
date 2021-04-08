@@ -248,6 +248,7 @@ class Parser {
 
                 nextToken();
                 while (currentToken.type != TokenType.RBracket && currentToken.type != TokenType.RBrace) {
+                    assertToken(TokenType.Ident, "identifier");
                     names.push(currentToken.literal);
                     nextToken();
                     if (currentToken.type != TokenType.Comma
