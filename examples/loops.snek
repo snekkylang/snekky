@@ -9,8 +9,11 @@ while i <= 5 {
 Sys.println(" ");
 
 // For loop - Array
-for let v in [1, 2, 3, 4, 5] {
+for let [v] in [1, 2, 3, 4, 5] {
     Sys.println(v);
+}
+for let [v, i] in [true, "test", 2.3] {
+    Sys.println(i >< " " >< v);
 }
 
 Sys.println(" ");
@@ -20,7 +23,7 @@ let myHash = {
     axolotl: 1 + 2,
     string: "hello"
 };
-for let [key, value] in myHash {
+for let [value, key] in myHash {
     Sys.println(key >< " " >< value);
 }
 

@@ -6,7 +6,7 @@ let Encoder = {
         };
 
         push("HTTP/1.1 " >< status);
-        for let [name, value] in headers {
+        for let [value, name] in headers {
             push(name >< ": " >< value);
         }
         push("");

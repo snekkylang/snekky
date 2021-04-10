@@ -13,7 +13,7 @@ private class ArrayIterator extends MemberObject {
 
         addFunctionMember("next", [], function(p) {
             index++;
-            return value[index];
+            return new ArrayObj([value[index], new NumberObj(index, vm)], vm);
         });
 
         addFunctionMember("hasNext", [], function(p) {
