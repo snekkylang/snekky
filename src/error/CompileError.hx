@@ -90,12 +90,16 @@ class CompileError {
         } 
     }
 
-    function printHead(position:Position, message:String) {
-        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#DE4A3F>error:</> $message.');
+    function printErrorHead(position:Position, message:String) {
+        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#DE4A3F>error:</> $message');
+    }
+
+    function printWarnHead(position:Position, message:String) {
+        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#F39C11>warning:</> $message');
     }
 
     public function unexpectedToken(token:Token, expected:String) {
-        printHead(token.position, 'unexpected token `${token.literal}` (${token.type})');
+        printErrorHead(token.position, 'unexpected token `${token.literal}` (${token.type})');
         Console.log('Expected $expected.');
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
@@ -103,72 +107,76 @@ class CompileError {
     }
 
     public function missingSemicolon(token:Token) {
-        printHead(token.position, "missing semicolon");
+        printErrorHead(token.position, "missing semicolon");
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function unexpectedEof(token:Token) {
-        printHead(token.position, 'unexpcted end of file');
+        printErrorHead(token.position, 'unexpcted end of file');
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
     
     public function illegalToken(token:Token) {
-        printHead(token.position, 'illegal token `${token.literal}` (${token.type})');
+        printErrorHead(token.position, 'illegal token `${token.literal}` (${token.type})');
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function importFailed(token:Token, fileName:String) {
-        printHead(token.position, 'failed to import file `$filename`');
+        printErrorHead(token.position, 'failed to import file `$filename`');
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
     }
 
     public function illegalContinue(position:Position) {
-        printHead(position, 'illegal continue statement');
+        printErrorHead(position, 'illegal continue statement');
         printCode(position, -1, "may only be used inside loops");
 
         ErrorHelper.exit();
     }
     
     public function illegalBreak(position:Position) {
-        printHead(position, 'illegal break statement');
+        printErrorHead(position, 'illegal break statement');
         printCode(position, -1, "may only be used inside loops");
 
         ErrorHelper.exit();
     }
 
     public function illegalReturn(position:Position) {
-        printHead(position, 'illegal return statement');
+        printErrorHead(position, 'illegal return statement');
         printCode(position, -1, "may only be used inside functions");
 
         ErrorHelper.exit();
     }
 
     public function symbolUndefined(position:Position, symbol:String) {
-        printHead(position, 'cannot find symbol `$symbol` in this scope');
+        printErrorHead(position, 'cannot find symbol `$symbol` in this scope');
         printCode(position, -1, "not found in this scope");
 
         ErrorHelper.exit();
     }
 
     public function symbolImmutable(position:Position, symbol:String) {
-        printHead(position, 'cannot re-assign to immutable variable `$symbol`');
+        printErrorHead(position, 'cannot re-assign to immutable variable `$symbol`');
         printCode(position, -1, "cannot be re-assgined");
 
         ErrorHelper.exit();
     }
 
     public function redeclareVariable(position:Position, symbol:String) {
-        printHead(position, 'cannot re-declare immutable variable `$symbol`');
+        printErrorHead(position, 'cannot re-declare immutable variable `$symbol`');
         printCode(position, -1, "has already been declared in this scope");
 
         ErrorHelper.exit();
+    }
+
+    public function dollarVariableName(position:Position, symbol:String) {
+        printWarnHead(position, 'symbol name `$symbol` contains $ which be used only in mechanically generated code');
     }
 }

@@ -326,6 +326,9 @@ class Compiler {
 
     function compileVariable(node:VariableNode) {
         inline function declareVariable(name:String, mutable:Bool):Symbol {
+            if (StringTools.contains(name, "$")) {
+                error.dollarVariableName(node.position, name);
+            }
             if (symbolTable.currentScope.exists(name)) {
                 error.redeclareVariable(node.position, name);
             }
