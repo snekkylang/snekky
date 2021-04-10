@@ -4,7 +4,7 @@ import "lexer/lexer";
 import "parser/parser";
 import "evaluator/evaluator";
 
-let code = File.read("./input.sneki");
+let code = File.read("./input.sneks");
 let lexer = Lexer(code);
 let parser = Parser(lexer);
 parser.generateAst();
