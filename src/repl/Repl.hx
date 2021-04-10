@@ -14,7 +14,7 @@ import parser.Parser;
 import lexer.Lexer;
 
 class Repl {
-    var compiler = new Compiler(true);
+    var compiler = new Compiler(true, true);
     var vm:VirtualMachine = null;
     var thread:Thread;
 
@@ -80,7 +80,7 @@ class Repl {
             case "clear":
                 Sys.print("\033c");
             case "reset" | "r":
-                compiler = new Compiler(true);
+                compiler = new Compiler(true, true);
                 vm = null;
                 Console.log("Environment reset");
             case "disassemble" | "d":

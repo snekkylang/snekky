@@ -35,13 +35,15 @@ class Compiler {
     var error:CompileError = new CompileError("", "");
 
     final debug:Bool;
+    final warnings:Bool;
 
     final breakPositions:GenericStack<Int> = new GenericStack();
     final loopPositions:GenericStack<Int> = new GenericStack();
     var functionDepth = 0;
 
-    public function new(debug:Bool) {
+    public function new(debug:Bool, warnings:Bool) {
         this.debug = debug;
+        this.warnings = warnings;
     }
 
     public function getByteCode(compress:Bool):Bytes {
@@ -326,7 +328,7 @@ class Compiler {
 
     function compileVariable(node:VariableNode) {
         inline function declareVariable(name:String, mutable:Bool):Symbol {
-            if (StringTools.contains(name, "$")) {
+            if (warnings && StringTools.contains(name, "$")) {
                 error.dollarVariableName(node.position, name);
             }
             if (symbolTable.currentScope.exists(name)) {
