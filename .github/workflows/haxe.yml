@@ -86,6 +86,7 @@ jobs:
         run: |
           haxelib install console.hx
           haxelib install hxcpp
+          haxelib install hxargs
       - name: Build
         run: haxe build-js.hxml
       - name: Upload artifact
