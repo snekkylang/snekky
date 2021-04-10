@@ -177,6 +177,6 @@ class CompileError {
     }
 
     public function dollarVariableName(position:Position, symbol:String) {
-        printWarnHead(position, 'symbol name `$symbol` contains $ which be used only in mechanically generated code');
+        printWarnHead(position, 'symbol name `$symbol` contains $ which should be used only in mechanically generated code');
     }
 }
