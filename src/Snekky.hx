@@ -9,7 +9,7 @@ import lexer.Lexer;
 @:expose
 class Snekky {
 
-    public static inline final Version = "0.9.0";
+    public static final Version = "0.9.0";
 
     public static function tokenizeString(filename:String, code:String) {
         return new Lexer(filename, code);
