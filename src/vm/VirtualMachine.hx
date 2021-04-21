@@ -142,7 +142,7 @@ class VirtualMachine {
                 final arrayValues:Array<Object> = [];
 
                 for (_ in 0...arrayLength) {
-                    arrayValues.unshift(popStack());
+                    arrayValues.push(popStack());
                 }
 
                 stack.add(new ArrayObj(arrayValues, this));

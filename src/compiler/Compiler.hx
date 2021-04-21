@@ -114,8 +114,9 @@ class Compiler {
     }
 
     function compileArray(node:ArrayNode) {
-        for (value in node.values) {
-            compile(value);
+        var i = node.values.length;
+        while (--i >= 0) {
+            compile(node.values[i]);
         }
 
         emit(OpCode.Array, node.position, [node.values.length]);
