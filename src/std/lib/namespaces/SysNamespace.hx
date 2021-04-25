@@ -24,7 +24,7 @@ class SysNamespace extends MemberObject {
             js.Browser.console.log(s);
             #end
 
-            return new NullObj(vm);
+            return p[0];
         });
 
         addFunctionMember("println", [null], function(p) {
