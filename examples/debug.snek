@@ -1,7 +1,7 @@
 // Tracing
 let myFunc = func(x) {
-    if x > 5 {
-        Sys.trace("x might be too large");
+    if Sys.trace(x > 5) {
+        return x;
     }
 
     return x * 2;
