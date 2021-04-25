@@ -13,6 +13,20 @@ class SysNamespace extends MemberObject {
     public function new(vm:VirtualMachine) {
         super(vm);
 
+        addFunctionMember("trace", [null], function(p) {
+            final filename = vm.filenameTable.resolve(vm.instructions.position);
+            final position = vm.lineNumberTable.resolve(vm.instructions.position);
+
+            final s = '$filename:${position.line}: ${p[0]}';
+            #if target.sys
+            Sys.println(s);
+            #else
+            js.Browser.console.log(s);
+            #end
+
+            return new NullObj(vm);
+        });
+
         addFunctionMember("println", [null], function(p) {
             #if target.sys
             Sys.println(p[0].toString());
