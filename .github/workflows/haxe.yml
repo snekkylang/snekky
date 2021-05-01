@@ -11,7 +11,7 @@ jobs:
         with:
           haxe-version: 4.2.0
       - name: Install dependencies
-        run: haxelib install .\build.hxml --always
+        run: haxelib install build.hxml --always
       - name: Build
         run: haxe build.hxml
       - name: Rename artifact
@@ -31,7 +31,7 @@ jobs:
         with:
           haxe-version: 4.2.0
       - name: Install dependencies
-        run: haxelib install .\build.hxml --always
+        run: haxelib install build.hxml --always
       - name: Build
         run: haxe build.hxml
       - name: Rename artifact
@@ -54,7 +54,7 @@ jobs:
         with:
           haxe-version: 4.2.0
       - name: Install dependencies
-        run: haxelib install .\build.hxml --always
+        run: haxelib install build.hxml --always
       - name: Build
         run: haxe build.hxml
       - name: Rename artifact
@@ -74,7 +74,7 @@ jobs:
         with:
           haxe-version: 4.2.0
       - name: Install dependencies
-        run: haxelib install .\build-js.hxml --always
+        run: haxelib install build-js.hxml --always
       - name: Build
         run: haxe build-js.hxml
       - name: Upload artifact
