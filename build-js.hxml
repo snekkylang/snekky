@@ -1,5 +1,5 @@
 -cp src
 -main Snekky
 -js js/snekky.js
--lib console.hx
+-lib console.hx:0.2.12
 -lib hxargs

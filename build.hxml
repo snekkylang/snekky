@@ -2,5 +2,5 @@
 -main Snekky
 -cpp cpp
 -D HXCPP_M64
--lib console.hx
+-lib console.hx:0.2.12
 -lib hxargs
