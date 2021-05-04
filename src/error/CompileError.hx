@@ -128,7 +128,7 @@ class CompileError {
     }
 
     public function importFailed(token:Token, fileName:String) {
-        printErrorHead(token.position, 'failed to import file `$filename`');
+        printErrorHead(token.position, 'failed to import file `$fileName`');
         printCode(token.position, token.position.lineOffset + token.literal.length);
 
         ErrorHelper.exit();
