@@ -94,7 +94,7 @@ class Snekky {
             final compress = config.dumpPath != null && config.compress;
     
             if (Path.extension(filename) == "snek") {
-                final code = sys.io.File.getContent('./$filename');
+                final code = sys.io.File.getContent(filename);
     
                 final byteCode = compileString(filename, code, config.debug, compress, config.warnings);
     
