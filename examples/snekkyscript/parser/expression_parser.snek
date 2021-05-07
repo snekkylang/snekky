@@ -41,7 +41,7 @@ let ExpressionParser = func(lexer, parser) {
         while true {
             let type = when parser.currentToken().type {
                 TokenType.Plus => NodeType.Add
-                TokenType.Subtract => NodeType.Subtract
+                TokenType.Minus => NodeType.Subtract
                 else => {
                     return left;
                 }
