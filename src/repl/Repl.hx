@@ -1,23 +1,21 @@
 package repl;
 
+import hxargs.Args;
 import build.Version;
-import sys.io.FileSeek;
 import sys.io.Process;
 import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
-import sys.thread.Lock;
 import error.ErrorHelper;
-import sys.thread.Thread;
 import vm.VirtualMachine;
 import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
 
 class Repl {
+
     var compiler = new Compiler(true, true);
     var vm:VirtualMachine = null;
-    var thread:Thread;
 
     public function new() {
         Console.logPrefix = "|  ";
@@ -69,22 +67,30 @@ class Repl {
         return code.toString();
     }
 
-    function handleCommand(line:String):Bool {
-        if (!StringTools.startsWith(line, "/")) {
-            return false;
-        }
-
-        switch (line.substr(1)) {
-            case "exit":
+    function handleCommand(cmd:String) {
+        var showHelp = false;
+        final argumentHandler = Args.generate([
+            @doc("Shows this dialog")
+            ["/help"] => function() {
+                showHelp = true;
+            },
+            @doc("Exits the REPL environment")
+            ["/exit"] => function() {
                 Console.log("Goodbye");
                 Sys.exit(0);
-            case "clear":
+            },
+            @doc("Clears the screen")
+            ["/clear"] => function() {
                 Sys.print("\033c");
-            case "reset" | "r":
+            },
+            @doc("Resets the environment")
+            ["/reset", "/r"] => function() {
                 compiler = new Compiler(true, true);
                 vm = null;
                 Console.log("Environment reset");
-            case "disassemble" | "d":
+            },
+            @doc("Prints the disassembled bytecode")
+            ["/disassemble", "/d"] => function() {
                 final byteCode = compiler.getByteCode(false);
                 final tempDir = if (Sys.systemName() == "Windows") {
                     Sys.getEnv("temp");
@@ -98,7 +104,7 @@ class Repl {
                 final process = new Process('snekkyp $file');
                 if (process.stderr.readAll().length > 0) {
                     Console.log("Snekkyp not found!");
-                    return true;
+                    return;
                 }
 
                 for (row in ~/\r\n|\n/g.split(process.stdout.readAll().toString())) {
@@ -110,69 +116,62 @@ class Repl {
                 }
 
                 process.close();
-            case "help":
-                Console.log("help - Shows this dialogue.");
-                Console.log("exit - Exits the REPL environment.");
-                Console.log("clear - Clears the screen.");
-                Console.log("reset/r - Resets the environment.");
-                Console.log("disassemble/d - Prints the disassembled bytecode.");
-            default:
-                Console.log("Unknown command");
-        }
+            },
+            _ => function(input:String) {
+                showHelp = true;
+            }
+        ]);
 
-        return true;
+        final command = cmd.split(" ");
+        argumentHandler.parse(command);
+        if (showHelp) {
+            for (line in argumentHandler.getDoc().split("\n")) {
+                Console.log(line);
+            }
+        }
     }
 
     function handleInput() {
-        final lock = new Lock();
-        thread = Thread.create(() -> {
+        try {
             ErrorHelper.exit = function() {
-                lock.release();
                 throw "execution failed";
             };
 
-            try {
-                final code = read();
-                if (handleCommand(code)) {
-                    lock.release();
-                    return;
-                }
+            final code = read();
 
-                final lexer = new Lexer("repl", code);
-                final parser = new Parser(lexer, true);
-                parser.generateAst();
+            if (StringTools.startsWith(code, "/")) {
+                handleCommand(code);
+                return;
+            }
 
-                compiler.compile(parser.ast);
-                final byteCode = compiler.getByteCode(false);
+            final lexer = new Lexer("repl", code);
+            final parser = new Parser(lexer, true);
+            parser.generateAst();
 
-                if (vm == null) {
-                    vm = new VirtualMachine(byteCode);
-                } else {
-                    vm.newWithState(byteCode);
-                }
+            compiler.compile(parser.ast);
+            final byteCode = compiler.getByteCode(false);
 
-                vm.eval();
+            if (vm == null) {
+                vm = new VirtualMachine(byteCode);
+            } else {
+                vm.newWithState(byteCode);
+            }
 
-                if (!vm.stack.isEmpty()) {
-                    Sys.println('==> ${vm.popStack()}');
-                }
-            } catch (e) {}
+            vm.eval();
 
-            lock.release();
-        });
+            if (!vm.stack.isEmpty()) {
+                Sys.println('==> ${vm.popStack()}');
+            }
+        } catch (e) {}
 
-        lock.wait();
         handleInput();
     }
 
     public function start() {
-        final lock = new Lock();
-
         Console.log('Welcome to Snekky REPL -- Version ${Version.SemVersion}');
         Console.log("Type /help for more information");
         Sys.println("");
 
         handleInput();
-        lock.wait();
     }
 }
