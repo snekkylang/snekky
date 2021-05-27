@@ -1,5 +1,6 @@
 package repl;
 
+import build.Version;
 import sys.io.FileSeek;
 import sys.io.Process;
 import haxe.io.Path;
@@ -167,7 +168,7 @@ class Repl {
     public function start() {
         final lock = new Lock();
 
-        Console.log('Welcome to Snekky REPL -- Version ${Snekky.Version}');
+        Console.log('Welcome to Snekky REPL -- Version ${Version.SemVersion}');
         Console.log("Type /help for more information");
         Sys.println("");
 
