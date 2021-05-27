@@ -9,8 +9,8 @@ class Version {
     static function getFormattedData() {
         final date = Date.now();
         
-        final dd = StringTools.rpad("0", Std.string(date.getDay()), 2);
-        final mm = StringTools.rpad("0", Std.string(date.getMonth() + 1), 2);
+        final dd = StringTools.lpad(Std.string(date.getDate()), "0", 2);
+        final mm = StringTools.lpad(Std.string(date.getMonth() + 1), "0", 2);
         final yyyy = date.getFullYear();
 
         return '$yyyy-$mm-$dd';    
