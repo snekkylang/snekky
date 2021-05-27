@@ -3,6 +3,7 @@ package object;
 import std.lib.MemberObject;
 import vm.VirtualMachine;
 import object.Object.ObjectType;
+import haxe.iterators.ArrayIterator as HaxeArrayIterator;
 
 private class ArrayIterator extends MemberObject {
 
@@ -187,7 +188,18 @@ class ArrayObj extends Object {
     }
 
     override function toString():String {
-        return value.map(o -> o.toString()).toString(); 
+        final buffer = new StringBuf();
+        buffer.add("[");
+        final iterator = new HaxeArrayIterator(value);
+        for (v in iterator) {
+            buffer.add(v.toString());
+            if (iterator.hasNext()) {
+                buffer.add(", ");
+            }
+        }
+        
+        buffer.add("]");
+        return buffer.toString();
     }
 
     override function equals(o:Object):Bool {
