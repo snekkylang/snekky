@@ -118,7 +118,8 @@ class Repl {
                 process.close();
             },
             _ => function(input:String) {
-                showHelp = true;
+                Console.log('Invalid command: $input');
+                Console.log("Type /help for help.");
             }
         ]);
 
@@ -141,6 +142,7 @@ class Repl {
 
             if (StringTools.startsWith(code, "/")) {
                 handleCommand(code);
+                handleInput();
                 return;
             }
 
