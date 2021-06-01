@@ -37,3 +37,12 @@ let myClosure = func() {
 };
 
 myClosure();
+
+// Function parameters are immutable by default
+let mutableParam = func(mut x, y) {
+    x *= 2;
+
+    return x + y;
+};
+
+Sys.println(mutableParam(2, 3));
