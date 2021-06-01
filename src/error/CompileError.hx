@@ -170,8 +170,8 @@ class CompileError {
     }
 
     public function redeclareVariable(position:Position, symbol:String) {
-        printErrorHead(position, 'cannot re-declare immutable variable `$symbol`');
-        printCode(position, -1, "has already been declared in this scope");
+        printErrorHead(position, 'cannot re-declare variable `$symbol`');
+        printCode(position, -1, "cannot be shadowed on same scope");
 
         ErrorHelper.exit();
     }

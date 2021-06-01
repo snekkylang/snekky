@@ -448,6 +448,9 @@ class Compiler {
 
         symbolTable.newScope();
         for (parameter in node.parameters) {
+            if (symbolTable.currentScope.exists(parameter.value)) {
+                error.redeclareVariable(parameter.position, parameter.value);
+            }
             final variableStart = instructions.length;
             final symbol = symbolTable.define(parameter.value, true);
             emit(OpCode.Store, node.position, [symbol.index]);
