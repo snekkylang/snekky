@@ -448,14 +448,14 @@ class Compiler {
 
         symbolTable.newScope();
         for (parameter in node.parameters) {
-            if (symbolTable.currentScope.exists(parameter.value)) {
-                error.redeclareVariable(parameter.position, parameter.value);
+            if (symbolTable.currentScope.exists(parameter.ident.value)) {
+                error.redeclareVariable(parameter.position, parameter.ident.value);
             }
             final variableStart = instructions.length;
-            final symbol = symbolTable.define(parameter.value, true);
+            final symbol = symbolTable.define(parameter.ident.value, parameter.mutable);
             emit(OpCode.Store, node.position, [symbol.index]);
             if (debug) {
-                variableTable.define(symbol.index, variableStart, instructions.length, parameter.value);
+                variableTable.define(symbol.index, variableStart, instructions.length, parameter.ident.value);
             }
         }
 

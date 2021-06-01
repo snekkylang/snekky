@@ -1,5 +1,6 @@
 package parser;
 
+import ast.nodes.datatypes.FunctionNode.ParameterNode;
 import lexer.Position;
 import ast.NodeType;
 import error.CompileError;
@@ -101,11 +102,18 @@ class Parser {
 
         nextToken();
 
-        final parameters:Array<IdentNode> = [];
+        final parameters:Array<ParameterNode> = [];
 
         while (currentToken.type != TokenType.RParen) {
+            var mutable = false;
+            if (currentToken.type == TokenType.Mut) {
+                mutable = true;
+                nextToken();
+            }
+
             if (currentToken.type == TokenType.Ident) {
-                parameters.push(new IdentNode(currentToken.position, currentToken.literal));
+                final param = new ParameterNode(currentToken.position, new IdentNode(currentToken.position, currentToken.literal), mutable);
+                parameters.push(param);
                 if (lexer.peekToken().type != TokenType.Comma && lexer.peekToken().type != TokenType.RParen) {
                     error.unexpectedToken(currentToken, "`,` or `)`");
                 }

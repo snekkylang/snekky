@@ -11,6 +11,7 @@ enum NodeType {
     DestructureHash;
     Ident;
     FunctionCall;
+    Parameter;
 
     Add;
     Subtract;
