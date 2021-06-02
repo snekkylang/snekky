@@ -16,6 +16,7 @@ class Repl {
 
     var compiler = new Compiler(true, true);
     var vm:VirtualMachine = null;
+    var fullCode = new StringBuf();
 
     public function new() {
         Console.logPrefix = "|  ";
@@ -52,6 +53,10 @@ class Repl {
                 null;
             };
 
+            if (!StringTools.startsWith(line, "/")) {
+                fullCode.add('$line\r\n');
+            }
+
             openBraces -= line.split("").filter(c -> c == "}").length;
 
             Sys.print("\033[1A");
@@ -80,13 +85,14 @@ class Repl {
                 Sys.exit(0);
             },
             @doc("Clears the screen")
-            ["/clear"] => function() {
+            ["/clear", "/c"] => function() {
                 Sys.print("\033c");
             },
             @doc("Resets the environment")
             ["/reset", "/r"] => function() {
                 compiler = new Compiler(true, true);
                 vm = null;
+                fullCode = new StringBuf();
                 Console.log("Environment reset");
             },
             @doc("Prints the disassembled bytecode")
@@ -117,6 +123,25 @@ class Repl {
 
                 process.close();
             },
+            @doc("Opens a file as source input")
+            ["/open"] => function(path) {
+                final code = try {
+                    File.getContent(path);
+                } catch (e) {
+                    Console.log('Failed to open file \'$path\'');
+                    return;
+                }
+
+                evaluate(code);
+            },
+            @doc("Save snippet source as file")
+            ["/save"] => function(path) {
+                try {
+                    File.saveContent(path, fullCode.toString());
+                } catch (e) {
+                    Console.log('Failed to write file \'$path\'');
+                }
+            },
             _ => function(input:String) {
                 Console.log('Invalid command: $input');
                 Console.log("Type /help for help.");
@@ -127,8 +152,29 @@ class Repl {
         argumentHandler.parse(command);
         if (showHelp) {
             for (line in argumentHandler.getDoc().split("\n")) {
-                Console.log(line);
+                Console.println('|  $line');
             }
+        }
+    }
+
+    function evaluate(code:String) {
+        final lexer = new Lexer("repl", code);
+        final parser = new Parser(lexer, true);
+        parser.generateAst();
+
+        compiler.compile(parser.ast);
+        final byteCode = compiler.getByteCode(false);
+
+        if (vm == null) {
+            vm = new VirtualMachine(byteCode);
+        } else {
+            vm.newWithState(byteCode);
+        }
+
+        vm.eval();
+
+        if (!vm.stack.isEmpty()) {
+            Sys.println('==> ${vm.popStack()}');
         }
     }
 
@@ -146,24 +192,7 @@ class Repl {
                 return;
             }
 
-            final lexer = new Lexer("repl", code);
-            final parser = new Parser(lexer, true);
-            parser.generateAst();
-
-            compiler.compile(parser.ast);
-            final byteCode = compiler.getByteCode(false);
-
-            if (vm == null) {
-                vm = new VirtualMachine(byteCode);
-            } else {
-                vm.newWithState(byteCode);
-            }
-
-            vm.eval();
-
-            if (!vm.stack.isEmpty()) {
-                Sys.println('==> ${vm.popStack()}');
-            }
+            evaluate(code);
         } catch (e) {}
 
         handleInput();
