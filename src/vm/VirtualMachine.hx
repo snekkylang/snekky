@@ -39,6 +39,7 @@ class VirtualMachine {
         builtInTable = new BuiltInTable(this);
 
         error = new RuntimeError(this);
+        pushFrame(null, 0, null);
     }
 
     public function newWithState(fileData:Bytes) {
@@ -57,7 +58,6 @@ class VirtualMachine {
         if (oPosition != -1) {
             instructions.position = oPosition;
         }
-        pushFrame(null, 0, null);
     }
 
     public function pushFrame(context:Frame, returnAddress:Int, calledFunction:Function) {
