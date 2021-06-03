@@ -58,7 +58,11 @@ class Highlighter {
             highlightedCode.add(highlighted);
         }
 
-        Console.log(highlightedCode.toString());
+        if (!StringTools.startsWith(code, "/")) {
+            Console.log(highlightedCode.toString());
+        } else {
+            Console.println(code);
+        }
         Console.logPrefix = "|  ";
     }
 }
