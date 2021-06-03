@@ -39,7 +39,6 @@ class VirtualMachine {
         builtInTable = new BuiltInTable(this);
 
         error = new RuntimeError(this);
-        pushFrame(null, 0, null);
     }
 
     public function newWithState(fileData:Bytes) {
@@ -53,11 +52,12 @@ class VirtualMachine {
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         variableTable = new VariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode, this);
-        final oPosition = instructions != null ? instructions.position : -1;
+        final oPosition = instructions != null ? instructions.position : 0;
         instructions = new BytesInput(byteCode.read(byteCode.readInt32()));
         if (oPosition != -1) {
             instructions.position = oPosition;
         }
+        pushFrame(null, 0, null);
     }
 
     public function pushFrame(context:Frame, returnAddress:Int, calledFunction:Function) {
