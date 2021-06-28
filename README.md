@@ -45,8 +45,9 @@ Builds can be found in the [releases tab](https://github.com/snekkylang/snekky/r
 
 1. Create a file called `input.snek` in a text editor (e.g. [Visual Studio Code](https://code.visualstudio.com/)).
 2. **(optional)** Install the Snekky [VSCode extension](https://github.com/snekkylang/snekky-vscode) for syntax highlighting.
-2. Enter some code (check out the examples).
-3. Run it using `snekky input.snek`.
+3. Enter some code (check out the examples).
+4. Run it using `snekky input.snek`.
+5. Run `snekky --help` for more information.
 
 ## Example
 For more examples, checkout the [examples folder](https://github.com/snekkylang/snekky/tree/master/examples).
