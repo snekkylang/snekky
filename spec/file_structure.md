@@ -1,5 +1,5 @@
 # File Structure
-###### Last updated 2020-08-11
+###### Last updated 2021-06-28
 This document describes the structure of a Snekky bytecode file.
 
 **Table of Contents**
@@ -10,7 +10,7 @@ This document describes the structure of a Snekky bytecode file.
     - [LineNumberTable](#linenumbertable)
     - [VariableTable](#variabletable)
     - [ConstantPool](#constantpool)
-        - [Float](#float)
+        - [Number](#Number)
         - [String](#string)
         - [Function](#function)
         - [Null](#null)
@@ -33,7 +33,7 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 | str    | An UTF-8 encoded string.                                                                                                           |
 
 ## Bytecode Structure
-The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Litte endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
+The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Little-endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
 ```
 Bytecode File {
     byt compressed
@@ -104,8 +104,8 @@ VariableTable {
 ```
 | Field name           | Data type | Description                                                  |
 |----------------------|-----------|--------------------------------------------------------------|
-| variable_index       | i32       | Index of this variable.                                      | 
 | table_size           | i32       | The length of the table in bytes.                            |
+| variable_index       | i32       | Index of this variable.                                      | 
 | start_byte_index     | i32       | Start position of this variable in bytecode.                 |
 | end_byte_index       | i32       | End position of this variable in bytecode.                   |
 | variable_name_length | i32       | Length of the variable name (in bytes).                      |
@@ -130,7 +130,7 @@ The structure of `Constant` depends on the data type of the value it contains. T
 Constant {
     byt data_type
     (
-        <FloatConstant>
+        <NumberConstant>
         <StringConstant>
         <FunctionConstant>
         <BooleanConstant>
@@ -144,16 +144,16 @@ Constant {
 Data types are mapped as follows:
 | data_type | Represented data type |
 |-----------|-----------------------|
-| 0         | Float                 |
+| 0         | Number                |
 | 1         | String                |
 | 2         | Function              |
 | 3         | Null                  |
 | 4         | Boolean               |
 
-#### Float
-Snekky uses 64-bit floats to represent all numbers and booleans.
+#### Number
+Snekky uses 64-bit floats to represent all numbers.
 ```
-FloatConstant {
+NumberConstant {
     f64 value
 }
 ```

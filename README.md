@@ -16,8 +16,7 @@
 Please do not take this project too seriously. I'm in no way a professional. To be honest, I'm surprised myself that Snekky is even somewhat usable.
 
 ## About
-Snekky is a simple object-based, imperative programming language compiling to a custom bytecode.
-
+Snekky is a simple object-based, imperative programming language compiling to a custom bytecode. Checkout the [specification](spec) for more information.
 ## Features
 - Built-in REPL.
 - Familiar syntax.
