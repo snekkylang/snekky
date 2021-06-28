@@ -79,6 +79,10 @@ class Snekky {
 
         argumentHandler.parse(args);
 
+        #if interp
+        config.inputPath = "input.snek";
+        #end
+
         if (config.showHelp) {
             Console.println("Usage: snekky [-options] <input>");
             Console.println("");

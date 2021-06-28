@@ -1,0 +1,3 @@
+scripts/base.hxml
+-cpp cpp
+-D HXCPP_M64

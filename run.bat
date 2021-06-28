@@ -1,1 +1,0 @@
-haxe --main Snekky -cp src -lib console.hx -lib hxargs --run Snekky input.snek

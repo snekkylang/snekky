@@ -16,7 +16,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install hxargs --quiet
       - name: Build
-        run: haxe build.hxml
+        run: haxe scripts/build-cpp.hxml
       - name: Rename artifact
         run: mv cpp/Snekky cpp/snekky
       - name: Strip artifact symbols
@@ -39,7 +39,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install hxargs --quiet
       - name: Build
-        run: haxe build.hxml
+        run: haxe scripts/build-cpp.hxml
       - name: Rename artifact
         run: | 
           cd cpp
@@ -65,7 +65,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install hxargs --quiet
       - name: Build
-        run: haxe build.hxml
+        run: haxe scripts/build-cpp.hxml
       - name: Rename artifact
         run: mv cpp/snekky cpp/snekky
       - name: Strip artifact symbols
@@ -87,7 +87,7 @@ jobs:
           haxelib install console.hx 0.2.12 --quiet
           haxelib install hxargs --quiet
       - name: Build
-        run: haxe build-js.hxml
+        run: haxe scripts/build-js.hxml
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:
