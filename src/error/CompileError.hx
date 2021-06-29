@@ -55,7 +55,7 @@ class CompileError {
         final lineCountWidth = Std.string(position.line + 3).length;
 
         for (i in previewStart...previewEnd) {
-            final lineCount = StringTools.rpad(Std.string(i), " ", lineCountWidth);
+            final lineCount = StringTools.lpad(Std.string(i), " ", lineCountWidth);
             final codeLine = codePreviewFull[i - 1].substring(minIndentation);
 
             if (i == position.line) {
