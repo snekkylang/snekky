@@ -27,7 +27,7 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 | (...)  | Represents exactly one of the definitions inside; depending on the context.                                                        |
 | <...>  | Angle brackets represent the structure with the name they contain.                                                                 |
 | i32    | A 32-bit signed integer (little endian).                                                                                           |
-| i15    | A 16-bit signed integer (little endian).                                                                                           |
+| i16    | A 16-bit signed integer (little endian).                                                                                           |
 | f64    | A 64-bit float (little endian).                                                                                                    |
 | byt    | The signed integer value of a single byte.                                                                                         |
 | str    | An UTF-8 encoded string.                                                                                                           |
