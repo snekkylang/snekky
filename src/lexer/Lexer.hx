@@ -148,7 +148,7 @@ class Lexer {
         readChar();
         readChar();
 
-        while (Helper.isNumber(peekChar())) {
+        while (Helper.isHexChar(peekChar())) {
             readChar();
         }
 
@@ -341,7 +341,9 @@ class Lexer {
                 }
             case "\u{0}": new Token(TokenType.Eof, tokenPosition, currentChar);
             default:
-                if (currentChar == "0" && peekChar() == "x") {
+                final peek = peekCharN(2);
+
+                if (currentChar == "0" && peek[0] == "x" && Helper.isHexChar(peek[1]))  {
                     final number = readNumberHex();
                     return new Token(TokenType.NumberHex, tokenPosition, number);
                 }
