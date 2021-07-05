@@ -47,7 +47,8 @@ Builds can be found in the [releases tab](https://github.com/snekkylang/snekky/r
 2. **(optional)** Install the Snekky [VSCode extension](https://github.com/snekkylang/snekky-vscode) for syntax highlighting.
 3. Enter some code (check out the examples).
 4. Run it using `snekky input.snek`.
-5. Run `snekky --help` for more information.
+
+Run `snekky --help` for more information.
 
 ## Example
 For more examples, checkout the [examples folder](https://github.com/snekkylang/snekky/tree/master/examples).
