@@ -128,7 +128,7 @@ class Lexer {
         return regex.toString();
     }
 
-    function readNumber():String {
+    function readNumberDec():String {
         final startPosition = position;
 
         var peek = peekCharN(2);
@@ -139,6 +139,20 @@ class Lexer {
         }
 
         return code.substring(startPosition - 1, position);
+    }
+
+    function readNumberHex():String {
+        final startPosition = position;
+
+        // Skip 0x
+        readChar();
+        readChar();
+
+        while (Helper.isNumber(peekChar())) {
+            readChar();
+        }
+
+        return code.substring(startPosition - 1, position);     
     }
 
     function eatWhitespace() {
@@ -327,9 +341,14 @@ class Lexer {
                 }
             case "\u{0}": new Token(TokenType.Eof, tokenPosition, currentChar);
             default:
+                if (currentChar == "0" && peekChar() == "x") {
+                    final number = readNumberHex();
+                    return new Token(TokenType.NumberHex, tokenPosition, number);
+                }
+
                 if (Helper.isNumber(currentChar)) {
-                    final number = readNumber();
-                    return new Token(TokenType.Number, tokenPosition, number);
+                    final number = readNumberDec();
+                    return new Token(TokenType.NumberDec, tokenPosition, number);
                 }
 
                 if (Helper.isAscii(currentChar)) {

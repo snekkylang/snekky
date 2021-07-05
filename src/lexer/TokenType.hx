@@ -5,7 +5,8 @@ enum TokenType {
     Eof;
 
     Ident;
-    Number;
+    NumberDec;
+    NumberHex;
     String;
     Assign;
     PlusAssign;

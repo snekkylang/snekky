@@ -651,7 +651,7 @@ class Compiler {
             case NodeType.Float | NodeType.Boolean | NodeType.String | NodeType.Null:
                 final constantIndex = switch (node.type) {
                     case NodeType.Float:
-                        constantPool.addConstant(new NumberObj(cast(node, FloatNode).value, null));
+                        constantPool.addConstant(new NumberObj(cast(node, NumberNode).value, null));
                     case NodeType.Boolean:
                         constantPool.addConstant(new BooleanObj(cast(node, BooleanNode).value, null));
                     case NodeType.String:

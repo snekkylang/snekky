@@ -2,7 +2,7 @@ package ast.nodes.datatypes;
 
 import lexer.Position;
 
-class FloatNode extends Node {
+class NumberNode extends Node {
 
     public final value:Float;
 

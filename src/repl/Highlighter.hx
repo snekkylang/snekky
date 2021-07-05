@@ -50,7 +50,7 @@ class Highlighter {
                     }
                 case TokenType.String:
                     highlightToken(token, TokenColor.String);
-                case TokenType.Number:
+                case TokenType.NumberDec | TokenType.NumberHex:
                     highlightToken(token, TokenColor.Number);
                 default: highlightToken(token, TokenColor.Default);
             }

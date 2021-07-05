@@ -56,11 +56,18 @@ class Parser {
         }
     }
 
-    public function parseNumber():Node {
+    public function parseNumberDec():NumberNode {
         final nodePos = currentToken.position;
         final n = Std.parseFloat(currentToken.literal);
         nextToken();
-        return new FloatNode(nodePos, n);
+        return new NumberNode(nodePos, n);
+    }
+
+    public function parseNumberHex():Node {
+        final nodePos = currentToken.position;
+        final n = Std.parseInt(currentToken.literal);
+        nextToken();
+        return new NumberNode(nodePos, n);
     }
 
     public function parseRegex():RegexNode {

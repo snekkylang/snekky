@@ -262,8 +262,10 @@ class ExpressionParser {
                 parser.nextToken();
 
                 ident; 
-            case TokenType.Number:
-                parser.parseNumber();
+            case TokenType.NumberDec:
+                parser.parseNumberDec();
+            case TokenType.NumberHex:
+                parser.parseNumberHex();
             case TokenType.String:
                 final string = new StringNode(parser.currentToken.position, parser.currentToken.literal);
                 parser.nextToken();
