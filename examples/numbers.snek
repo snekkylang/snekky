@@ -1,0 +1,7 @@
+// Decimal numbers
+Sys.println(123);
+Sys.println(42.3);
+
+// Hexadecimal numbers
+Sys.println(0xABC);
+Sys.println(0x1f2a);
