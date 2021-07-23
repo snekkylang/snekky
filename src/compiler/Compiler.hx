@@ -9,7 +9,7 @@ import object.StringObj;
 import object.NumberObj;
 import object.UserFunctionObj;
 import haxe.zip.Compress;
-import compiler.debug.FilenameTable;
+import compiler.debug.FileNameTable;
 import std.BuiltInTable;
 import haxe.io.Bytes;
 import compiler.constant.ConstantPool;
@@ -31,7 +31,7 @@ class Compiler {
     final lineNumberTable = new LineNumberTable();
     final variableTable = new VariableTable();
     final symbolTable = new SymbolTable();
-    final filenameTable = new FilenameTable();
+    final fileNameTable = new FileNameTable();
     var error:CompileError = new CompileError("", "");
 
     final debug:Bool;
@@ -48,7 +48,7 @@ class Compiler {
 
     public function getByteCode(compress:Bool):Bytes {
         final program = new BytesOutput();
-        program.write(filenameTable.toByteCode());
+        program.write(fileNameTable.toByteCode());
         program.write(lineNumberTable.toByteCode());
         program.write(variableTable.toByteCode());
         program.write(constantPool.toByteCode());
@@ -71,10 +71,10 @@ class Compiler {
     }
 
     function compileFile(node:FileNode) {
-        final pFilename = error.filename;
+        final pFileName = error.fileName;
         final pCode = error.code;
 
-        error.filename = node.filename;
+        error.fileName = node.fileName;
         error.code = node.code;
 
         final startIndex = instructions.length;
@@ -83,11 +83,11 @@ class Compiler {
             compile(n);
         }
 
-        error.filename = pFilename;
+        error.fileName = pFileName;
         error.code = pCode;
 
         if (debug) {
-            filenameTable.define(startIndex, instructions.length, node.filename);
+            fileNameTable.define(startIndex, instructions.length, node.fileName);
         }
     }
 

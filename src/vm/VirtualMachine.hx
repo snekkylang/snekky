@@ -2,7 +2,7 @@ package vm;
 
 import object.*;
 import haxe.zip.Uncompress;
-import compiler.debug.FilenameTable;
+import compiler.debug.FileNameTable;
 import haxe.ds.StringMap;
 import object.Object;
 import compiler.constant.ConstantPool;
@@ -22,7 +22,7 @@ class VirtualMachine {
     public var currentFrame:Frame;
     public var constantPool:Array<Object>;
     public var instructions:BytesInput;
-    public var filenameTable:FilenameTable;
+    public var fileNameTable:FileNameTable;
     public var lineNumberTable:LineNumberTable;
     public var variableTable:VariableTable;
     final builtInTable:BuiltInTable;
@@ -49,7 +49,7 @@ class VirtualMachine {
         } else {
             new BytesInput(fileData.readAll());
         }
-        filenameTable = new FilenameTable().fromByteCode(byteCode);
+        fileNameTable = new FileNameTable().fromByteCode(byteCode);
         lineNumberTable = new LineNumberTable().fromByteCode(byteCode);
         variableTable = new VariableTable().fromByteCode(byteCode);
         constantPool = ConstantPool.fromByteCode(byteCode, this);

@@ -18,7 +18,7 @@ class RuntimeError {
 
     function printStackTrace() {
         var position = vm.lineNumberTable.resolve(vm.instructions.position);
-        var filename = vm.filenameTable.resolve(vm.instructions.position);
+        var fileName = vm.fileNameTable.resolve(vm.instructions.position);
 
         while (!vm.frames.isEmpty()) {
             final frame = vm.popFrame();
@@ -29,10 +29,10 @@ class RuntimeError {
                 -1;
             }
             final functionName = vm.variableTable.resolve(functionPosition);
-            Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($filename:${position.line}:${position.lineOffset + 1})');
+            Console.log('   at ${functionName == null ? "[anonymous]" : functionName } ($fileName:${position.line}:${position.lineOffset + 1})');
 
             position = vm.lineNumberTable.resolve(frame.returnAddress);
-            filename = vm.filenameTable.resolve(frame.returnAddress);
+            fileName = vm.fileNameTable.resolve(frame.returnAddress);
         }
     }
 

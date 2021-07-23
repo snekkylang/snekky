@@ -10,11 +10,11 @@ class CompileError {
         Console.logPrefix = "";
     }
 
-    public var filename:String;
+    public var fileName:String;
     public var code:String;
 
-    public function new(filename:String, code:String) {
-        this.filename = filename;
+    public function new(fileName:String, code:String) {
+        this.fileName = fileName;
         this.code = code;
     }
 
@@ -91,11 +91,11 @@ class CompileError {
     }
 
     function printErrorHead(position:Position, message:String) {
-        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#DE4A3F>error:</> $message');
+        Console.log('<b>${fileName}:${position.line}:${position.lineOffset + 1}</> <#DE4A3F>error:</> $message');
     }
 
     function printWarnHead(position:Position, message:String) {
-        Console.log('<b>${filename}:${position.line}:${position.lineOffset + 1}</> <#F39C11>warning:</> $message');
+        Console.log('<b>${fileName}:${position.line}:${position.lineOffset + 1}</> <#F39C11>warning:</> $message');
     }
 
     public function unexpectedToken(token:Token, expected:String) {

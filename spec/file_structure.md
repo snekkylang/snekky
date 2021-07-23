@@ -6,7 +6,7 @@ This document describes the structure of a Snekky bytecode file.
 
 - [Syntax Definition](#syntax-definition)
 - [Bytecode Structure](#bytecode-structure)
-    - [FilenameTable](#filenametable)
+    - [FileNameTable](#filenametable)
     - [LineNumberTable](#linenumbertable)
     - [VariableTable](#variabletable)
     - [ConstantPool](#constantpool)
@@ -37,7 +37,7 @@ The Snekky compiler compiles the entire program, which could consist of several 
 ```
 Bytecode File {
     byt compressed
-    <FilenameTable>
+    <FileNameTable>
     <LineNumberTable>
     <VariableTable>
     <ConstantPool>
@@ -48,10 +48,10 @@ Bytecode File {
 |----------------------|-----------|----------------------------------------------------------------|
 | compressed           | byt       | Indicates whether the file has ben compressed (1=yes, 0=no).   |
 
-### FilenameTable
-The FilenameTable maps a start and an end position in the bytecode to the name of the source file it was generated from.
+### FileNameTable
+The FileNameTable maps a start and an end position in the bytecode to the name of the source file it was generated from.
 ```
-FilenameTable {
+FileNameTable {
     i32 table_size
     [
         i32 start_byte_index

@@ -4,7 +4,7 @@ import haxe.io.Path;
 
 class Lexer {
 
-    public final filename:String;
+    public final fileName:String;
     public final code:String;
     var currentChar = ' ';
     var position = 0;
@@ -12,8 +12,8 @@ class Lexer {
     var line = 1;
     var lineOffset = -1;
 
-    public function new(filename:String, code:String) {
-        this.filename = Path.normalize(filename);
+    public function new(fileName:String, code:String) {
+        this.fileName = Path.normalize(fileName);
         this.code = code;
     }
 

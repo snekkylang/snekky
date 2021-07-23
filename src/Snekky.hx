@@ -12,12 +12,12 @@ class Snekky {
 
     public static final Version = MacroVersion.getVersionString();
 
-    public static function tokenizeString(filename:String, code:String) {
-        return new Lexer(filename, code);
+    public static function tokenizeString(fileName:String, code:String) {
+        return new Lexer(fileName, code);
     }
 
-    public static function compileString(filename:String, code:String, debug:Bool, compress:Bool, warnings:Bool):Bytes {
-        final lexer = new Lexer(filename, code);
+    public static function compileString(fileName:String, code:String, debug:Bool, compress:Bool, warnings:Bool):Bytes {
+        final lexer = new Lexer(fileName, code);
 
         final parser = new Parser(lexer, false);
         parser.generateAst();
@@ -95,13 +95,13 @@ class Snekky {
             final repl = new repl.Repl();
             repl.start();
         } else {
-            final filename = config.inputPath;
+            final fileName = config.inputPath;
             final compress = config.dumpPath != null && config.compress;
     
-            if (Path.extension(filename) == "snek") {
-                final code = sys.io.File.getContent(filename);
+            if (Path.extension(fileName) == "snek") {
+                final code = sys.io.File.getContent(fileName);
     
-                final byteCode = compileString(filename, code, config.debug, compress, config.warnings);
+                final byteCode = compileString(fileName, code, config.debug, compress, config.warnings);
     
                 if (config.dumpPath != null) {
                     sys.io.File.saveBytes('${config.dumpPath}.bite', byteCode);
@@ -110,7 +110,7 @@ class Snekky {
     
                 evaluateBytes(byteCode);
             } else {
-                final byteCode = sys.io.File.getBytes('./$filename');
+                final byteCode = sys.io.File.getBytes('./$fileName');
                 evaluateBytes(byteCode);
             }
         }

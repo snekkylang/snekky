@@ -4,13 +4,13 @@ import lexer.Position;
 
 class FileNode extends BlockNode {
 
-    public final filename:String;
+    public final fileName:String;
     public final code:String;
 
-    public function new(position:Position, filename:String, code:String) {
+    public function new(position:Position, fileName:String, code:String) {
         super(position);
 
-        this.filename = filename;
+        this.fileName = fileName;
         this.code = code;
         this.type = NodeType.File;
     }

@@ -14,10 +14,10 @@ class SysNamespace extends MemberObject {
         super(vm);
 
         addFunctionMember("trace", [null], function(p) {
-            final filename = vm.filenameTable.resolve(vm.instructions.position);
+            final fileName = vm.fileNameTable.resolve(vm.instructions.position);
             final position = vm.lineNumberTable.resolve(vm.instructions.position);
 
-            final s = '$filename:${position.line}: ${p[0]}';
+            final s = '$fileName:${position.line}: ${p[0]}';
             #if target.sys
             Sys.println(s);
             #else
