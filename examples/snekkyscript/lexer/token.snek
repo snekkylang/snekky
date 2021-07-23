@@ -9,16 +9,20 @@ let TokenType = {
     RBrace: 7,
     Plus: 8,
     Minus: 9,
-    Assign: 10,
-    Equals: 11,
-    If: 12,
-    Else: 13,
-    While: 14,
-    Illegal: 15,
-    Comma: 16,
-    LessThan: 17,
-    GreaterThan: 18,
-    Puts: 19
+    Asterisk: 10,
+    Slash: 11,
+    Percent: 12,
+    Assign: 13,
+    Equals: 14,
+    If: 15,
+    Else: 16,
+    While: 17,
+    Illegal: 18,
+    Comma: 19,
+    LessThan: 20,
+    GreaterThan: 21,
+    Puts: 22,
+    Eof: 23
 };
 
 

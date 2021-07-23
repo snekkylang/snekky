@@ -7,11 +7,14 @@ let NodeType = {
     Expression: 5,
     Add: 6,
     Subtract: 7,
-    Ident: 8,
-    String: 9,
-    Number: 10,
-    Puts: 11,
-    If: 12
+    Multiply: 8,
+    Divide: 9,
+    Modulo: 10,
+    Ident: 11,
+    String: 12,
+    Number: 13,
+    Puts: 14,
+    If: 15
 };
 
 let BlockNode = func(parent) {

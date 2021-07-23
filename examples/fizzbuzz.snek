@@ -1,4 +1,4 @@
-for let i in 0..100 {
+for let i in 1..100 {
     Sys.println(when {
         i % 3 == 0 && i % 5 == 0 => "FizzBuzz"
         i % 3 == 0 => "Fizz"

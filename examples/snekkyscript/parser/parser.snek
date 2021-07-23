@@ -5,18 +5,27 @@ let Parser = func(lexer) {
 
     mut currentToken = lexer.readToken();
     mut ast = BlockNode(null);
-    mut expressionParser = null; // Currently necessary
+    mut expressionParser = null;
     mut parseToken = null;
 
     let nextToken = func() {
         currentToken = lexer.readToken();
     };
 
+    let expectToken = func(type) {
+        if (currentToken.type != type) {
+            Sys.println("Unexpected token `" >< currentToken.literal >< "`");
+            Sys.exit(0);
+        }
+    };
+
     let parseVariable = func() {
         let name = currentToken.literal;
         nextToken();
+        expectToken(TokenType.Assign);
         nextToken();
         let value = expressionParser.parseExpression();
+        expectToken(TokenType.Semicolon);
         nextToken();
 
         return VariableNode(name, value);
@@ -25,6 +34,7 @@ let Parser = func(lexer) {
     let parsePuts = func() {
         nextToken();
         let value = expressionParser.parseExpression();
+        expectToken(TokenType.Semicolon);
         nextToken();
 
         return PutsNode(value);
@@ -33,18 +43,24 @@ let Parser = func(lexer) {
     let parseIf = func(block) {
         nextToken();
         let condition = expressionParser.parseExpression();
+        expectToken(TokenType.LBrace);
         nextToken();
         let consequence = BlockNode(block);
-        while currentToken.type != TokenType.RBrace {
+        while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
             parseToken(consequence);   
         }
+        expectToken(TokenType.RBrace);
         
         let alternative = if lexer.peekToken().type == TokenType.Else {
             nextToken();
+            nextToken();
+            expectToken(TokenType.LBrace);
+            nextToken();
             let alt = BlockNode(block);
-            while currentToken.type != TokenType.RBrace {
+            while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
                 parseToken(alt);   
             }
+            expectToken(TokenType.RBrace);
 
             alt
         } else {
@@ -59,11 +75,13 @@ let Parser = func(lexer) {
     let parseWhile = func(block) {
         nextToken();
         let condition = expressionParser.parseExpression();
+        expectToken(TokenType.LBrace);
         nextToken();
         let body = BlockNode(block);
-        while currentToken.type != TokenType.RBrace {
+        while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
             parseToken(body);   
         }
+        expectToken(TokenType.RBrace);
         nextToken();
 
         return WhileNode(condition, body);
@@ -81,9 +99,15 @@ let Parser = func(lexer) {
             TokenType.Puts => parsePuts()
             TokenType.If => parseIf(block)
             TokenType.While => parseWhile(block)
+            TokenType.Illegal => {
+                Sys.println("Illegal token `" >< currentToken.literal >< "`");
+                Sys.exit(0);
+                null
+            }
             else => {
                 let expr = expressionParser.parseExpression();
                 nextToken();
+                expectToken(TokenType.Semicolon);
                 expr
             }
         };
@@ -92,7 +116,7 @@ let Parser = func(lexer) {
     };
 
     let generateAst = func() {
-        while currentToken.literal != null {
+        while currentToken.type != TokenType.Eof {
             parseToken(ast);
         }
     };

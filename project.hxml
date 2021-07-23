@@ -2,3 +2,4 @@
 -main Snekky
 -lib console.hx:0.2.12
 -lib hxargs
+--interp

@@ -2,6 +2,7 @@ let ExpressionParser = func(lexer, parser) {
     mut factor = null;
     mut numeric = null;
     mut comparison = null;
+    mut term = null;
 
     factor = func() {
         let currentToken = parser.currentToken();
@@ -26,22 +27,29 @@ let ExpressionParser = func(lexer, parser) {
 
                 string                
             }
-            else => {
+            TokenType.Number => {
                 let number = NumberNode(Number.parse(currentToken.literal));
                 parser.nextToken();
 
-                number               
+                number 
+            }
+            else => {
+                Sys.println("Unexpected token `" >< parser.currentToken().literal >< "`");
+                Sys.exit(0);
+
+                null
             }
         };
     };
 
-    numeric = func() {
+    term = func() {
         mut left = factor();
 
         while true {
             let type = when parser.currentToken().type {
-                TokenType.Plus => NodeType.Add
-                TokenType.Minus => NodeType.Subtract
+                TokenType.Asterisk => NodeType.Multiply
+                TokenType.Slash => NodeType.Divide
+                TokenType.Percent => NodeType.Modulo
                 else => {
                     return left;
                 }
@@ -54,6 +62,27 @@ let ExpressionParser = func(lexer, parser) {
 
         return left;
     };
+
+    numeric = func() {
+        mut left = term();
+
+        while true {
+            let type = when parser.currentToken().type {
+                TokenType.Plus => NodeType.Add
+                TokenType.Minus => NodeType.Subtract
+                else => {
+                    return left;
+                }
+            };
+
+            parser.nextToken();
+            let right = term();
+            left = OperatorNode(type, left, right);
+        }
+
+        return left;
+    };
+
 
     comparison = func() {
         let left = numeric();

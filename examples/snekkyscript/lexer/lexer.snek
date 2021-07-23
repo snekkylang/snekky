@@ -53,7 +53,7 @@ let Lexer = func(code) {
     let readNumber = func() {
         mut number = currentChar;
 
-        while LexerUtils.isNumber(peekChar()) {
+        while LexerUtils.isNumber(peekChar()) || peekChar() == "." {
             readChar();
             number = number >< currentChar;
         }
@@ -79,6 +79,9 @@ let Lexer = func(code) {
             "}" => Token(TokenType.RBrace, "}")
             "+" => Token(TokenType.Plus, "+")
             "-" => Token(TokenType.Minus, "-")
+            "*" => Token(TokenType.Asterisk, "*")
+            "/" => Token(TokenType.Slash, "/")
+            "%" => Token(TokenType.Percent, "%")
             "," => Token(TokenType.Comma, ",")
             "<" => Token(TokenType.LessThan, "<")
             ">" => Token(TokenType.GreaterThan, ">")
@@ -90,6 +93,7 @@ let Lexer = func(code) {
                 Token(TokenType.Assign, "=")  
             }
             else => when {
+                position > code.length() => Token(TokenType.Eof, "EOF")
                 LexerUtils.isNumber(currentChar) => Token(TokenType.Number, readNumber())
                 LexerUtils.isAscii(currentChar) => {
                     let ident = readIdent();
@@ -107,14 +111,16 @@ let Lexer = func(code) {
 
     let peekToken = func() {
         let lastPosition = position;
+        let lastChar = currentChar;
         let token = readToken();
         position = lastPosition;
+        currentChar = lastChar;
 
         return token;
     };
 
     let tokenize = func() {
-        while currentChar != null {
+        while position < code.length() {
             Sys.println(readToken());
         }
     };

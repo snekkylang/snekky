@@ -1,11 +1,18 @@
-i = 0;
-
-while i < 10 {
-    puts i;
-
-    if i == 5 {
-        puts "is 5";
+i = 1;
+while i < 101 {
+    if i % 3 == 0 {
+        if i % 5 == 0 {
+            puts "FizzBuzz";
+        } else {
+            puts "Fizz";
+        }
+    } else {
+        if i % 5 == 0 {
+            puts "Buzz";
+        } else {
+            puts i;
+        }
     }
 
     i = i + 1;
-} 
+}

@@ -19,6 +19,9 @@ let Evaluator = func(ast) {
         return when expr.type {
             NodeType.Add => evalExpression(expr.left) + evalExpression(expr.right)
             NodeType.Subtract => evalExpression(expr.left) - evalExpression(expr.right)
+            NodeType.Multiply => evalExpression(expr.left) * evalExpression(expr.right)
+            NodeType.Divide => evalExpression(expr.left) / evalExpression(expr.right)
+            NodeType.Modulo => evalExpression(expr.left) % evalExpression(expr.right)
             NodeType.LessThan => evalExpression(expr.left) < evalExpression(expr.right)
             NodeType.GreaterThan => evalExpression(expr.left) > evalExpression(expr.right)
             NodeType.Equals => evalExpression(expr.left) == evalExpression(expr.right)
