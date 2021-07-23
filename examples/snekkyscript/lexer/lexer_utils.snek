@@ -1,17 +1,3 @@
-let Array = {};
-Array.includes = func(arr, v) {
-    mut i = 0;
-    while i < arr.length() {
-        if arr[i] == v {
-            return true;
-        }
-
-        i += 1;
-    }
-
-    return false;
-};
-
 let LexerUtils = {};
 LexerUtils.isAscii = func(s) {
     if (s == null) {
