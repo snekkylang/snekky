@@ -1,0 +1,681 @@
+// Extremely rudimentary programming language written in Snekky
+// Code at the bottom of this file
+
+// Lexer
+let LexerUtils = {};
+LexerUtils.isAscii = func(s) {
+    if (s == null) {
+        return false;
+    }
+    let charCode = s.charCodeAt(0);
+
+    return (charCode >= 65 && charCode >= 90) || (charCode >= 97 && charCode <= 122) || LexerUtils.isNumber(s) || s == "_";
+};
+
+LexerUtils.isNumber = func(s) {
+    if (s == null) {
+        return false;
+    }
+
+    let charCode = s.charCodeAt(0);
+
+    return charCode >= 48 && charCode <= 57;
+};
+
+LexerUtils.isWhitespace = func(s) {
+    return s == "\n" || s == "\r" || s == " ";
+};
+
+let TokenType = {
+    Number: 0,
+    Ident: 1,
+    String: 2,
+    Semicolon: 3,
+    LParen: 4,
+    RParen: 5,
+    LBrace: 6,
+    RBrace: 7,
+    Plus: 8,
+    Minus: 9,
+    Asterisk: 10,
+    Slash: 11,
+    Percent: 12,
+    Assign: 13,
+    Equals: 14,
+    If: 15,
+    Else: 16,
+    While: 17,
+    Illegal: 18,
+    Comma: 19,
+    LessThan: 20,
+    GreaterThan: 21,
+    Puts: 22,
+    Eof: 23
+};
+
+
+let Token = func(type, literal) {
+    return {
+        type: type,
+        literal: literal
+    };
+};
+
+let Keyword = {};
+Keyword.keywords = {
+    "if": TokenType.If,
+    "while": TokenType.While,
+    "puts": TokenType.Puts,
+    "else": TokenType.Else
+};
+
+Keyword.isKeyword = func(s) {
+    return Keyword.keywords[s] != null;  
+};
+
+Keyword.resolve = func(s) {
+    return Keyword.keywords[s];
+};
+
+let Lexer = func(code) {
+
+    mut currentChar = "";
+    mut position = 0;
+
+    let readChar = func() {
+        currentChar = if position >= code.length() {
+            null
+        } else {
+            code.charAt(position)
+        };
+
+        position += 1;
+    };
+
+    let peekChar = func() {
+        return if position >= code.length() {
+            null
+        } else {
+            code.charAt(position)
+        };   
+    };
+
+    let readIdent = func() {
+        mut ident = currentChar;
+
+        while LexerUtils.isAscii(peekChar()) {
+            readChar();
+            ident = ident >< currentChar;
+        }
+
+        return ident;
+    };
+
+    let readString = func() {
+        readChar();
+
+        mut string = "";
+
+        while currentChar != "\"" && currentChar != null {
+            string = string >< currentChar;
+
+            readChar();
+        }
+
+        return string;
+    };
+
+    let readNumber = func() {
+        mut number = currentChar;
+
+        while LexerUtils.isNumber(peekChar()) || peekChar() == "." {
+            readChar();
+            number = number >< currentChar;
+        }
+
+        return number;
+    };
+
+    let eatWhitespace = func() {
+        while LexerUtils.isWhitespace(currentChar) {
+            readChar();
+        }
+    };
+
+    let readToken = func() {
+        readChar();
+        eatWhitespace();
+
+        return when currentChar {
+            ";" => Token(TokenType.Semicolon, ";")
+            "(" => Token(TokenType.LParen, "(")
+            ")" => Token(TokenType.RParen, ")")
+            "{" => Token(TokenType.LBrace, "{")
+            "}" => Token(TokenType.RBrace, "}")
+            "+" => Token(TokenType.Plus, "+")
+            "-" => Token(TokenType.Minus, "-")
+            "*" => Token(TokenType.Asterisk, "*")
+            "/" => Token(TokenType.Slash, "/")
+            "%" => Token(TokenType.Percent, "%")
+            "," => Token(TokenType.Comma, ",")
+            "<" => Token(TokenType.LessThan, "<")
+            ">" => Token(TokenType.GreaterThan, ">")
+            "\"" => Token(TokenType.String, readString())
+            "=" => if peekChar() == "=" {
+                readChar();
+                Token(TokenType.Equals, "==")  
+            } else {
+                Token(TokenType.Assign, "=")  
+            }
+            else => when {
+                position > code.length() => Token(TokenType.Eof, "EOF")
+                LexerUtils.isNumber(currentChar) => Token(TokenType.Number, readNumber())
+                LexerUtils.isAscii(currentChar) => {
+                    let ident = readIdent();
+            
+                    if Keyword.isKeyword(ident) {
+                        Token(Keyword.resolve(ident), ident)
+                    } else {
+                        Token(TokenType.Ident, ident)
+                    }  
+                }
+                else => Token(TokenType.Illegal, currentChar)
+            }   
+        };
+    };
+
+    let peekToken = func() {
+        let lastPosition = position;
+        let lastChar = currentChar;
+        let token = readToken();
+        position = lastPosition;
+        currentChar = lastChar;
+
+        return token;
+    };
+
+    let tokenize = func() {
+        while position < code.length() {
+            Sys.println(readToken());
+        }
+    };
+
+    return {
+        tokenize: tokenize,
+        readToken: readToken,
+        peekToken: peekToken
+    };
+};
+
+// Parser
+let NodeType = {
+    Block: 0,
+    LessThan: 1,
+    GreaterThan: 2,
+    Equals: 3,
+    Variable: 4,
+    Expression: 5,
+    Add: 6,
+    Subtract: 7,
+    Multiply: 8,
+    Divide: 9,
+    Modulo: 10,
+    Ident: 11,
+    String: 12,
+    Number: 13,
+    Puts: 14,
+    If: 15
+};
+
+let BlockNode = func(parent) {
+    let nodes = [];
+    let variables = {};
+
+    let addNode = func(node) {
+        nodes.push(node);
+    };
+
+    let getVariable = func(name) {
+        return variables[name];
+    };
+
+    let setVariable = func(name, value) {
+        variables[name] = value;
+    };
+
+    return {
+        type: NodeType.Block,
+        addNode: addNode,
+        parent: parent,
+        nodes: nodes,
+        getVariable: getVariable,
+        setVariable: setVariable,
+    };
+};
+
+let VariableNode = func(name, value) {
+    return {
+        type: NodeType.Variable,
+        name: name,
+        value: value
+    };
+};
+
+let ExpressionNode = func(value) {
+    return {
+        type: NodeType.Expression,
+        value: value
+    };
+};
+
+let OperatorNode = func(type, left, right) {
+    return {
+        type: type,
+        left: left,
+        right: right
+    };
+};
+
+let IdentNode = func(value) {
+    return {
+        type: NodeType.Ident,
+        value: value
+    };
+};
+
+let StringNode = func(value) {
+    return {
+        type: NodeType.String,
+        value: value
+    };
+};
+
+let NumberNode = func(value) {
+    return {
+        type: NodeType.Number,
+        value: value
+    };
+};
+
+let PutsNode = func(value) {
+    return {
+        type: NodeType.Puts,
+        value: value
+    };
+};
+
+let IfNode = func(condition, consequence, alternative) {
+    return {
+        type: NodeType.If,
+        condition: condition,
+        consequence: consequence,
+        alternative: alternative
+    };
+};
+
+let WhileNode = func(condition, body) {
+    return {
+        type: NodeType.While,
+        condition: condition,
+        body: body
+    };
+};
+
+let ExpressionParser = func(lexer, parser) {
+    mut factor = null;
+    mut numeric = null;
+    mut comparison = null;
+    mut term = null;
+
+    factor = func() {
+        let currentToken = parser.currentToken();
+
+        return when currentToken.type {
+            TokenType.LParen => {
+                parser.nextToken();
+                let comp = comparison();
+                parser.nextToken();
+
+                comp  
+            }
+            TokenType.Ident => {
+                let ident = IdentNode(currentToken.literal);
+                parser.nextToken();
+
+                ident
+            }
+            TokenType.String => {
+                let string = StringNode(currentToken.literal);
+                parser.nextToken();
+
+                string                
+            }
+            TokenType.Number => {
+                let number = NumberNode(Number.parse(currentToken.literal));
+                parser.nextToken();
+
+                number 
+            }
+            else => {
+                Sys.println("Unexpected token `" >< parser.currentToken().literal >< "`");
+                Sys.exit(0);
+
+                null
+            }
+        };
+    };
+
+    term = func() {
+        mut left = factor();
+
+        while true {
+            let type = when parser.currentToken().type {
+                TokenType.Asterisk => NodeType.Multiply
+                TokenType.Slash => NodeType.Divide
+                TokenType.Percent => NodeType.Modulo
+                else => {
+                    return left;
+                }
+            };
+
+            parser.nextToken();
+            let right = factor();
+            left = OperatorNode(type, left, right);
+        }
+
+        return left;
+    };
+
+    numeric = func() {
+        mut left = term();
+
+        while true {
+            let type = when parser.currentToken().type {
+                TokenType.Plus => NodeType.Add
+                TokenType.Minus => NodeType.Subtract
+                else => {
+                    return left;
+                }
+            };
+
+            parser.nextToken();
+            let right = term();
+            left = OperatorNode(type, left, right);
+        }
+
+        return left;
+    };
+
+
+    comparison = func() {
+        let left = numeric();
+
+        let type = when parser.currentToken().type {
+            TokenType.LessThan => NodeType.LessThan
+            TokenType.GreaterThan => NodeType.GreaterThan
+            TokenType.Equals => NodeType.Equals
+            else => {
+                return left;
+            }
+        };
+
+        parser.nextToken();
+        let right = numeric();
+        return OperatorNode(type, left, right);
+    };
+
+    let parseExpression = func() {
+        return ExpressionNode(comparison());
+    };
+
+    return {
+        parseExpression: parseExpression
+    };
+};
+
+let Parser = func(lexer) {
+
+    mut currentToken = lexer.readToken();
+    mut ast = BlockNode(null);
+    mut expressionParser = null;
+    mut parseToken = null;
+
+    let nextToken = func() {
+        currentToken = lexer.readToken();
+    };
+
+    let expectToken = func(type) {
+        if (currentToken.type != type) {
+            Sys.println("Unexpected token `" >< currentToken.literal >< "`");
+            Sys.exit(0);
+        }
+    };
+
+    let parseVariable = func() {
+        let name = currentToken.literal;
+        nextToken();
+        expectToken(TokenType.Assign);
+        nextToken();
+        let value = expressionParser.parseExpression();
+        expectToken(TokenType.Semicolon);
+        nextToken();
+
+        return VariableNode(name, value);
+    };
+
+    let parsePuts = func() {
+        nextToken();
+        let value = expressionParser.parseExpression();
+        expectToken(TokenType.Semicolon);
+        nextToken();
+
+        return PutsNode(value);
+    };
+
+    let parseIf = func(block) {
+        nextToken();
+        let condition = expressionParser.parseExpression();
+        expectToken(TokenType.LBrace);
+        nextToken();
+        let consequence = BlockNode(block);
+        while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
+            parseToken(consequence);   
+        }
+        expectToken(TokenType.RBrace);
+        
+        let alternative = if lexer.peekToken().type == TokenType.Else {
+            nextToken();
+            nextToken();
+            expectToken(TokenType.LBrace);
+            nextToken();
+            let alt = BlockNode(block);
+            while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
+                parseToken(alt);   
+            }
+            expectToken(TokenType.RBrace);
+
+            alt
+        } else {
+            null
+        };
+
+        nextToken();
+
+        return IfNode(condition, consequence, alternative);
+    };
+
+    let parseWhile = func(block) {
+        nextToken();
+        let condition = expressionParser.parseExpression();
+        expectToken(TokenType.LBrace);
+        nextToken();
+        let body = BlockNode(block);
+        while currentToken.type != TokenType.RBrace && currentToken.type != TokenType.Eof {
+            parseToken(body);   
+        }
+        expectToken(TokenType.RBrace);
+        nextToken();
+
+        return WhileNode(condition, body);
+    };
+
+    parseToken = func(block) {
+        let node = when currentToken.type {
+            TokenType.Ident => if lexer.peekToken().type == TokenType.Assign {
+                parseVariable()
+            } else {
+                let expr = expressionParser.parseExpression();
+                nextToken();
+                expr
+            }
+            TokenType.Puts => parsePuts()
+            TokenType.If => parseIf(block)
+            TokenType.While => parseWhile(block)
+            TokenType.Illegal => {
+                Sys.println("Illegal token `" >< currentToken.literal >< "`");
+                Sys.exit(0);
+                null
+            }
+            else => {
+                let expr = expressionParser.parseExpression();
+                nextToken();
+                expectToken(TokenType.Semicolon);
+                expr
+            }
+        };
+
+        block.addNode(node);
+    };
+
+    let generateAst = func() {
+        while currentToken.type != TokenType.Eof {
+            parseToken(ast);
+        }
+    };
+
+    let parser = {
+        currentToken: func() {
+            return currentToken;
+        },
+        nextToken: nextToken,
+        generateAst: generateAst,
+        ast: ast
+    };
+
+    expressionParser = ExpressionParser(lexer, parser);
+
+    return parser;
+};
+
+let Evaluator = func(ast) {
+
+    mut executeBlock = null;
+    mut currentBlock = null;
+
+    mut getVariableScope = null;
+    getVariableScope = func(name, block) {
+        return if block.getVariable(name) != null {
+            block
+        } else if block.parent != null {
+            getVariableScope(name, block.parent)
+        } else {
+            null
+        };
+    };
+
+    mut evalExpression = null;
+    evalExpression = func(expr) {
+        return when expr.type {
+            NodeType.Add => evalExpression(expr.left) + evalExpression(expr.right)
+            NodeType.Subtract => evalExpression(expr.left) - evalExpression(expr.right)
+            NodeType.Multiply => evalExpression(expr.left) * evalExpression(expr.right)
+            NodeType.Divide => evalExpression(expr.left) / evalExpression(expr.right)
+            NodeType.Modulo => evalExpression(expr.left) % evalExpression(expr.right)
+            NodeType.LessThan => evalExpression(expr.left) < evalExpression(expr.right)
+            NodeType.GreaterThan => evalExpression(expr.left) > evalExpression(expr.right)
+            NodeType.Equals => evalExpression(expr.left) == evalExpression(expr.right)
+            NodeType.Ident => getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+            else => expr.value
+        };
+    };
+
+    let executeInstruction = func(ins) {
+        when ins.type {
+            NodeType.Variable => {
+                let variableScope = getVariableScope(ins.name, currentBlock);
+                if variableScope != null {
+                    variableScope.setVariable(ins.name, evalExpression(ins.value.value));
+                } else {
+                    currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
+                }                
+            }
+            NodeType.Puts => Sys.println(evalExpression(ins.value.value));                
+            NodeType.If => {
+                let condition = evalExpression(ins.condition.value);
+                if condition {
+                    executeBlock(ins.consequence);
+                } else if (ins.alternative != null) {
+                    executeBlock(ins.alternative);
+                }                
+            }
+            NodeType.While => {
+                mut condition = evalExpression(ins.condition.value);
+                while condition {
+                    executeBlock(ins.body);
+
+                    condition = evalExpression(ins.condition.value);
+                }                      
+            }
+        }
+    };
+
+    executeBlock = func(block) {
+        let lastBlock = currentBlock;
+        currentBlock = block;
+
+        mut i = 0;
+        while i < block.nodes.length() {
+            executeInstruction(block.nodes[i]);
+
+            i += 1;
+        }
+
+        currentBlock = lastBlock;
+    };
+
+    let execute = func() {
+        executeBlock(ast);
+    };
+
+    return {
+        execute: execute
+    };
+};
+
+let code =
+"
+i = 1;
+while i < 101 {
+    if i % 3 == 0 {
+        if i % 5 == 0 {
+            puts \"FizzBuzz\";
+        } else {
+            puts \"Fizz\";
+        }
+    } else {
+        if i % 5 == 0 {
+            puts \"Buzz\";
+        } else {
+            puts i;
+        }
+    }
+
+    i = i + 1;
+}
+";
+
+let lexer = Lexer(code);
+let parser = Parser(lexer);
+parser.generateAst();
+let evaluator = Evaluator(parser.ast);
+evaluator.execute();
