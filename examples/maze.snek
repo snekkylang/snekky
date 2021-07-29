@@ -1,0 +1,109 @@
+// Direct port of https://rosettacode.org/wiki/Maze_generation#JavaScript
+
+let maze = func(x, y) {
+    mut n = x * y - 1;
+	if n < 0 {
+        Sys.trace("Illegal maze dimensions");
+        return null;
+    }
+
+    let horizontal = [];
+    let vertical = [];
+    for 0..x {
+        horizontal.push([]);
+        vertical.push([]);
+    }
+
+    mut here = [Math.floor(Math.random() * x), Math.floor(Math.random() * y)];
+    let path = [here];
+    let unvisited = [];
+
+    for let j in 0...x + 2 {
+        unvisited[j] = [];
+        for let k in 0..y {
+			unvisited[j].push(j > 0 && j < x + 1 && k > 0 && (j != here[0] + 1 || k != here[1] + 1));
+        }
+    }
+
+    while 0 < n {
+        let potential = [
+            [here[0]+1, here[1]], [here[0], here[1]+1],
+		    [here[0]-1, here[1]], [here[0], here[1]-1]
+        ];
+        let neighbors = [];  
+        
+        for let j in 0...4 {
+            if unvisited[potential[j][0] + 1][potential[j][1] + 1] == true {
+				neighbors.push(potential[j]);
+            }
+        }
+
+        if neighbors.length() > 0 {
+            n -= 1;
+            let next = neighbors[Math.floor(Math.random() * neighbors.length())];
+            unvisited[next[0] + 1][next[1] + 1] = false;
+            if next[0] == here[0] {
+				horizontal[next[0]][(next[1] + here[1] - 1) / 2] = true;
+            } else { 
+				vertical[(next[0] + here[0] - 1) / 2][next[1]] = true;
+            }
+            here = next;
+			path.push(here);
+        } else {
+            here = path.pop();
+        }
+    }
+
+    return {
+        x: x, 
+        y: y, 
+        horizontal: horizontal, 
+        vertical: vertical
+    };
+};
+
+let display = func(m) {
+    let text = [];
+    for let j in 0..m.x * 2 {
+        let line = [];
+        if j % 2 == 0 {
+            for let k in 0..m.y * 4 {
+                if k % 4 == 0 {
+                    line[k] = "+";
+                } else if j > 0 && m.vertical[j / 2 - 1][Math.floor(k / 4)] == true {
+                    line[k] = " ";
+                } else {
+                    line[k] = "-";
+                }
+            }
+        } else {
+            for let k in 0..m.y * 4 {
+                if k % 4 == 0 {
+                    if k > 0 && m.horizontal[(j - 1) / 2][k / 4 - 1] == true {
+                        line[k]= " ";
+                    } else {
+                        line[k]= "|";
+                    }
+                } else {
+                    line[k]= " ";
+                }
+            }
+        }
+
+        if 0 == j {
+            line[1] = " ";
+            line[2] = " ";
+            line[3] = " ";
+        }
+
+        if m.x * 2 - 1 == j {
+            line[4 * m.y] = " ";
+        }
+
+        text.push(line.join("") >< "\r\n");
+    }
+
+    return text.join("");
+};
+
+Sys.println(display(maze(8, 8)));
