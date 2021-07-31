@@ -19,6 +19,27 @@ let Parser = func(lexer) {
         }
     };
 
+    let parseCall = func(target) {
+        nextToken();
+
+        let arguments = [];
+
+        while currentToken.type != TokenType.RParen {
+            arguments.push(expressionParser.parseExpression());
+            if currentToken.type == TokenType.Comma && lexer.peekToken().type == TokenType.RParen {
+                expectToken(TokenType.RParen);
+            } else if currentToken.type == TokenType.Comma {
+                nextToken();
+            } else {
+                expectToken(TokenType.RParen);
+            }
+        }
+
+        nextToken();
+
+        return CallNode(target, arguments);
+    };
+
     let parseVariable = func() {
         let name = currentToken.literal;
         nextToken();
@@ -29,15 +50,6 @@ let Parser = func(lexer) {
         nextToken();
 
         return VariableNode(name, value);
-    };
-
-    let parsePuts = func() {
-        nextToken();
-        let value = expressionParser.parseExpression();
-        expectToken(TokenType.Semicolon);
-        nextToken();
-
-        return PutsNode(value);
     };
 
     let parseIf = func(block) {
@@ -96,7 +108,6 @@ let Parser = func(lexer) {
                 nextToken();
                 expr
             }
-            TokenType.Puts => parsePuts()
             TokenType.If => parseIf(block)
             TokenType.While => parseWhile(block)
             TokenType.Illegal => {
@@ -125,6 +136,7 @@ let Parser = func(lexer) {
         currentToken: func() {
             return currentToken;
         },
+        parseCall: parseCall,
         nextToken: nextToken,
         generateAst: generateAst,
         ast: ast

@@ -13,8 +13,8 @@ let NodeType = {
     Ident: 11,
     String: 12,
     Number: 13,
-    Puts: 14,
-    If: 15
+    If: 14,
+    Call: 15
 };
 
 let BlockNode = func(parent) {
@@ -87,13 +87,6 @@ let NumberNode = func(value) {
     };
 };
 
-let PutsNode = func(value) {
-    return {
-        type: NodeType.Puts,
-        value: value
-    };
-};
-
 let IfNode = func(condition, consequence, alternative) {
     return {
         type: NodeType.If,
@@ -108,5 +101,13 @@ let WhileNode = func(condition, body) {
         type: NodeType.While,
         condition: condition,
         body: body
+    };
+};
+
+let CallNode = func(target, arguments) {
+    return {
+        type: NodeType.Call,
+        target: target,
+        arguments: arguments
     };
 };

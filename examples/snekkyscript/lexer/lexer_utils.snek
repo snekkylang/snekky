@@ -1,11 +1,10 @@
 let LexerUtils = {};
 LexerUtils.isAscii = func(s) {
-    if (s == null) {
+    if s == null {
         return false;
     }
-    let charCode = s.charCodeAt(0);
 
-    return (charCode >= 65 && charCode >= 90) || (charCode >= 97 && charCode <= 122) || LexerUtils.isNumber(s) || s == "_";
+    return ~/([A-Za-z0-9\_]+)/.match(s);
 };
 
 LexerUtils.isNumber = func(s) {

@@ -2,7 +2,6 @@ let Keyword = {};
 Keyword.keywords = {
     "if": TokenType.If,
     "while": TokenType.While,
-    "puts": TokenType.Puts,
     "else": TokenType.Else
 };
 

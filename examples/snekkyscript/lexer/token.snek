@@ -21,8 +21,7 @@ let TokenType = {
     Comma: 19,
     LessThan: 20,
     GreaterThan: 21,
-    Puts: 22,
-    Eof: 23
+    Eof: 22
 };
 
 

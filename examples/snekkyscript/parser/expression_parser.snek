@@ -3,6 +3,7 @@ let ExpressionParser = func(lexer, parser) {
     mut numeric = null;
     mut comparison = null;
     mut term = null;
+    mut access = null;
 
     factor = func() {
         let currentToken = parser.currentToken();
@@ -42,8 +43,22 @@ let ExpressionParser = func(lexer, parser) {
         };
     };
 
-    term = func() {
+    access = func() {
         mut left = factor();
+
+        while true {
+            if parser.currentToken().type == TokenType.LParen {
+                left = parser.parseCall(left);
+            } else {
+                return left;
+            }
+        }
+
+        return left;
+    };
+
+    term = func() {
+        mut left = access();
 
         while true {
             let type = when parser.currentToken().type {
@@ -56,7 +71,7 @@ let ExpressionParser = func(lexer, parser) {
             };
 
             parser.nextToken();
-            let right = factor();
+            let right = access();
             left = OperatorNode(type, left, right);
         }
 

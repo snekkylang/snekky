@@ -1,0 +1,28 @@
+let Std = func() {
+    
+    let objects = {
+        println: func(arguments) {
+            Sys.println(arguments[0]);
+
+            return 1;
+        }    
+    };
+
+    let isBuiltIn = func(name) {
+        return objects[name] != null;
+    };
+
+    let getBuiltIn = func(name) {
+        return objects[name];
+    };
+
+    let expose = func(name, object) {
+        objects[name] = object;  
+    };
+
+    return {
+        isBuiltIn: isBuiltIn,
+        getBuiltIn: getBuiltIn,
+        expose: expose
+    };
+};

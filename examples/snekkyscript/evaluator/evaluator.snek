@@ -1,4 +1,8 @@
-let Evaluator = func(ast) {
+import "std/Std";
+
+let Evaluator = func() {
+
+    let std = Std();
 
     mut executeBlock = null;
     mut currentBlock = null;
@@ -25,7 +29,22 @@ let Evaluator = func(ast) {
             NodeType.LessThan => evalExpression(expr.left) < evalExpression(expr.right)
             NodeType.GreaterThan => evalExpression(expr.left) > evalExpression(expr.right)
             NodeType.Equals => evalExpression(expr.left) == evalExpression(expr.right)
-            NodeType.Ident => getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+            NodeType.Ident => {
+                if (std.isBuiltIn(expr.value)) {
+                    std.getBuiltIn(expr.value)
+                } else {
+                    getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+                }
+            }
+            NodeType.Expression => evalExpression(expr.value)
+            NodeType.Call => {
+                let target = evalExpression(expr.target);
+                let arguments = expr.arguments.map(func(a) {
+                    return evalExpression(a);
+                });
+
+                target(arguments)
+            }
             else => expr.value
         };
     };
@@ -39,8 +58,7 @@ let Evaluator = func(ast) {
                 } else {
                     currentBlock.setVariable(ins.name, evalExpression(ins.value.value));
                 }                
-            }
-            NodeType.Puts => Sys.println(evalExpression(ins.value.value));                
+            }                
             NodeType.If => {
                 let condition = evalExpression(ins.condition.value);
                 if condition {
@@ -57,6 +75,7 @@ let Evaluator = func(ast) {
                     condition = evalExpression(ins.condition.value);
                 }                      
             }
+            NodeType.Expression => evalExpression(ins.value);
         }
     };
 
@@ -74,11 +93,14 @@ let Evaluator = func(ast) {
         currentBlock = lastBlock;
     };
 
-    let execute = func() {
+    let execute = func(ast) {
         executeBlock(ast);
     };
 
     return {
-        execute: execute
+        execute: execute,
+        std: func() {
+            return std;
+        }
     };
 };

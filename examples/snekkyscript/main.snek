@@ -1,12 +1,12 @@
-// Extremely rudimentary programming language written in Snekky
-
-import "lexer/lexer";
-import "parser/parser";
-import "evaluator/evaluator";
+import "ScriptEngine";
 
 let code = File.read("./input.sneks");
-let lexer = Lexer(code);
-let parser = Parser(lexer);
-parser.generateAst();
-let evaluator = Evaluator(parser.ast);
-evaluator.execute();
+
+let engine = ScriptEngine();
+
+// Make function `add` available from SnekkyScript
+engine.expose("add", func(args) {
+    return args[0] + args[1];
+});
+
+engine.eval(code);

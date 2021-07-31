@@ -1,0 +1,24 @@
+import "lexer/Lexer";
+import "parser/Parser";
+import "evaluator/Evaluator";
+
+let ScriptEngine = func() {
+
+    let evaluator = Evaluator();
+
+    let eval = func(code) {
+        let lexer = Lexer(code);
+        let parser = Parser(lexer);
+        parser.generateAst();
+        evaluator.execute(parser.ast);
+    };
+
+    let expose = func(name, object) {
+        evaluator.std().expose(name, object);
+    };
+
+    return {
+        eval: eval,
+        expose: expose
+    };
+};
