@@ -7,6 +7,11 @@ let Evaluator = func() {
     mut executeBlock = null;
     mut currentBlock = null;
 
+    let error = func(message) {
+        Sys.println(message);
+        Sys.exit(0);
+    };
+
     mut getVariableScope = null;
     getVariableScope = func(name, block) {
         return if block.getVariable(name) != null {
@@ -33,7 +38,14 @@ let Evaluator = func() {
                 if (std.isBuiltIn(expr.value)) {
                     std.getBuiltIn(expr.value)
                 } else {
-                    getVariableScope(expr.value, currentBlock).getVariable(expr.value)
+                    let scope = getVariableScope(expr.value, currentBlock);
+
+                    if (scope != null) {
+                        scope.getVariable(expr.value)
+                    } else {
+                        error("Symbol `" >< expr.value >< "` undefined");
+                        null
+                    }
                 }
             }
             NodeType.Expression => evalExpression(expr.value)

@@ -4,7 +4,7 @@ let Std = func() {
         println: func(arguments) {
             Sys.println(arguments[0]);
 
-            return 1;
+            return 0;
         }    
     };
 
