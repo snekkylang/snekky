@@ -1,5 +1,6 @@
 package vm;
 
+import event.EventLoop;
 import object.*;
 import haxe.zip.Uncompress;
 import compiler.debug.FileNameTable;
@@ -19,6 +20,7 @@ class VirtualMachine {
 
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
+    public final eventLoop = new EventLoop();
     public var currentFrame:Frame;
     public var constantPool:Array<Object>;
     public var instructions:BytesInput;
@@ -103,7 +105,9 @@ class VirtualMachine {
                 final oPosition = instructions.position;
                 pushFrame(closure.context, instructions.length, cUserFunction);
                 instructions.position = cUserFunction.position;
-                eval();
+                while (instructions.position < instructions.length) {
+                    evalInstruction();
+                }
                 instructions.position = oPosition;
             case ObjectType.BuiltInFunction:
                 final cBuiltInFunction = cast(closure.func, BuiltInFunctionObj);
@@ -125,6 +129,8 @@ class VirtualMachine {
         while (instructions.position < instructions.length) {
             evalInstruction();
         }
+
+        eventLoop.start();
 
         #if target.sys
         for (lock in threadLocks) {

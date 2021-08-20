@@ -11,7 +11,7 @@ class MemberObject {
 
     public static final name:String = null;
     final members:StringMap<Object> = new StringMap();
-    final vm:VirtualMachine;
+    public final vm:VirtualMachine;
 
     public function new(vm:VirtualMachine) {
         this.vm = vm;
