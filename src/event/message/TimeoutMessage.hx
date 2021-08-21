@@ -1,15 +1,14 @@
 package event.message;
 
-import event.message.Message.MessageType;
 import object.ClosureObj;
 
-class TimeoutMessage extends Message {
+class TimeoutMessage extends Message implements Timable {
 
     public final timeout:Int;
     public var cleared(default, null) = false;
 
     public function new(handler:ClosureObj, timeout:Int) {
-        super(MessageType.Timeout, handler, null);
+        super(handler, null);
 
         this.timeout = getCurrentMsTime() + timeout;
     }

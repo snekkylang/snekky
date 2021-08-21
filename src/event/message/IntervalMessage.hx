@@ -1,16 +1,15 @@
 package event.message;
 
-import event.message.Message.MessageType;
 import object.ClosureObj;
 
-class IntervalMessage extends Message {
+class IntervalMessage extends Message implements Timable {
 
     public final interval:Int;
     var lastExecuted = getCurrentMsTime();
     public var cleared(default, null) = false;
 
     public function new(handler:ClosureObj, interval:Int) {
-        super(MessageType.Interval, handler, null);
+        super(handler, null);
 
         this.interval = interval;
     }
