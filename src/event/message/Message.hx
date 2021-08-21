@@ -5,11 +5,9 @@ import object.Object;
 
 class Message {
 
-    public final handler:ClosureObj;
     public final data:Object;
 
-    public function new(handler:ClosureObj, data:Object) {
-        this.handler = handler;
+    public function new(data:Object) {
         this.data = data;
     }
 }

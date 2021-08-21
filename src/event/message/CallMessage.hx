@@ -5,7 +5,11 @@ import object.ClosureObj;
 
 class CallMessage extends Message {
 
+    public final handler:ClosureObj;
+
     public function new(handler:ClosureObj, data:Object) {
-        super(handler, data);
+        super(data);
+
+        this.handler = handler;
     }
 }

@@ -1,5 +1,7 @@
 package std.lib.namespaces;
 
+import event.message.EventMessage;
+import object.StringObj;
 import event.message.Timable;
 import event.message.TimeoutMessage;
 import event.message.IntervalMessage;
@@ -69,6 +71,30 @@ class EventLoopNamespace extends MemberObject {
             vm.eventLoop.enqueue(message);
 
             return new Timer(vm, message).getMembers();
+        });
+
+        addFunctionMember("attach", [null], function(p) {
+            final target = p[0];
+
+            target.addFunctionMember("attachEventListener", [ObjectType.String, ObjectType.Closure], function(p) {
+                final eventName = cast(p[0], StringObj).value;
+                final cb = cast(p[1], ClosureObj);
+
+                vm.eventLoop.addEventListener(target, eventName, cb);
+
+                return new NullObj(vm);
+            });
+
+            target.addFunctionMember("dispatchEvent", [ObjectType.String, null], function(p) {
+                final eventName = cast(p[0], StringObj).value;
+                final data = p[1];
+
+                vm.eventLoop.enqueue(new EventMessage(eventName, target, data));
+
+                return new NullObj(vm);
+            });
+
+            return new NullObj(vm);
         });
     }
 }

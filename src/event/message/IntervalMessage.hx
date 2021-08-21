@@ -8,10 +8,12 @@ class IntervalMessage extends Message implements Timable {
     public final interval:Int;
     var lastExecuted = getCurrentMsStamp();
     public var cleared(default, null) = false;
+    public final handler:ClosureObj;
 
     public function new(handler:ClosureObj, interval:Int) {
-        super(handler, null);
-
+        super(null);
+        
+        this.handler = handler;
         this.interval = interval;
     }
 

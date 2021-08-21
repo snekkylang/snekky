@@ -7,10 +7,12 @@ class TimeoutMessage extends Message implements Timable {
 
     public final timeout:Int;
     public var cleared(default, null) = false;
+    public final handler:ClosureObj;
 
     public function new(handler:ClosureObj, timeout:Int) {
-        super(handler, null);
+        super(null);
 
+        this.handler = handler;
         this.timeout = getCurrentMsStamp() + timeout;
     }
 
