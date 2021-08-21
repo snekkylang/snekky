@@ -33,7 +33,6 @@ class BuiltInTable {
             #if target.sys
             new FileNamespace(vm), 
             new HttpNamespace(vm),
-            new ThreadNamespace(vm),
             new NetNamespace(vm)
             #end
         ];
@@ -54,7 +53,6 @@ class BuiltInTable {
             #if target.sys
             FileNamespace.name, 
             HttpNamespace.name,
-            ThreadNamespace.name,
             NetNamespace.name
             #end
         ].indexOf(name);
