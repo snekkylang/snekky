@@ -1,5 +1,6 @@
 package vm;
 
+import event.EventLoop;
 import object.*;
 import haxe.zip.Uncompress;
 import compiler.debug.FileNameTable;
@@ -19,13 +20,14 @@ class VirtualMachine {
 
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
+    public final eventLoop = new EventLoop();
     public var currentFrame:Frame;
     public var constantPool:Array<Object>;
     public var instructions:BytesInput;
     public var fileNameTable:FileNameTable;
     public var lineNumberTable:LineNumberTable;
     public var variableTable:VariableTable;
-    final builtInTable:BuiltInTable;
+    public final builtInTable:BuiltInTable;
     public final error:RuntimeError;
     public final fileData:Bytes;
     #if target.sys
@@ -86,35 +88,6 @@ class VirtualMachine {
         return o;
     }
 
-    public function callFunction(closure:ClosureObj, parameters:Array<Object>):Object {
-        parameters.reverse();
-
-        for (p in parameters) {
-            stack.add(p);
-        }
-
-        switch (closure.func.type) {
-            case ObjectType.UserFunction:
-                final cUserFunction = cast(closure.func, UserFunctionObj);
-
-                if (parameters.length != cUserFunction.parametersCount) {
-                    error.error("wrong number of arguments to function");
-                }
-                final oPosition = instructions.position;
-                pushFrame(closure.context, instructions.length, cUserFunction);
-                instructions.position = cUserFunction.position;
-                eval();
-                instructions.position = oPosition;
-            case ObjectType.BuiltInFunction:
-                final cBuiltInFunction = cast(closure.func, BuiltInFunctionObj);
-
-                builtInTable.callFunction(cBuiltInFunction);
-            default:
-        }
-
-        return popStack();
-    }
-
     #if target.sys
     public function addThreadLock(lock:sys.thread.Lock) {
         threadLocks.push(lock);
@@ -126,6 +99,8 @@ class VirtualMachine {
             evalInstruction();
         }
 
+        eventLoop.start();
+
         #if target.sys
         for (lock in threadLocks) {
             lock.wait();
@@ -133,7 +108,7 @@ class VirtualMachine {
         #end
     }
 
-    function evalInstruction() {
+    public function evalInstruction() {
         final opCode = instructions.readByte();
         
         switch (opCode) {

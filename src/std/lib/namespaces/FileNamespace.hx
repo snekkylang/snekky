@@ -1,6 +1,5 @@
 package std.lib.namespaces;
 
-import object.HashObj;
 import std.lib.namespaces.io.Bytes;
 import sys.FileSystem;
 import object.NullObj;

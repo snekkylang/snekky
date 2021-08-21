@@ -1,0 +1,40 @@
+// Snekky has a simple event loop
+
+// Executing a piece of code every x milliseconds
+mut c = 0;
+mut interval = null;
+interval = EventLoop.scheduleInterval(500, func() {
+    Sys.trace("Interval: " >< c);
+    if c >= 5 {
+        interval.clear();
+    }
+    c += 1;
+});
+
+// Executing a piece of code once after x milliseconds
+EventLoop.scheduleTimeout(2000, func() {
+    Sys.trace("Timeout ran out");
+});
+
+// Running a function asynchronously
+let asyncFunc = func() {
+    return EventLoop.Future(func(resolve) {
+        EventLoop.scheduleTimeout(2000, func() {
+            resolve(5 + 3);
+        });
+    });
+};
+
+asyncFunc().handle(func(result) {
+    Sys.trace("asyncFunc resolved with " >< result);
+});
+
+// Dispatching of and listening for events
+let o = {}; // Events can be attached to any object
+
+EventLoop.attach(o);
+o.dispatchEvent("myEvent", 2 + 3);
+
+o.attachEventListener("myEvent", func(data) {
+    Sys.trace("myEvent fired with data " >< data);
+});
