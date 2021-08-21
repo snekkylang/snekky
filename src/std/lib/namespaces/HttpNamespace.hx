@@ -16,18 +16,14 @@ private class HttpClient extends MemberObject {
 
         final client = new Http(url);
 
-        client.onData = function(data) {
-            final newVirtualMachine = new VirtualMachine(vm.fileData);
-        
+        client.onData = function(data) {        
             final func = cast(members.get("onData"), ClosureObj);
-            newVirtualMachine.callFunction(func, [new StringObj(data, vm)]);
+            func.call([new StringObj(data, vm)]);
         };
 
-        client.onStatus = function(status) {
-            final newVirtualMachine = new VirtualMachine(vm.fileData);
-        
+        client.onStatus = function(status) {        
             final func = cast(members.get("onStatus"), ClosureObj);
-            newVirtualMachine.callFunction(func, [new NumberObj(status, vm)]);
+            func.call([new NumberObj(status, vm)]);
         };
         
         addFunctionMember("onData", [ObjectType.String], function(parameters) {

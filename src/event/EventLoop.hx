@@ -14,13 +14,13 @@ class EventLoop {
             if (current is Timable) {
                 final timable = cast(current, Timable);
                 if (timable.shouldExecute()) {
-                    current.handler.vm.callFunction(current.handler, []);
+                    current.handler.call([]);
                 }
                 if (!timable.cleared) {
                     queue.push(current); 
                 }  
             } else if (current is CallMessage) {
-                current.handler.vm.callFunction(current.handler, [current.data]); 
+                current.handler.call([current.data]); 
             }
         }
     }
