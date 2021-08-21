@@ -1,11 +1,12 @@
 package event.message;
 
+import haxe.Timer;
 import object.ClosureObj;
 
 class IntervalMessage extends Message implements Timable {
 
     public final interval:Int;
-    var lastExecuted = getCurrentMsTime();
+    var lastExecuted = getCurrentMsStamp();
     public var cleared(default, null) = false;
 
     public function new(handler:ClosureObj, interval:Int) {
@@ -15,8 +16,8 @@ class IntervalMessage extends Message implements Timable {
     }
 
     public function shouldExecute():Bool {
-        if (getCurrentMsTime() - lastExecuted >= interval) {
-            lastExecuted = getCurrentMsTime();
+        if (getCurrentMsStamp() - lastExecuted >= interval) {
+            lastExecuted = getCurrentMsStamp();
             return true;
         }
 
@@ -27,7 +28,7 @@ class IntervalMessage extends Message implements Timable {
         cleared = true;
     }
 
-    static function getCurrentMsTime():Int {
-        return Std.int(Sys.time() * 1000);
+    static function getCurrentMsStamp():Int {
+        return Std.int(Timer.stamp() * 1000);
     }
 }

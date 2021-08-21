@@ -1,5 +1,6 @@
 package event.message;
 
+import haxe.Timer;
 import object.ClosureObj;
 
 class TimeoutMessage extends Message implements Timable {
@@ -10,11 +11,11 @@ class TimeoutMessage extends Message implements Timable {
     public function new(handler:ClosureObj, timeout:Int) {
         super(handler, null);
 
-        this.timeout = getCurrentMsTime() + timeout;
+        this.timeout = getCurrentMsStamp() + timeout;
     }
 
     public function shouldExecute():Bool {
-        if (getCurrentMsTime() >= timeout) {
+        if (getCurrentMsStamp() >= timeout) {
             cleared = true;
             return true;
         }
@@ -26,7 +27,7 @@ class TimeoutMessage extends Message implements Timable {
         cleared = true;
     }
 
-    static function getCurrentMsTime():Int {
-        return Std.int(Sys.time() * 1000);
+    static function getCurrentMsStamp():Int {
+        return Std.int(Timer.stamp() * 1000);
     }
 }
