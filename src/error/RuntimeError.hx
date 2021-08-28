@@ -13,7 +13,7 @@ class RuntimeError {
     }
 
     function printHead(message:String) {
-        Console.log('<#DE4A3F>error:</> $message.');
+        Console.log('<#DE4A3F>error:</> $message');
     }
 
     function printStackTrace() {
