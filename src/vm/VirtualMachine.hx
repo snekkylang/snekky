@@ -30,9 +30,6 @@ class VirtualMachine {
     public final builtInTable:BuiltInTable;
     public final error:RuntimeError;
     public final fileData:Bytes;
-    #if target.sys
-    final threadLocks:Array<sys.thread.Lock> = [];
-    #end
 
     public function new(fileData:Bytes) {
         this.fileData = fileData;
@@ -88,24 +85,12 @@ class VirtualMachine {
         return o;
     }
 
-    #if target.sys
-    public function addThreadLock(lock:sys.thread.Lock) {
-        threadLocks.push(lock);
-    }
-    #end
-
     public function eval() {
         while (instructions.position < instructions.length) {
             evalInstruction();
         }
 
         eventLoop.start();
-
-        #if target.sys
-        for (lock in threadLocks) {
-            lock.wait();
-        }
-        #end
     }
 
     public function evalInstruction() {
