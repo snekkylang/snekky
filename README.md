@@ -21,7 +21,6 @@ Snekky is a simple object-based, imperative programming language compiling to a 
 - Built-in REPL.
 - Familiar syntax.
 - Compiles to a custom bytecode.
-- Supports multithreading.
 - Arrays and hashes.
 - Lambdas and closures are supported.
 - Almost everything is an expression (including `if`s, `when`s and blocks).
