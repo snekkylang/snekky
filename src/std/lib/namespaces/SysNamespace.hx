@@ -47,39 +47,31 @@ class SysNamespace extends MemberObject {
             return new NullObj(vm);
         });
 
+        #if target.sys
         addFunctionMember("readLine", [], function(p) {
-            #if target.sys
             final input = Sys.stdin().readLine();
-            #else
-            final input = "";
-            throw "Read line not supported on this target";
-            #end
 
             return new StringObj(input, vm);
         });
+        #end
 
+        #if target.sys
+        // TODO: Maybe this method should be removed.
         addFunctionMember("sleep", [ObjectType.Number], function(p) {
-            #if target.sys
             final time = cast(p[0], NumberObj).value;
-            
             Sys.sleep(time);
-            #else
-            throw "unsupported";
-            #end
 
             return new NullObj(vm);
         });
+        #end
 
+        #if target.sys
         addFunctionMember("exit", [ObjectType.Number], function(p) {
-            #if target.sys
             final code = Std.int(cast(p[0], NumberObj).value);
-            
             Sys.exit(code);
-            #else
-            throw "unsupported";
-            #end
 
             return new NullObj(vm);
         });
+        #end
     }
 }
