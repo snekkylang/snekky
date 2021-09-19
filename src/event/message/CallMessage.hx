@@ -5,11 +5,18 @@ import object.ClosureObj;
 
 class CallMessage extends Message {
 
-    public final handler:ClosureObj;
+    final callback:ClosureObj;
+    final arguments:Array<Object>;
 
-    public function new(handler:ClosureObj, data:Object) {
-        super(data);
+    public function new(eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
+        super(eventLoop);
 
-        this.handler = handler;
+        this.callback = callback;
+        this.arguments = arguments;
+    }
+
+    override function execute() {
+        callback.call(arguments);
+        super.execute();
     }
 }

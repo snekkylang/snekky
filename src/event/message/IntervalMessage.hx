@@ -1,36 +1,51 @@
 package event.message;
 
-import haxe.Timer;
+import object.Object;
 import object.ClosureObj;
+import sys.thread.Deque;
+import sys.thread.Thread;
+
+private enum ThreadMessage {
+    Cancel;
+}
 
 class IntervalMessage extends Message implements Timable {
 
-    public final interval:Int;
-    var lastExecuted = getCurrentMsStamp();
-    public var cleared(default, null) = false;
-    public final handler:ClosureObj;
+    final interval:Int;
+    final callback:ClosureObj;
+    final arguments:Array<Object>;
+    var cancelled = false;
+    var threadQueue = new Deque<ThreadMessage>();
 
-    public function new(handler:ClosureObj, interval:Int) {
-        super(null);
-        
-        this.handler = handler;
+    public function new(interval:Int, eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
+        super(eventLoop);
+
         this.interval = interval;
+        this.callback = callback;
+        this.arguments = arguments;
     }
 
-    public function shouldExecute():Bool {
-        if (getCurrentMsStamp() - lastExecuted >= interval) {
-            lastExecuted = getCurrentMsStamp();
-            return true;
-        }
+    override function execute() {
+        Thread.create(function() {
+            while (true) {
+                if (threadQueue.pop(false) == ThreadMessage.Cancel) {
+                    eventLoop.scheduleDecreaseTasks();
+                    break;
+                }
 
-        return false;
+                Sys.sleep(interval / 1000);
+
+                if (threadQueue.pop(false) == ThreadMessage.Cancel) {
+                    eventLoop.scheduleDecreaseTasks();
+                    break;
+                }
+
+                eventLoop.scheduleCall(callback, arguments);
+            }
+        });
     }
 
-    public function clear() {
-        cleared = true;
-    }
-
-    static function getCurrentMsStamp():Int {
-        return Std.int(Timer.stamp() * 1000);
+    public function cancel() {
+        threadQueue.add(ThreadMessage.Cancel);
     }
 }

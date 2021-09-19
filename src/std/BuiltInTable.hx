@@ -29,8 +29,8 @@ class BuiltInTable {
             new JsonNamespace(vm),
             new IoNamespace(vm),
             new StringNamespace(vm),
-            new EventLoopNamespace(vm),
             #if target.sys
+            new EventLoopNamespace(vm),
             new FileNamespace(vm), 
             new HttpNamespace(vm),
             new NetNamespace(vm)
@@ -49,8 +49,8 @@ class BuiltInTable {
             JsonNamespace.name,
             IoNamespace.name,
             StringNamespace.name,
-            EventLoopNamespace.name,
             #if target.sys
+            EventLoopNamespace.name,
             FileNamespace.name, 
             HttpNamespace.name,
             NetNamespace.name

@@ -1,17 +1,28 @@
 package event.message;
 
 import object.Object;
-import object.ClosureObj;
 
 class EventMessage extends Message {
 
-    public final name:String;
-    public final target:Object;
+    final target:Object;
+    final name:String;
+    final arguments:Array<Object>;
 
-    public function new(name:String, target:Object, data:Object) {
-        super(data);
+    public function new(eventLoop:EventLoop, target:Object, name:String, arguments:Array<Object>) {
+        super(eventLoop);
 
-        this.name = name;
         this.target = target;
+        this.name = name;
+        this.arguments = arguments;
+    }
+
+    override function execute() {
+        final handlers = eventLoop.getEventListeners(target, name);
+
+        for (h in handlers) {
+            h.call(arguments);
+        }
+
+        super.execute();
     }
 }

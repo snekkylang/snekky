@@ -1,6 +1,8 @@
 package vm;
 
+#if target.sys
 import event.EventLoop;
+#end
 import object.*;
 import haxe.zip.Uncompress;
 import compiler.debug.FileNameTable;
@@ -20,7 +22,9 @@ class VirtualMachine {
 
     public final stack:GenericStack<Object> = new GenericStack();
     public var frames:GenericStack<Frame> = new GenericStack();
+    #if target.sys
     public final eventLoop = new EventLoop();
+    #end
     public var currentFrame:Frame;
     public var constantPool:Array<Object>;
     public var instructions:BytesInput;
@@ -90,7 +94,9 @@ class VirtualMachine {
             evalInstruction();
         }
 
+        #if target.sys
         eventLoop.start();
+        #end
     }
 
     public function evalInstruction() {

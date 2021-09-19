@@ -1,12 +1,8 @@
 package std.lib.namespaces;
 
-import event.message.EventMessage;
-import object.StringObj;
 import event.message.Timable;
-import event.message.TimeoutMessage;
-import event.message.IntervalMessage;
+import object.StringObj;
 import object.NumberObj;
-import event.message.CallMessage;
 import object.NullObj;
 import object.ClosureObj;
 import object.Object.ObjectType;
@@ -20,7 +16,7 @@ private class Future extends MemberObject {
         addFunctionMember("handle", [ObjectType.Closure], function(p) {
             final handlerCallback = cast(p[0], ClosureObj);
 
-            vm.eventLoop.enqueue(new CallMessage(promiseCallback, handlerCallback));
+            vm.eventLoop.scheduleCall(promiseCallback, [handlerCallback]);
 
             return new NullObj(vm);
         });
@@ -33,7 +29,7 @@ private class Timer extends MemberObject {
         super(vm);
 
         addFunctionMember("clear", [], function(p) {
-            message.clear();
+            message.cancel();
 
             return new NullObj(vm);
         });
@@ -57,8 +53,7 @@ class EventLoopNamespace extends MemberObject {
             final interval = Std.int(cast(p[0], NumberObj).value);
             final cb = cast(p[1], ClosureObj);
 
-            final message = new IntervalMessage(cb, interval);
-            vm.eventLoop.enqueue(message);
+            final message = vm.eventLoop.scheduleInterval(interval, cb, []);
 
             return new Timer(vm, message).getMembers();
         });
@@ -67,8 +62,7 @@ class EventLoopNamespace extends MemberObject {
             final timeout = Std.int(cast(p[0], NumberObj).value);
             final cb = cast(p[1], ClosureObj);
 
-            final message = new TimeoutMessage(cb, timeout);
-            vm.eventLoop.enqueue(message);
+            final message = vm.eventLoop.scheduleTimeout(timeout, cb, []);
 
             return new Timer(vm, message).getMembers();
         });
@@ -89,7 +83,7 @@ class EventLoopNamespace extends MemberObject {
                 final eventName = cast(p[0], StringObj).value;
                 final data = p[1];
 
-                vm.eventLoop.enqueue(new EventMessage(eventName, target, data));
+                vm.eventLoop.scheduleEvent(target, eventName, [data]);
 
                 return new NullObj(vm);
             });

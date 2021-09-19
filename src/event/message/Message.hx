@@ -1,13 +1,14 @@
 package event.message;
 
-import object.ClosureObj;
-import object.Object;
-
 class Message {
 
-    public final data:Object;
+    final eventLoop:EventLoop;
 
-    public function new(data:Object) {
-        this.data = data;
+    public function new(eventLoop:EventLoop) {
+        this.eventLoop = eventLoop;
+    }
+
+    public function execute() {
+        eventLoop.scheduleDecreaseTasks();
     }
 }

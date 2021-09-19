@@ -1,35 +1,45 @@
 package event.message;
 
-import haxe.Timer;
+import object.Object;
 import object.ClosureObj;
+import sys.thread.Deque;
+import sys.thread.Thread;
+
+private enum ThreadMessage {
+    Cancel;
+}
 
 class TimeoutMessage extends Message implements Timable {
 
-    public final timeout:Int;
-    public var cleared(default, null) = false;
-    public final handler:ClosureObj;
+    final timeout:Int;
+    final callback:ClosureObj;
+    final arguments:Array<Object>;
+    var cancelled = false;
+    var threadQueueast = new Deque<ThreadMessage>();
 
-    public function new(handler:ClosureObj, timeout:Int) {
-        super(null);
+    public function new(timeout:Int, eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
+        super(eventLoop);
 
-        this.handler = handler;
-        this.timeout = getCurrentMsStamp() + timeout;
+        this.timeout = timeout;
+        this.callback = callback;
+        this.arguments = arguments;
     }
 
-    public function shouldExecute():Bool {
-        if (getCurrentMsStamp() >= timeout) {
-            cleared = true;
-            return true;
-        }
+    override public function execute() {
+        Thread.create(function() {
+            if (threadQueueast.pop(false) == ThreadMessage.Cancel) {
+                eventLoop.scheduleDecreaseTasks();
+                return;
+            }
 
-        return false;
+            Sys.sleep(timeout / 1000);
+
+            eventLoop.scheduleCall(callback, arguments);
+            eventLoop.scheduleDecreaseTasks();
+        });
     }
 
-    public function clear() {
-        cleared = true;
-    }
-
-    static function getCurrentMsStamp():Int {
-        return Std.int(Timer.stamp() * 1000);
+    public function cancel() {
+        threadQueueast.add(ThreadMessage.Cancel);
     }
 }
