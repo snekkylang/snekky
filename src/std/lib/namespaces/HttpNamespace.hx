@@ -18,12 +18,12 @@ private class HttpClient extends MemberObject {
 
         client.onData = function(data) {        
             final func = cast(members.get("onData"), ClosureObj);
-            func.call([new StringObj(data, vm)]);
+            vm.eventLoop.scheduleCall(func, [new StringObj(data, vm)]);
         };
 
         client.onStatus = function(status) {        
             final func = cast(members.get("onStatus"), ClosureObj);
-            func.call([new NumberObj(status, vm)]);
+            vm.eventLoop.scheduleCall(func, [new NumberObj(status, vm)]);
         };
         
         addFunctionMember("onData", [ObjectType.String], function(parameters) {
