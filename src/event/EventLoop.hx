@@ -72,7 +72,7 @@ class EventLoop {
         return message;
     }
 
-    public function addEventListener(target, name, handler) {
+    public function addEventListener(target:Object, name:String, handler:ClosureObj) {
         if (!eventListeners.exists(target)) {
             eventListeners.set(target, new Map());
         }
@@ -84,7 +84,7 @@ class EventLoop {
         targetHandlers.push(handler);
     }
 
-    public function getEventListeners(target, name) {
+    public function getEventListeners(target:Object, name:String) {
         return try {
             eventListeners.get(target).get(name);
         } catch (err) {
