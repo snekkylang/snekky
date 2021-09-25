@@ -63,7 +63,7 @@ class VirtualMachine {
         }
     }
 
-    public function pushFrame(context:Frame, returnAddress:Int, calledFunction:Function) {
+    public inline function pushFrame(context:Frame, returnAddress:Int, calledFunction:Function) {
         final expectedStackSize = if (calledFunction != null) {
             Lambda.count(stack) + 1 - calledFunction.parametersCount;
         } else {
@@ -74,7 +74,7 @@ class VirtualMachine {
         currentFrame = frames.first();
     }
 
-    public function popFrame():Frame {
+    public inline function popFrame():Frame {
         final frame = frames.pop();
         currentFrame = frames.first();
 
