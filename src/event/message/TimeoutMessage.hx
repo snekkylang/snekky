@@ -1,21 +1,18 @@
 package event.message;
 
+import sys.thread.Mutex;
+import haxe.Timer;
 import object.Object;
 import object.ClosureObj;
-import sys.thread.Deque;
 import sys.thread.Thread;
-
-private enum ThreadMessage {
-    Cancel;
-}
 
 class TimeoutMessage extends Message implements Timable {
 
     final timeout:Int;
     final callback:ClosureObj;
     final arguments:Array<Object>;
-    var cancelled = false;
-    var threadQueue = new Deque<ThreadMessage>();
+    var cleared = false;
+    final mutex = new Mutex();
 
     public function new(timeout:Int, eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
         super(eventLoop);
@@ -27,19 +24,26 @@ class TimeoutMessage extends Message implements Timable {
 
     override public function execute() {
         Thread.create(function() {
-            if (threadQueue.pop(false) == ThreadMessage.Cancel) {
-                eventLoop.scheduleDecreaseTasks();
-                return;
-            }
+            final startTime = Timer.stamp() * 1000;
 
-            Sys.sleep(timeout / 1000);
+            while (Timer.stamp() * 1000 - startTime < timeout) {
+                mutex.acquire();
+                if (cleared) {
+                    mutex.release();
+                    eventLoop.scheduleDecreaseTasks();
+                    return;
+                }
+                mutex.release();
+
+                Sys.sleep(1 / 1000);
+            }
 
             eventLoop.scheduleCall(callback, arguments);
             eventLoop.scheduleDecreaseTasks();
         });
     }
 
-    public function cancel() {
-        threadQueue.add(ThreadMessage.Cancel);
+    public function clear() {
+        cleared = true;
     }
 }

@@ -1,5 +1,6 @@
 package event.message;
 
 interface Timable {
-    function cancel():Void;
+    function clear():Void;
+    private var cleared:Bool;
 }

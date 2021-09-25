@@ -1,21 +1,18 @@
 package event.message;
 
+import sys.thread.Mutex;
+import haxe.Timer;
 import object.Object;
 import object.ClosureObj;
-import sys.thread.Deque;
 import sys.thread.Thread;
-
-private enum ThreadMessage {
-    Cancel;
-}
 
 class IntervalMessage extends Message implements Timable {
 
     final interval:Int;
     final callback:ClosureObj;
     final arguments:Array<Object>;
-    var cancelled = false;
-    var threadQueue = new Deque<ThreadMessage>();
+    var cleared = false;
+    final mutex = new Mutex();
 
     public function new(interval:Int, eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
         super(eventLoop);
@@ -28,16 +25,18 @@ class IntervalMessage extends Message implements Timable {
     override function execute() {
         Thread.create(function() {
             while (true) {
-                if (threadQueue.pop(false) == ThreadMessage.Cancel) {
-                    eventLoop.scheduleDecreaseTasks();
-                    break;
-                }
+                final startTime = Timer.stamp() * 1000;
 
-                Sys.sleep(interval / 1000);
+                while (Timer.stamp() * 1000 - startTime < interval) {
+                    mutex.acquire();
+                    if (cleared) {
+                        mutex.release();
+                        eventLoop.scheduleDecreaseTasks();
+                        return;
+                    }
+                    mutex.release();
 
-                if (threadQueue.pop(false) == ThreadMessage.Cancel) {
-                    eventLoop.scheduleDecreaseTasks();
-                    break;
+                    Sys.sleep(1 / 1000);
                 }
 
                 eventLoop.scheduleCall(callback, arguments);
@@ -45,7 +44,7 @@ class IntervalMessage extends Message implements Timable {
         });
     }
 
-    public function cancel() {
-        threadQueue.add(ThreadMessage.Cancel);
+    public function clear() {
+        cleared = true;
     }
 }

@@ -29,7 +29,7 @@ private class Timer extends MemberObject {
         super(vm);
 
         addFunctionMember("clear", [], function(p) {
-            message.cancel();
+            message.clear();
 
             return new NullObj(vm);
         });
