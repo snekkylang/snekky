@@ -15,7 +15,7 @@ class TimeoutMessage extends Message implements Timable {
     final callback:ClosureObj;
     final arguments:Array<Object>;
     var cancelled = false;
-    var threadQueueast = new Deque<ThreadMessage>();
+    var threadQueue = new Deque<ThreadMessage>();
 
     public function new(timeout:Int, eventLoop:EventLoop, callback:ClosureObj, arguments:Array<Object>) {
         super(eventLoop);
@@ -27,7 +27,7 @@ class TimeoutMessage extends Message implements Timable {
 
     override public function execute() {
         Thread.create(function() {
-            if (threadQueueast.pop(false) == ThreadMessage.Cancel) {
+            if (threadQueue.pop(false) == ThreadMessage.Cancel) {
                 eventLoop.scheduleDecreaseTasks();
                 return;
             }
@@ -40,6 +40,6 @@ class TimeoutMessage extends Message implements Timable {
     }
 
     public function cancel() {
-        threadQueueast.add(ThreadMessage.Cancel);
+        threadQueue.add(ThreadMessage.Cancel);
     }
 }
