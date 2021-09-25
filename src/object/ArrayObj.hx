@@ -45,7 +45,7 @@ class ArrayObj extends Object {
         });
 
         addFunctionMember("toString", [], function(p) {
-            return new StringObj(this.value.toString(), vm);
+            return new StringObj(toString(), vm);
         });
 
         addFunctionMember("push", [null], function(p) {
@@ -185,6 +185,24 @@ class ArrayObj extends Object {
         addFunctionMember("clone", [], function(p) {
             return clone(); 
         });
+    }
+
+    inline public function set(index:Int, v:Object) {
+        while (index > value.length) {
+            value.push(new NullObj(vm));
+        }
+
+        value[index] = v;
+    }
+
+    inline public function get(index:Int) {
+        final v = value[index];
+
+        return if (v == null) {
+            new NullObj(vm);
+        } else {
+            v;
+        };
     }
 
     override function toString():String {

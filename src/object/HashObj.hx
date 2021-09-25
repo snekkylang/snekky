@@ -54,6 +54,24 @@ class HashObj extends Object {
         });
     }
 
+    inline public function set(name:String, v:Object) {
+        value.set(name, v);
+    }
+
+    inline public function get(name:String) {
+        final v = value.get(name);
+
+        return if (v == null) {
+            new NullObj(vm);
+        } else {
+            v;
+        };
+    }
+
+    inline public function exists(name):Bool {
+        return value.exists(name);
+    }
+
     override function toString():String {
         final buffer = new StringBuf();
         buffer.add("{");

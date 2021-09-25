@@ -137,25 +137,24 @@ class VirtualMachine {
                         final cTarget = cast(target, ArrayObj);
                         final cIndex = cast(index, NumberObj);
 
-                        cTarget.value[Std.int(cIndex.value)];
+                        cTarget.get(Std.int(cIndex.value));
                     case [ObjectType.Hash, ObjectType.String]:
                         final cTarget = cast(target, HashObj);
                         final cIndex = cast(index, StringObj);
 
-                        var value = cTarget.value.get(cIndex.value);
-                        if (value == null) {
-                            value = cTarget.getMembers().value.get(cIndex.value);
+                        if (cTarget.exists(cIndex.value)) {
+                            cTarget.get(cIndex.value);
+                        } else {
+                            cTarget.getMembers().get(cIndex.value);
                         }
-
-                        value;
                     case [_, ObjectType.String]:
                         final cIndex = cast(index, StringObj);
 
-                        target.getMembers().value.get(cIndex.value);
+                        target.getMembers().get(cIndex.value);
                     default: new NullObj(this);
                 }
 
-                stack.add(value == null ? new NullObj(this) : value);
+                stack.add(value);
             case OpCode.StoreIndex:
                 final value = popStack();
                 final index = popStack();
@@ -166,16 +165,16 @@ class VirtualMachine {
                         final cTarget = cast(target, ArrayObj);
                         final cIndex = cast(index, NumberObj);
 
-                        cTarget.value[Std.int(cIndex.value)] = value;
+                        cTarget.set(Std.int(cIndex.value), value);
                     case [ObjectType.Hash, ObjectType.String]:
                         final cTarget = cast(target, HashObj);
                         final cIndex = cast(index, StringObj);
 
-                        cTarget.value.set(cIndex.value, value);
+                        cTarget.set(cIndex.value, value);
                     case [_, ObjectType.String]:
                         final cIndex = cast(index, StringObj);
     
-                        target.getMembers().value.set(cIndex.value, value);
+                        target.getMembers().set(cIndex.value, value);
                     default: error.error("index operator cannot be used on this datatype");      
                 }
             case OpCode.ConcatString:
