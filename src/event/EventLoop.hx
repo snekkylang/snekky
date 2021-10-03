@@ -16,6 +16,10 @@ class EventLoop {
     public function new() {}
 
     public function start() {
+        if (scheduledTasks <= 0) {
+            return;
+        }
+
         while (true) {
             final message = queue.pop(true);
     
