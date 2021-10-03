@@ -23,6 +23,12 @@ class IntervalMessage extends Message implements Timable {
     }
 
     override function execute() {
+        // Return instantly if interval has been cleared before event loop was started
+        if (cleared) {
+            eventLoop.unscheduleTask();
+            return;
+        }
+
         Thread.create(function() {
             while (true) {
                 final startTime = Timer.stamp() * 1000;

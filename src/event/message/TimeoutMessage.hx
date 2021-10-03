@@ -23,6 +23,12 @@ class TimeoutMessage extends Message implements Timable {
     }
 
     override public function execute() {
+        // Return instantly if interval has been cleared before event loop was started
+        if (cleared) {
+            eventLoop.unscheduleTask();
+            return;
+        }
+
         Thread.create(function() {
             final startTime = Timer.stamp() * 1000;
 
