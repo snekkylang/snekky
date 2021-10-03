@@ -6,6 +6,10 @@ import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
 import build.Version as MacroVersion;
+#if target.sys
+import sys.io.File;
+import repl.Repl;
+#end
 
 @:expose
 class Snekky {
@@ -88,29 +92,40 @@ class Snekky {
             Console.println("");
             Console.println("Options:");
             Console.println(argumentHandler.getDoc());
-            Sys.exit(0);
+            return;
         }
 
         if (args.length == 0) {
-            final repl = new repl.Repl();
+            final repl = new Repl();
             repl.start();
         } else {
             final fileName = config.inputPath;
             final compress = config.dumpPath != null && config.compress;
     
             if (Path.extension(fileName) == "snek") {
-                final code = sys.io.File.getContent(fileName);
+                final code = try {
+                    File.getContent(fileName);
+                } catch (err) {
+                    Console.println('Error: Unable to open file $fileName');
+                    return;
+                };
     
                 final byteCode = compileString(fileName, code, config.debug, compress, config.warnings);
     
                 if (config.dumpPath != null) {
-                    sys.io.File.saveBytes('${config.dumpPath}.bite', byteCode);
-                    Sys.exit(0);
+                    File.saveBytes('${config.dumpPath}.bite', byteCode);
+                    return;
                 }
     
                 evaluateBytes(byteCode);
             } else {
-                final byteCode = sys.io.File.getBytes('./$fileName');
+                final byteCode = try {
+                    File.getBytes('./$fileName');
+                } catch (err) {
+                    Console.println('Error: Unable to open file $fileName');
+                    return;
+                };
+
                 evaluateBytes(byteCode);
             }
         }
