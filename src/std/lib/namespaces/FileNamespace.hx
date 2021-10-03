@@ -15,7 +15,9 @@ class FileNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("readBytes", [ObjectType.String], function(p) {
             final path = cast(p[0], StringObj).value;
 

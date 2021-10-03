@@ -11,11 +11,9 @@ class BooleanObj extends Object {
         super(ObjectType.Boolean, vm);
 
         this.value = value;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), vm);
         });

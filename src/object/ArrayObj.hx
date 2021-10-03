@@ -7,11 +7,16 @@ import haxe.iterators.ArrayIterator as HaxeArrayIterator;
 
 private class ArrayIterator extends MemberObject {
 
+    final value:Array<Object>;
+    var index = -1;
+
     public function new(vm:VirtualMachine, value:Array<Object>) {
         super(vm);
 
-        var index = -1;
+        this.value = value;
+    }
 
+    override function initMembers() {
         addFunctionMember("next", [], function(p) {
             index++;
             return new ArrayObj([value[index], new NumberObj(index, vm)], vm);
@@ -31,11 +36,9 @@ class ArrayObj extends Object {
         super(ObjectType.Array, vm);
 
         this.value = value;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("Iterator", [], function(p) {
             return new ArrayIterator(vm, value).getMembers();
         });

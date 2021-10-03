@@ -11,9 +11,15 @@ import sys.net.Socket as SysSocket;
 
 class Socket extends MemberObject {
 
+    final socket:SysSocket;
+
     public function new(vm:VirtualMachine, socket:SysSocket) {
         super(vm);
 
+        this.socket = socket;
+    }
+
+    override function initMembers() {
         addFunctionMember("write", [ObjectType.String], function(p) {
             final msg = cast(p[0], StringObj).value;
             

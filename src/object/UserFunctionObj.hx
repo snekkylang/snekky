@@ -11,11 +11,9 @@ class UserFunctionObj extends Function {
         super(ObjectType.UserFunction, parametersCount, vm);
 
         this.position = position;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), vm);
         });

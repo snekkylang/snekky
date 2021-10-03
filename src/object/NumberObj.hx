@@ -11,16 +11,14 @@ class NumberObj extends Object {
         super(ObjectType.Number, vm);
 
         this.value = value;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), vm);
         });
     }
-
+    
     override function toString():String {
         return Std.string(value);
     }

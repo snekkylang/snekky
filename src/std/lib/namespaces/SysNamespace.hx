@@ -12,7 +12,9 @@ class SysNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("trace", [null], function(p) {
             final fileName = vm.fileNameTable.resolve(vm.instructions.position);
             final position = vm.lineNumberTable.resolve(vm.instructions.position);

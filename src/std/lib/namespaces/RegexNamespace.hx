@@ -7,9 +7,15 @@ import vm.VirtualMachine;
 
 class Regex extends MemberObject {
 
+    final regex:EReg;
+
     public function new(vm:VirtualMachine, regex:EReg) {
         super(vm);
 
+        this.regex = regex;
+    }
+
+    override function initMembers() {
         addFunctionMember("match", [ObjectType.String], function(p) {
             final s = cast(p[0], StringObj).value;
 
@@ -31,7 +37,9 @@ class RegexNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("compile", [ObjectType.String, ObjectType.String], function(p) {
             final pattern = cast(p[0], StringObj).value;
             final flags = cast(p[1], StringObj).value;

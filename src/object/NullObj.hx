@@ -7,11 +7,9 @@ class NullObj extends Object {
 
     public function new(vm:VirtualMachine) {
         super(ObjectType.Null, vm);
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), vm);
         });

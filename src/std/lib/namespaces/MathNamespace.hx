@@ -10,7 +10,9 @@ class MathNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addObjectMember("PI", new NumberObj(Math.PI, vm));
 
         addFunctionMember("abs", [ObjectType.Number], function(p) {

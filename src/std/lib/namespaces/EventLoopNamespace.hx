@@ -10,9 +10,15 @@ import vm.VirtualMachine;
 
 private class Future extends MemberObject {
 
+    final promiseCallback:ClosureObj;
+
     public function new(vm:VirtualMachine, promiseCallback:ClosureObj) {
         super(vm);
 
+        this.promiseCallback = promiseCallback;
+    }
+
+    override function initMembers() {
         addFunctionMember("handle", [ObjectType.Closure], function(p) {
             final handlerCallback = cast(p[0], ClosureObj);
 
@@ -25,9 +31,15 @@ private class Future extends MemberObject {
 
 private class Timer extends MemberObject {
 
+    final message:Timable;
+
     public function new(vm:VirtualMachine, message:Timable) {
         super(vm);
 
+        this.message = message;
+    }
+
+    override function initMembers() {
         addFunctionMember("clear", [], function(p) {
             message.clear();
 
@@ -42,7 +54,9 @@ class EventLoopNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("Future", [ObjectType.Closure], function(p) {
             final promiseCallback = cast(p[0], ClosureObj);
 

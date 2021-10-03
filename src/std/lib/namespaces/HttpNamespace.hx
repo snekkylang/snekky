@@ -11,10 +11,14 @@ import vm.VirtualMachine;
 
 private class HttpClient extends MemberObject {
 
+    final url:String;
+    final client:Http;
+
     public function new(vm:VirtualMachine, url:String) {
         super(vm);
 
-        final client = new Http(url);
+        this.url = url;
+        this.client = new Http(url);
 
         client.onData = function(data) {        
             final func = cast(members.get("onData"), ClosureObj);
@@ -25,7 +29,9 @@ private class HttpClient extends MemberObject {
             final func = cast(members.get("onStatus"), ClosureObj);
             vm.eventLoop.scheduleCall(func, [new NumberObj(status, vm)]);
         };
-        
+    }
+
+    override function initMembers() {        
         addFunctionMember("onData", [ObjectType.String], function(parameters) {
             return new NullObj(vm);
         });
@@ -76,7 +82,9 @@ class HttpNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("Client", [ObjectType.String], function(p) {
             final url = cast(p[0], StringObj).value;
 

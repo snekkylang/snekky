@@ -15,7 +15,9 @@ class Bytes extends MemberObject {
         super(vm);
 
         this.bytes = bytes;
+    }
 
+    override function initMembers() {
         addFunctionMember("getByte", [ObjectType.Number], function(p) {
             final pos = Std.int(cast(p[0], NumberObj).value);
 

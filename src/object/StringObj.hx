@@ -7,11 +7,16 @@ import object.Object.ObjectType;
 
 private class StringIterator extends MemberObject {
 
+    var index = -1;
+    final value:String;
+
     public function new(vm:VirtualMachine, value:String) {
         super(vm);
 
-        var index = -1;
+        this.value = value;
+    }
 
+    override function initMembers() {
         addFunctionMember("next", [], function(p) {
             index++;
             return new StringObj(value.charAt(index), vm);
@@ -31,11 +36,9 @@ class StringObj extends Object {
         super(ObjectType.String, vm);
 
         this.value = value;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("toString", [], function(p) {
             return new StringObj(toString(), vm);
         });

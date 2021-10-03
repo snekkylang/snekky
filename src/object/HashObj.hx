@@ -8,11 +8,17 @@ import haxe.ds.StringMap;
 
 private class HashIterator extends MemberObject {
 
+    final value:StringMap<Object>;
+    final iterator:MapKeyValueIterator<String, Object>;
+
     public function new(vm:VirtualMachine, value:StringMap<Object>) {
         super(vm);
 
-        final iterator = new MapKeyValueIterator(value);
+        this.value = value;
+        iterator = new MapKeyValueIterator(value);
+    }
 
+    override function initMembers() {
         addFunctionMember("next", [], function(p) {
             final next = iterator.next();
             return new ArrayObj([next.value, new StringObj(next.key, vm)], vm);
@@ -32,11 +38,9 @@ class HashObj extends Object {
         super(ObjectType.Hash, vm);
 
         this.value = value;
+    }
 
-        if (vm == null) {
-            return;
-        }
-
+    override function initMembers() {
         addFunctionMember("Iterator", [], function(p) {
             return new HashIterator(vm, value).getMembers();
         });

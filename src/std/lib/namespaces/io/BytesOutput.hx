@@ -6,12 +6,19 @@ import object.StringObj;
 import object.NumberObj;
 import vm.VirtualMachine;
 import object.Object.ObjectType;
+import haxe.io.BytesOutput as HaxeBytesOutput;
 
 class BytesOutput extends MemberObject {
 
-    public function new(vm:VirtualMachine, bytes:haxe.io.BytesOutput) {
+    final bytes:HaxeBytesOutput;
+
+    public function new(vm:VirtualMachine, bytes:HaxeBytesOutput) {
         super(vm);
 
+        this.bytes = bytes;
+    }
+
+    override function initMembers() {
         addFunctionMember("setBigEndian", [ObjectType.Boolean], function(p) {
             final bigEndian = cast(p[0], BooleanObj).value;
 
@@ -116,5 +123,5 @@ class BytesOutput extends MemberObject {
         addFunctionMember("getBytes", [], function(p) {
             return new Bytes(vm, bytes.getBytes()).getMembers();
         });
-    }  
+    }
 }

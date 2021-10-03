@@ -11,7 +11,9 @@ class StringNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("fromCharCode", [ObjectType.Number], function(p) {
             final value = Std.int(cast(p[0], NumberObj).value);
             

@@ -11,7 +11,9 @@ class NumberNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("parse", [ObjectType.String], function(p) {
             final value = cast(p[0], StringObj).value;
             

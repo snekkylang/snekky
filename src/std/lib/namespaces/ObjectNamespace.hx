@@ -9,7 +9,9 @@ class ObjectNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("typeof", [null], function(parameters) {
             return new StringObj(Std.string(parameters[0].type), vm);
         });

@@ -15,7 +15,13 @@ class MemberObject {
 
     public function new(vm:VirtualMachine) {
         this.vm = vm;
+
+        if (vm != null) {
+            initMembers();
+        }
     }
+
+    function initMembers() {}
 
     public function getMembers():HashObj {
         return new HashObj(members, vm);

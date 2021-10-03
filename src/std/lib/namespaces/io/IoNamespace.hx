@@ -10,7 +10,9 @@ class IoNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("Bytes", [ObjectType.Number], function(p) {
             final size = Std.int(cast(p[0], NumberObj).value);
             

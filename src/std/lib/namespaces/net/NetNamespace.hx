@@ -10,7 +10,9 @@ class NetNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("Socket", [ObjectType.Boolean], function(p) {
             final secure = cast(p[0], BooleanObj).value;
 

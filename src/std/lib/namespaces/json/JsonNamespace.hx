@@ -2,7 +2,6 @@ package std.lib.namespaces.json;
 
 import object.StringObj;
 import object.Object.ObjectType;
-import object.NullObj;
 import vm.VirtualMachine;
 
 class JsonNamespace extends MemberObject {
@@ -11,7 +10,9 @@ class JsonNamespace extends MemberObject {
 
     public function new(vm:VirtualMachine) {
         super(vm);
+    }
 
+    override function initMembers() {
         addFunctionMember("encode", [null], function(p) {
             return try {
                 new StringObj(JsonEncoder.encode(p[0]), vm);
