@@ -30,7 +30,7 @@ class TimeoutMessage extends Message implements Timable {
                 mutex.acquire();
                 if (cleared) {
                     mutex.release();
-                    eventLoop.scheduleDecreaseTasks();
+                    eventLoop.unscheduleTask();
                     return;
                 }
                 mutex.release();
@@ -39,7 +39,7 @@ class TimeoutMessage extends Message implements Timable {
             }
 
             eventLoop.scheduleCall(callback, arguments);
-            eventLoop.scheduleDecreaseTasks();
+            eventLoop.unscheduleTask();
         });
     }
 

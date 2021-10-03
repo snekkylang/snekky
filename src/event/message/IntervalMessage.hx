@@ -31,7 +31,7 @@ class IntervalMessage extends Message implements Timable {
                     mutex.acquire();
                     if (cleared) {
                         mutex.release();
-                        eventLoop.scheduleDecreaseTasks();
+                        eventLoop.unscheduleTask();
                         return;
                     }
                     mutex.release();

@@ -1,5 +1,6 @@
 package event;
 
+import sys.thread.Mutex;
 import event.message.*;
 import object.Object;
 import object.ClosureObj;
@@ -10,23 +11,20 @@ class EventLoop {
     final queue = new Deque<Message>();
     var scheduledTasks = 0;
     final eventListeners:Map<Object, Map<String, Array<ClosureObj>>> = new Map();
-    var shouldRun = false;
+    final mutex = new Mutex();
 
     public function new() {}
 
     public function start() {
-        if (shouldRun) {
-            do {
-                final message = queue.pop(true);
+        while (true) {
+            final message = queue.pop(true);
     
-                message.execute();
-            } while (scheduledTasks > 0);
+            message.execute();
         }
     }
 
     public function enqueue(message:Message) {
-        shouldRun = true;
-        scheduleIncreaseTasks();
+        scheduleTask();
         queue.add(message);
     }
 
@@ -58,20 +56,6 @@ class EventLoop {
         return message;
     }
 
-    public function scheduleDecreaseTasks():UnscheduleTaskMessage {
-        final message = new UnscheduleTaskMessage(this);
-        queue.add(message);
-
-        return message; 
-    }
-
-    public function scheduleIncreaseTasks():ScheduleTaskMessage {
-        final message = new ScheduleTaskMessage(this);
-        queue.add(message);
-
-        return message;
-    }
-
     public function addEventListener(target:Object, name:String, handler:ClosureObj) {
         if (!eventListeners.exists(target)) {
             eventListeners.set(target, new Map());
@@ -93,10 +77,17 @@ class EventLoop {
     }
 
     public function unscheduleTask() {
+        mutex.acquire();
         scheduledTasks--;
+        if (scheduledTasks <= 0) {
+            Sys.exit(0);
+        }
+        mutex.release();
     }
 
     public function scheduleTask() {
+        mutex.acquire();
         scheduledTasks++;
+        mutex.release();
     }
 }

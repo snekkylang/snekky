@@ -9,6 +9,6 @@ class Message {
     }
 
     public function execute() {
-        eventLoop.scheduleDecreaseTasks();
+        eventLoop.unscheduleTask();
     }
 }
