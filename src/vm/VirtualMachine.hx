@@ -47,6 +47,13 @@ class VirtualMachine {
 
     public function newWithState(fileData:Bytes) {
         final fileData = new BytesInput(fileData);
+        final magicNumber = fileData.readString(4);
+        if (magicNumber != "SNEK") {
+            Sys.println("Error: Snekky magic number not found!");
+            #if target.sys
+            Sys.exit(1);
+            #end
+        }
         final byteCode = if (fileData.readByte() == 1) {
             new BytesInput(Uncompress.run(fileData.readAll()));
         } else {

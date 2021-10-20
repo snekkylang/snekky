@@ -60,6 +60,7 @@ class Compiler {
         program.write(instructionsByteCode);
 
         final output = new BytesOutput();
+        output.writeString("SNEK");
         output.writeByte(compress ? 1 : 0);
         if (compress) {
             output.write(Compress.run(program.getBytes(), 9));

@@ -36,6 +36,7 @@ A JSON-like representation is utilized to visualize the structure of the bytecod
 The Snekky compiler compiles the entire program, which could consist of several source files (`.snek` extension), into a single file containing the entire bytecode (`.bite` extension). Little-endian byte order is used throughout the entire bytecode. Bytecode files are structured as follows:
 ```
 Bytecode File {
+    str magic_number
     byt compressed
     <FileNameTable>
     <LineNumberTable>
@@ -46,6 +47,7 @@ Bytecode File {
 ```
 | Field name           | Data type | Description                                                    |
 |----------------------|-----------|----------------------------------------------------------------|
+| magic_number         | str       | Snekky bytecode file magic number (`SNEK`).                    |
 | compressed           | byt       | Indicates whether the file has ben compressed (1=yes, 0=no).   |
 
 ### FileNameTable
