@@ -27,23 +27,24 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | BitShiftRight      | 0d              |          | Number(v1), Number(v2) -> Number(v3)                 | Bitwise shifts `v1`'s bits to the right by `v2`.                                          |
 | BitNot             | 0e              |          | Number(v1) -> Number(v2)                             | Bitwise inverts all bits of `v1`.                                                         |
 | Modulo             | 0f              |          | Number(v1), Number(v2) -> Number(v3)                 | Performs modulo operation on `v1` with `v2`.                                              |
-| Equals             | 10              |          | Any(v1), Any(v2) -> Boolean(v3)                      | Compares `v1` with `v2` and.                                                              |
-| LessThan           | 11              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is smaller than `v2` (`v1` < `v2`).                                   |
-| LessThanOrEqual    | 12              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is smaller than or equal to `v2` (`v1` <= `v2`).                      |
-| GreaterThan        | 13              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is greater than `v2` (`v1` > `v2`).                                   |
-| GreaterThanOrEqual | 14              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is greater than or equal to `v2` (`v1` >= `v2`).                      |
-| Negate             | 15              |          | Number(v1) -> Number(v2)                             | Negates `v1` (inverts its sign).                                                          |
-| Not                | 16              |          | Boolean(v1) -> Boolean(v2)                           | Inverts `v1` (`Boolean(true)` -> `Boolean(false)` / `Boolean(false)` -> `Boolean(true)`). |
-| ConcatString       | 17              |          | String(v1), String(v2) -> String(v3)                 | Concatenates `v1` and `v2` creating a new string.                                         |
-| Load               | 18              | index    | -> Any(v)                                            | Loads value of variable at `index` onto the stack.                                        |
-| Store              | 19              | index    | Any(v) ->                                            | Stores value of `v1` in variable at `index`.                                              |
-| LoadBuiltIn        | 1a              | index    | -> Any(v)                                            | Loads built-in object at index `index` onto the stack.                                    |
-| Call               | 1b              | p_count  | Function(v1) -> Any(v2)                              | Calls function `v1` by jumping to its byte index and pushing a new activation record.     |
-| Return             | 1c              |          | [no change]                                          | Pops topmost activation record and jumps back to calling byte index.                      |
-| Array              | 1d              | length   | Any(v1), Any(v2), ... Any(vlength) -> Array(a)       | Constructs array by popping `length` objects off the stack.                               |
-| Hash               | 1e              | length   | String(v1), Any(v2), ... -> Hash(h)                  | Constructs hash by popping `length * 2` objects off the stack.                            |
-| LoadIndex          | 1f              |          | Any(index), Any(target) -> Any(v)                    | Loads `index` on `target`.                                                                |
-| StoreIndex         | 20              |          | Any(v), Any(index), Any(target) ->                   | Load `index` on `target` and sets it to `v`.                                              |
+| Equals             | 10              |          | Any(v1), Any(v2) -> Boolean(v3)                      | Pushes `Boolean(true)` onto the stack if `v1` and `v2` are equal.                         |
+| NotEquals          | 11              |          | Any(v1), Any(v2) -> Boolean(v3)                      | Pushes `Boolean(false)` onto the stack if `v1` and `v2` are equal                         |
+| LessThan           | 12              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is smaller than `v2` (`v1` < `v2`).                                   |
+| LessThanOrEqual    | 13              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is smaller than or equal to `v2` (`v1` <= `v2`).                      |
+| GreaterThan        | 14              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is greater than `v2` (`v1` > `v2`).                                   |
+| GreaterThanOrEqual | 15              |          | Number(v1), Number(v2) -> Boolean(v3)                | Checks whether `v1` is greater than or equal to `v2` (`v1` >= `v2`).                      |
+| Negate             | 16              |          | Number(v1) -> Number(v2)                             | Negates `v1` (inverts its sign).                                                          |
+| Not                | 17              |          | Boolean(v1) -> Boolean(v2)                           | Inverts `v1` (`Boolean(true)` -> `Boolean(false)` / `Boolean(false)` -> `Boolean(true)`). |
+| ConcatString       | 18              |          | String(v1), String(v2) -> String(v3)                 | Concatenates `v1` and `v2` creating a new string.                                         |
+| Load               | 19              | index    | -> Any(v)                                            | Loads value of variable at `index` onto the stack.                                        |
+| Store              | 11              | index    | Any(v) ->                                            | Stores value of `v1` in variable at `index`.                                              |
+| LoadBuiltIn        | 1b              | index    | -> Any(v)                                            | Loads built-in object at index `index` onto the stack.                                    |
+| Call               | 1c              | p_count  | Function(v1) -> Any(v2)                              | Calls function `v1` by jumping to its byte index and pushing a new activation record.     |
+| Return             | 1d              |          | [no change]                                          | Pops topmost activation record and jumps back to calling byte index.                      |
+| Array              | 1e              | length   | Any(v1), Any(v2), ... Any(vlength) -> Array(a)       | Constructs array by popping `length` objects off the stack.                               |
+| Hash               | 1f              | length   | String(v1), Any(v2), ... -> Hash(h)                  | Constructs hash by popping `length * 2` objects off the stack.                            |
+| LoadIndex          | 20              |          | Any(index), Any(target) -> Any(v)                    | Loads `index` on `target`.                                                                |
+| StoreIndex         | 21              |          | Any(v), Any(index), Any(target) ->                   | Load `index` on `target` and sets it to `v`.                                              |
 
 ## Notes
 Notes must be followed to implement certain behaviors correctly.
