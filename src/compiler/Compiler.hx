@@ -249,8 +249,7 @@ class Compiler {
     function compileNotEquals(node:OperatorNode) {
         compile(node.left);
         compile(node.right);
-        emit(OpCode.Equals, node.position, []);
-        emit(OpCode.Not, node.position, []);
+        emit(OpCode.NotEquals, node.position, []);
     }
 
     function compileLessThan(node:OperatorNode) {
