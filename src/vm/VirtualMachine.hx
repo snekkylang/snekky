@@ -244,7 +244,7 @@ class VirtualMachine {
                 final builtInIndex = instructions.readInt32();
 
                 stack.add(builtInTable.resolveIndex(builtInIndex));
-            case OpCode.JumpNot:
+            case OpCode.JumpFalse:
                 final jumpIndex = instructions.readInt32();
                 try {
                     final conditionValue = cast(popStack(), BooleanObj).value;
@@ -255,10 +255,10 @@ class VirtualMachine {
                 } catch (e) {
                     error.error("expected condition to evaluate to boolean");
                 }
-            case OpCode.JumpPeek:
+            case OpCode.JumpTrue:
                 final jumpIndex = instructions.readInt32();
                 try {
-                    final conditionValue = cast(stack.first(), BooleanObj).value;
+                    final conditionValue = cast(popStack(), BooleanObj).value;
 
                     if (conditionValue) {
                         instructions.position = jumpIndex;
