@@ -221,6 +221,13 @@ class VirtualMachine {
                 final equals = left.equals(right);
 
                 stack.add(new BooleanObj(equals, this));
+            case OpCode.NotEquals:
+                final right = popStack();
+                final left = popStack();
+                
+                final equals = !left.equals(right);
+
+                stack.add(new BooleanObj(equals, this)); 
             case OpCode.Constant:
                 final constantIndex = instructions.readInt32();
 
@@ -329,9 +336,6 @@ class VirtualMachine {
                 }
             case OpCode.Pop:
                 popStack();
-
-            default:
-
         }
     }
 }
