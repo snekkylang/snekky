@@ -554,10 +554,14 @@ class Compiler {
         final iterator = symbolTable.defineInternal();
         emit(OpCode.Store, node.position, [iterator]);
 
-        final jumpSkipPos = instructions.length;
-        loopPositions.add(jumpSkipPos);
-        emit(OpCode.Jump, node.position, [jumpSkipPos]);
-        final blockStartPos = instructions.length;
+        final jumpPos = instructions.length;
+        loopPositions.add(jumpPos);
+        emit(OpCode.Load, node.position, [iterator]);
+        emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
+        emit(OpCode.LoadIndex, node.position, []);
+        emit(OpCode.Call, node.position, [0]);
+        final JumpFalsePos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
         emit(OpCode.Load, node.position, [iterator]);
         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("next", null))]);
         emit(OpCode.LoadIndex, node.position, []);
@@ -570,35 +574,32 @@ class Compiler {
         }
         compile(node.block);
         symbolTable.setParent();
-        overwriteInstruction(jumpSkipPos, [instructions.length]);
-        emit(OpCode.Load, node.position, [iterator]);
-        emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
-        emit(OpCode.LoadIndex, node.position, []);
-        emit(OpCode.Call, node.position, [0]);
-        emit(OpCode.JumpTrue, node.position, [blockStartPos]);
+        emit(OpCode.Jump, node.position, [jumpPos]);
 
         while (!breakPositions.isEmpty()) {
             overwriteInstruction(breakPositions.pop(), [instructions.length]);   
         }
 
         loopPositions.pop();
+        overwriteInstruction(JumpFalsePos, [instructions.length]);
     }
 
     function compileWhile(node:WhileNode) {
-        final jumpSkipPos = instructions.length;
-        loopPositions.add(jumpSkipPos);
-        emit(OpCode.Jump, node.position, [jumpSkipPos]);
-        final blockStartPos = instructions.length;
-        compile(node.block);
-        overwriteInstruction(jumpSkipPos, [instructions.length]);
+        final jumpPos = instructions.length;
+        loopPositions.add(jumpPos);
         compile(node.condition);
-        emit(OpCode.JumpTrue, node.position, [blockStartPos]);
+
+        final JumpFalseInstructionPos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
+        compile(node.block);
+        emit(OpCode.Jump, node.position, [jumpPos]);
 
         while (!breakPositions.isEmpty()) {
             overwriteInstruction(breakPositions.pop(), [instructions.length]);   
         }
 
         loopPositions.pop();
+        overwriteInstruction(JumpFalseInstructionPos, [instructions.length]);
     }
 
     public function compile(node:Node) {
