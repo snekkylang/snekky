@@ -188,25 +188,26 @@ class Compiler {
 
     function compileOr(node:OperatorNode) {
         compile(node.left);
-        final jumpPeekInstructionPos = instructions.length;
-        emit(OpCode.JumpPeek, node.position, [0]);
-        emit(OpCode.Pop, node.position, []);
+        final jumpIfLeftPos = instructions.length;
+        emit(OpCode.JumpTrue, node.position, [0]);
         compile(node.right);
-        overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
+        final jumpAfterRightPos = instructions.length;
+        emit(OpCode.Jump, node.position, [0]);
+        overwriteInstruction(jumpIfLeftPos, [instructions.length]);
+        emit(OpCode.Constant, node.position, [constantPool.addConstant(new BooleanObj(true, null))]);
+        overwriteInstruction(jumpAfterRightPos, [instructions.length]);
     }
 
     function compileAnd(node:OperatorNode) {
         compile(node.left);
-        emit(OpCode.Not, node.position, []);
-        final jumpPeekInstructionPos = instructions.length;
-        emit(OpCode.JumpPeek, node.position, [0]);
-        emit(OpCode.Pop, node.position, []);
+        final jumpIfNotLeftPos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
         compile(node.right);
-        final jumpInstructionPos = instructions.length;
+        final jumpAfterRightPos = instructions.length;
         emit(OpCode.Jump, node.position, [0]);
-        overwriteInstruction(jumpPeekInstructionPos, [instructions.length]);
-        emit(OpCode.Not, node.position, []);
-        overwriteInstruction(jumpInstructionPos, [instructions.length]);
+        overwriteInstruction(jumpIfNotLeftPos, [instructions.length]);
+        emit(OpCode.Constant, node.position, [constantPool.addConstant(new BooleanObj(false, null))]);
+        overwriteInstruction(jumpAfterRightPos, [instructions.length]);
     }
 
     function compileAdd(node:OperatorNode) {
@@ -494,21 +495,21 @@ class Compiler {
     function compileIf(node:IfNode) {
         compile(node.condition);
 
-        final jumpNotInstructionPos = instructions.length;
-        emit(OpCode.JumpNot, node.position, [0]);
+        final JumpFalseInstructionPos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
 
         compile(node.consequence);
 
         final jumpInstructionPos = instructions.length;
         emit(OpCode.Jump, node.position, [0]);
 
-        final jumpNotPos = instructions.length;
+        final JumpFalsePos = instructions.length;
         if (node.alternative != null) {
             compile(node.alternative);
         }
         final jumpPos = instructions.length;
 
-        overwriteInstruction(jumpNotInstructionPos, [jumpNotPos]);
+        overwriteInstruction(JumpFalseInstructionPos, [JumpFalsePos]);
         overwriteInstruction(jumpInstructionPos, [jumpPos]);
     }
 
@@ -529,13 +530,13 @@ class Compiler {
                 emit(OpCode.Equals, node.position, []);
             }
             
-            final jumpNotPos = instructions.length;
-            emit(OpCode.JumpNot, node.position, [0]);
+            final JumpFalsePos = instructions.length;
+            emit(OpCode.JumpFalse, node.position, [0]);
             compile(c.consequence);
             jumpPositions.push(instructions.length);
             emit(OpCode.Jump, node.position, [0]);
 
-            overwriteInstruction(jumpNotPos, [instructions.length]);
+            overwriteInstruction(JumpFalsePos, [instructions.length]);
         }
         if (node.elseCase != null) {
             compile(node.elseCase);
@@ -560,8 +561,8 @@ class Compiler {
         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("hasNext", null))]);
         emit(OpCode.LoadIndex, node.position, []);
         emit(OpCode.Call, node.position, [0]);
-        final jumpNotPos = instructions.length;
-        emit(OpCode.JumpNot, node.position, [0]);
+        final JumpFalsePos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
         emit(OpCode.Load, node.position, [iterator]);
         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("next", null))]);
         emit(OpCode.LoadIndex, node.position, []);
@@ -581,7 +582,7 @@ class Compiler {
         }
 
         loopPositions.pop();
-        overwriteInstruction(jumpNotPos, [instructions.length]);
+        overwriteInstruction(JumpFalsePos, [instructions.length]);
     }
 
     function compileWhile(node:WhileNode) {
@@ -589,8 +590,8 @@ class Compiler {
         loopPositions.add(jumpPos);
         compile(node.condition);
 
-        final jumpNotInstructionPos = instructions.length;
-        emit(OpCode.JumpNot, node.position, [0]);
+        final JumpFalseInstructionPos = instructions.length;
+        emit(OpCode.JumpFalse, node.position, [0]);
         compile(node.block);
         emit(OpCode.Jump, node.position, [jumpPos]);
 
@@ -599,7 +600,7 @@ class Compiler {
         }
 
         loopPositions.pop();
-        overwriteInstruction(jumpNotInstructionPos, [instructions.length]);
+        overwriteInstruction(JumpFalseInstructionPos, [instructions.length]);
     }
 
     public function compile(node:Node) {

@@ -14,8 +14,8 @@ Snekky's evaluator is a stack-based virtual machine. It can execute programs whi
 | Constant           | 00              | index    | -> Any(v)                                            | Pushes constant at `index` onto the stack.                                                |
 | Pop                | 01              |          | Any(v) ->                                            | Pops top object off stack and discards it.                                                |
 | Jump               | 02              | position | [no change]                                          | Jumps to `position` in bytecode.                                                          |
-| JumpNot            | 03              | position | Boolean(v) ->                                        | Jumps to `position` in bytecode if object popped from stack is `Boolean(false)`.          |
-| JumpPeek           | 04              | position | [no change]                                          | Jumps to `position` in bytecode if top element on stack is `Boolean(true)`.               |
+| JumpFalse          | 03              | position | Boolean(v) ->                                        | Jumps to `position` in bytecode if object popped from stack is `Boolean(false)`.          |
+| JumpTrue           | 04              | position | Boolean(v) ->                                        | Jumps to `position` in bytecode if object popped from stack is `Boolean(true)`.           |
 | Add                | 05              |          | Number(v1), Number(v2) -> Number(v3)                 | Adds `v1` to `v2`.                                                                        |
 | Subtract           | 06              |          | Number(v1), Number(v2) -> Number(v3)                 | Subtracts `v1` from `v2`.                                                                 |
 | Multiply           | 07              |          | Number(v1), Number(v2) -> Number(v3)                 | Multiplies `v1` with `v2`.                                                                |
