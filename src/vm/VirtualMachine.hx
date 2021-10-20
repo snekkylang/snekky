@@ -49,7 +49,7 @@ class VirtualMachine {
         final fileData = new BytesInput(fileData);
         final magicNumber = fileData.readString(4);
         if (magicNumber != "SNEK") {
-            Sys.println("Error: Snekky magic number not found!");
+            Console.println("Error: Snekky magic number not found!");
             #if target.sys
             Sys.exit(1);
             #end
