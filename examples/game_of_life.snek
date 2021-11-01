@@ -49,7 +49,6 @@ let Field = func(w, h) {
             y
         };
 
-
         return s[yy][xx];
     };
 
