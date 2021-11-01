@@ -45,6 +45,12 @@ private class Iterator extends MemberObject {
     }
 
     override function initMembers() {
+        addFunctionMember("includes", [ObjectType.Number], function(p) {
+            final sample = cast(p[0], NumberObj).value;
+
+            return new BooleanObj(sample >= start && sample <= end - 1, vm);
+        });
+
         addFunctionMember("Iterator", [], function(p) {
             return new ExclusiveRange(vm, start, end).getMembers();
         });
