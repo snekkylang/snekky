@@ -1,0 +1,135 @@
+// +----------------------------------------------------------------------+
+// |                        Convay's Game of Life                         |
+// +----------------------------------------------------------------------+
+// | Based on https://rosettacode.org/wiki/Conway%27s_Game_of_Life#Kotlin |
+// +----------------------------------------------------------------------+
+let patterns = {
+    glider: [
+        [false, false, true],
+        [true , false, true],
+        [false, true , true]
+    ],
+    blinker: [
+        [false, true , false],
+        [false, true , false],
+        [false, true , false]
+    ]
+};
+
+let Field = func(w, h) {
+    let s = [];
+    for let y in 0...h {
+        if (s[y] == null) {
+            s[y] = [];
+        }
+
+        for let x in 0...w {
+            s[y][x] = false;
+        }
+    }
+
+    let set = func(x, y, b) {
+        s[y][x] = b;
+    };
+
+    let state = func(x, y) {
+        let xx = if x >= w {
+            x - w
+        } else if x < 0 {
+            x + w
+        } else {
+            x
+        };
+
+        let yy = if y >= h {
+            y - h
+        } else if y < 0 {
+            y + h
+        } else {
+            y
+        };
+
+
+        return s[yy][xx];
+    };
+
+    let next = func(x, y) {
+        mut on = 0;
+        for let i in -1..1 {
+            for let j in -1..1 {
+                if state(x + i, y + j) && !(j == 0 && i == 0) {
+                    on += 1;
+                }
+            }
+        }
+
+        return on == 3 || (on == 2 && state(x, y));
+    };
+
+    return {
+        set: set,
+        state: state,
+        next: next
+    };
+};
+
+let Life = func(w, h, pattern) {
+    mut a = Field(w, h);
+    mut b = Field(w, h);
+    mut generation = 0;
+
+    let init = func() {
+        for let y in 0...pattern.length() {
+            for let x in 0...pattern[y].length() {
+                a.set(y, x, pattern[y][x]);
+            }
+        }
+    };
+
+    let step = func() {
+        for let y in 0...h {
+            for let x in 0...w {
+                b.set(x, y, a.next(x, y));
+            }
+        }
+
+        let t = a;
+        a = b;
+        b = t;
+
+        generation += 1;
+    };
+
+    let toString = func() {
+        mut s = "generation: " >< generation >< "\r\n";
+        for let y in 0...h {
+            for let x in 0...w {
+                let c = if a.state(x, y) {
+                    "#"
+                } else {
+                    "."
+                };
+
+                s = s >< c;
+            }
+            s = s >< "\r\n";
+        }
+
+        return s;
+    };
+
+    init();
+
+    return {
+        step: step,
+        toString: toString
+    };
+};
+
+let generations = 10;
+let game = Life(20, 10, patterns.glider);
+
+for 0...generations {
+    Sys.println(game.toString());
+    game.step();
+}
