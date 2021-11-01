@@ -49,6 +49,14 @@ class SysNamespace extends MemberObject {
             return new NullObj(vm);
         });
 
+        addFunctionMember("time", [], function(p) {
+            #if js
+            return new NumberObj(Date.now().getTime(), vm);
+            #else
+            return new NumberObj(Sys.time() * 1000, vm);
+            #end
+        });
+
         #if target.sys
         addFunctionMember("readLine", [], function(p) {
             final input = Sys.stdin().readLine();
