@@ -1,14 +1,11 @@
 import hxargs.Args;
 import haxe.io.Bytes;
 import haxe.io.Path;
-import vm.VirtualMachine;
-import compiler.Compiler;
 import parser.Parser;
 import lexer.Lexer;
 import build.Version as MacroVersion;
 #if target.sys
 import sys.io.File;
-import repl.Repl;
 #end
 
 @:expose
@@ -21,21 +18,11 @@ class Snekky {
     }
 
     public static function compileString(fileName:String, code:String, debug:Bool, compress:Bool, warnings:Bool):Bytes {
-        final lexer = new Lexer(fileName, code);
-
-        final parser = new Parser(lexer, false);
-        parser.generateAst();
-
-        final compiler = new Compiler(debug, warnings);
-        compiler.compile(parser.ast);
-        final byteCode = compiler.getByteCode(compress);  
-
-        return byteCode;
+        throw "not implemented";
     }
 
     public static function evaluateBytes(byteCode:Bytes) {
-        final vm = new VirtualMachine(byteCode);
-        vm.eval();
+        throw "not implemented";
     }
     
     public static function main() {
@@ -96,8 +83,8 @@ class Snekky {
         }
 
         if (args.length == 0) {
-            final repl = new Repl();
-            repl.start();
+/*             final repl = new Repl();
+            repl.start(); */
         } else {
             final fileName = config.inputPath;
             final compress = config.dumpPath != null && config.compress;
