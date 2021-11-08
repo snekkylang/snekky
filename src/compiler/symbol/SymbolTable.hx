@@ -9,11 +9,11 @@ class SymbolTable {
 
     public function new() { }
 
-    public function newScope() {
+    public function enterScope() {
         currentScope = new SymbolScope(currentScope);
     }
 
-    public function setParent() {
+    public function leaveScope() {
         currentScope = currentScope.parent;
     }
 

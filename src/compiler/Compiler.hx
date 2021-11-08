@@ -93,13 +93,13 @@ class Compiler {
     }
 
     function compileBlock(node:BlockNode) {
-        symbolTable.newScope();
+        symbolTable.enterScope();
 
         for (n in node.body) {
             compile(n);
         }
 
-        symbolTable.setParent();
+        symbolTable.leaveScope();
     }
 
     function compileHash(node:HashNode) {
@@ -447,7 +447,7 @@ class Compiler {
         functionDepth++;
         constantPool.addConstant(new UserFunctionObj(instructions.length, node.parameters.length, null));
 
-        symbolTable.newScope();
+        symbolTable.enterScope();
         for (parameter in node.parameters) {
             if (symbolTable.currentScope.exists(parameter.ident.value)) {
                 error.redeclareVariable(parameter.position, parameter.ident.value);
@@ -465,7 +465,7 @@ class Compiler {
 
         overwriteInstruction(jumpInstructionPos, [instructions.length]);
 
-        symbolTable.setParent();
+        symbolTable.leaveScope();
         functionDepth--;
     }
 
@@ -567,14 +567,14 @@ class Compiler {
         emit(OpCode.Constant, node.position, [constantPool.addConstant(new StringObj("next", null))]);
         emit(OpCode.LoadIndex, node.position, []);
         emit(OpCode.Call, node.position, [0]);
-        symbolTable.newScope();
+        symbolTable.enterScope();
         if (node.variable != null) {
             compile(node.variable);
         } else {
             emit(OpCode.Pop, node.position, []);
         }
         compile(node.block);
-        symbolTable.setParent();
+        symbolTable.leaveScope();
         emit(OpCode.Jump, node.position, [jumpPos]);
 
         while (!breakPositions.isEmpty()) {
