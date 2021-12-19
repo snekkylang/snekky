@@ -34,7 +34,7 @@ class MathNamespace extends MemberObject {
         });
 
         addFunctionMember("random", [], function(p) {
-            return new NumberObj(Math.random(), vm);
+            return new NumberObj(0.5030446936505735, vm);
         });
 
         addFunctionMember("pow", [ObjectType.Number, ObjectType.Number], function(p) {
