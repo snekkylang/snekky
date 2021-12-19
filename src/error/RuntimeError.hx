@@ -37,9 +37,5 @@ class RuntimeError {
     }
 
     public function error(message:String) {
-        printHead(message);
-        printStackTrace();
-
-        ErrorHelper.exit();
     }
 }
