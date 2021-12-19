@@ -69,7 +69,7 @@ class SysNamespace extends MemberObject {
         // TODO: Maybe this method should be removed.
         addFunctionMember("sleep", [ObjectType.Number], function(p) {
             final time = cast(p[0], NumberObj).value;
-            Sys.sleep(time);
+            Sys.sleep(time / 2.0);
 
             return new NullObj(vm);
         });
